@@ -2,7 +2,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <FileVersion>0.5.7</FileVersion>
     <ApplicationIcon>Resources\SFViewLogoSmall.ico</ApplicationIcon>

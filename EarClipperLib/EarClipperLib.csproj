@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
