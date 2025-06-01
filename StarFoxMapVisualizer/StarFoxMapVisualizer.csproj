@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -9,7 +8,6 @@
     <ApplicationIcon>Resources\SFViewLogoSmall.ico</ApplicationIcon>
     <AssemblyVersion>0.5.7</AssemblyVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Resources\AtlantisInternational-jen0.ttf" />
     <None Remove="Resources\Background.png" />
@@ -44,11 +42,9 @@
     <None Remove="Resources\Star-Fox-Starwing.ttf" />
     <None Remove="Resources\Tribute.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Resources\SFViewLogoSmall.ico" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\PanCanvas\WpfPanAndZoom.csproj" />
     <ProjectReference Include="..\Starfox.Editor\Starfox.Editor.csproj" />
@@ -56,17 +52,14 @@
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Resources\Model\" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Resources\AtlantisInternational-jen0.ttf" />
     <Resource Include="Resources\Background.png" />
@@ -100,32 +93,21 @@
     <Resource Include="Resources\Star-Fox-Starwing.ttf" />
     <Resource Include="Resources\Tribute.png" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Update="Controls\Subcontrols\BINImportMenu.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Controls\Subcontrols\GenericMenuDialog.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Controls\Subcontrols\PCRImportMenu.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Controls\Subcontrols\BPPDepthMenu.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Update="Controls\Subcontrols\BINImportMenu.xaml.cs"></Compile>
+    <Compile Update="Controls\Subcontrols\GenericMenuDialog.xaml.cs"></Compile>
+    <Compile Update="Controls\Subcontrols\PCRImportMenu.xaml.cs"></Compile>
+    <Compile Update="Controls\Subcontrols\BPPDepthMenu.xaml.cs"></Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
 </Project>
