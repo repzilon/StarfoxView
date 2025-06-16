@@ -362,5 +362,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# JetBrains Rider C# IDE
+.idea/
+
 # Mac OS X Finder
 .DS_Store
