@@ -172,7 +172,7 @@ namespace StarFoxMapVisualizer.Controls
             transformGroup.Children.Add(new ScaleTransform3D()
             {
                 ScaleX = 1,
-                ScaleY = -1,
+                ScaleY = 1,
                 ScaleZ = 1
             });
             var animation = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(30));                      
@@ -412,7 +412,7 @@ namespace StarFoxMapVisualizer.Controls
             canShowShape = false;
             //Stop animating, please
             EndAnimatingFrames();
-            //can we use persistant data?
+            //can we use persistent data?
             Clear3DScreen();
 
             var group = currentGroup;
@@ -800,7 +800,7 @@ namespace StarFoxMapVisualizer.Controls
 
         private void ExportMeshButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette);
+            var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette, SelectedFrame);
             MessageBox.Show($"{result.Message}::{result.Successful}", result.Descriptor);
         }
     }
