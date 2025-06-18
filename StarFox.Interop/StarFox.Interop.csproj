@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MeshIO" Version="2.1.0-alpha" />
+    <PackageReference Include="MeshIO.FBX" Version="2.1.0-alpha" />
     <PackageReference Include="Microsoft.Solver.Foundation" Version="3.1.0" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>

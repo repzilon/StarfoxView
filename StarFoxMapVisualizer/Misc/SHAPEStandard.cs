@@ -20,6 +20,8 @@ using Starfox.Editor;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 using System.Windows.Media.Imaging;
+using Microsoft.Win32;
+using StarFox.Interop.BSP;
 
 namespace StarFoxMapVisualizer.Misc
 {
@@ -553,6 +555,22 @@ namespace StarFoxMapVisualizer.Misc
             {
                 Brush = new VisualBrush(image)
             };
+        }
+
+        internal static void ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette)
+        {
+            SaveFileDialog saveDialog = new()
+            {
+                Title = "Save FBX File",
+                AddExtension = true,
+                Filter = "FBX Files|*.fbx",
+                CheckPathExists = true,
+                FileName = currentShape.Header.Name,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+            };
+            if (!saveDialog.ShowDialog() ?? true)
+                return;
+            BSPExporter.ExportShapeFBX(saveDialog.FileName, currentShape, Group, Palette, -1, 0);
         }
     }
 }

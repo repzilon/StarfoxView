@@ -863,5 +863,10 @@ namespace StarFoxMapVisualizer.Screens
             LevelSelectWindow wnd = new();
             wnd.Show();
         }
+
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            new AboutBox() { Owner = Application.Current.MainWindow }.ShowDialog();
+        }
     }
 }

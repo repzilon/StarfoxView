@@ -797,5 +797,10 @@ namespace StarFoxMapVisualizer.Controls
             };
             window.Show();
         }
+
+        private void ExportMeshButton_Click(object sender, RoutedEventArgs e)
+        {
+            SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette);
+        }
     }
 }
