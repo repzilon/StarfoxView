@@ -800,7 +800,8 @@ namespace StarFoxMapVisualizer.Controls
 
         private void ExportMeshButton_Click(object sender, RoutedEventArgs e)
         {
-            SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette);
+            var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette);
+            MessageBox.Show($"{result.Message}::{result.Successful}", result.Descriptor);
         }
     }
 }

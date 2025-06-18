@@ -1,16 +1,7 @@
-﻿using CSMath;
-using MeshIO;
-using MeshIO.Entities.Geometries;
-using MeshIO.FBX;
+﻿using g4;
 using StarFox.Interop.BSP.SHAPE;
-using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MeshIO.Shaders;
+using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.COLTAB.DEF;
 
 namespace StarFox.Interop.BSP
@@ -21,51 +12,108 @@ namespace StarFox.Interop.BSP
     /// </summary>
     public class BSPExporter
     {
-        public static void ExportShapeFBX(string FileName, BSPShape Shape, COLGroup Group, SFPalette Palette, int Frame, int MaterialAnimationFrame)
+        public const string FILE_EXTENSION = ".obj"; 
+
+        public struct BSPIOWriteResult
         {
-            Scene scene = new Scene();
-            Node modelNode = new Node(Shape.Header.Name);
-            scene.RootNode.Nodes.Add(modelNode);
-            Dictionary<int, Mesh> DrawGroups = new();
-            Mesh GetDrawGroup(int ColorIndex)
+            public string Descriptor { get; }
+            public string Message { get; }
+            public bool Successful { get; }
+            
+
+            public BSPIOWriteResult(IOWriteResult Other, string? appendMsg = null)
             {
-                if (DrawGroups.TryGetValue(ColorIndex, out var geom))
-                    return geom;
-#if false
-                Node newDrawGroup = new Node($"MATERIAL{ColorIndex}");
-                geom = new($"MATERIAL{ColorIndex}_Mesh");
-                newDrawGroup.Entities.Add(geom);
-                modelNode.Nodes.Add(newDrawGroup);
-#endif
-                modelNode.Entities.Add(geom = new Mesh($"MATERIAL{ColorIndex}_Mesh"));
-
-                var definition = Group.Definitions.ElementAt(ColorIndex);
-                var color = GetMaterialEntry(definition, Palette);
-                //newDrawGroup.Materials.Add(new Material($"{definition.CallType}{ColorIndex}"));
-
-                DrawGroups.Add(ColorIndex, geom);
-                return geom;
+                Descriptor = nameof(Other);
+                Successful = Other.code == IOCode.Ok;
+                Message = appendMsg + Other.message;
+            }
+            internal BSPIOWriteResult(string descriptor, string message, bool successful)
+            {
+                Descriptor = descriptor;
+                Message = message;  
+                Successful = successful;
             }
 
-            foreach(var face in Shape.Faces)
-            {                
-                if (face.PointIndices.Length % 3 == 0 || face.PointIndices.Length % 4 == 0)
-                {
-                    var geom = GetDrawGroup(0);
-                    XYZ getPointRef(int PointRef)
-                    {
-                        var point = Shape.GetPoint(PointRef, Frame);
-                        return new(point.X, point.Y, point.Z);
-                    }
-                    geom.AddPolygons(face.PointIndices.Select(x => getPointRef(x.PointIndex)).ToArray());
-                }
-            }
-
-            FbxWriter writer = new FbxWriter(FileName, scene);
-            writer.Write();
+            public static BSPIOWriteResult Cancelled = new BSPIOWriteResult("Cancelled", "Operation was cancelled.", false);
+            public static BSPIOWriteResult Faulted(Exception exception) => new BSPIOWriteResult(exception.GetType().Name, $"An error has occurred: {exception.Message}", false);
         }
 
-        static Color GetColor(COLDefinition.CallTypes Type, int colIndex, SFPalette palette)
+        public static BSPIOWriteResult ExportShapeFBX(string FileName, BSPShape Shape, COLGroup Group, SFPalette Palette, int Frame, int MaterialAnimationFrame)
+        {
+            if (!FileName.EndsWith(FILE_EXTENSION)) return new BSPIOWriteResult(nameof(NotSupportedException), 
+                "Only accepting *.OBJ file extensions at this time.", false);
+
+            string userMsg = "";
+
+            Dictionary<int, Vector3d> vertices = new();
+            List<int> indices = new List<int>();
+            List<Vector3f> normals = null;
+
+            //Set up mesh geometry
+            foreach (var face in Shape.Faces)
+            {
+                if (face.PointIndices.Length % 3 != 0) // must be triangulated and not quads or lines
+                    continue;
+                
+                //order the indices in order that they appear in the code (as if they're not already?)
+                var orderedIndicies = face.PointIndices.OrderBy(x => x.Position).ToArray();
+                for (int i = 0; i < face.PointIndices.Count(); i++)
+                { 
+                    var pointRefd = orderedIndicies[i]; // get the PointReference
+                    var point = Shape.GetPointOrDefault(pointRefd.PointIndex, Frame); // find the referenced point itself
+                    if (point == null)
+                        return new BSPIOWriteResult(nameof(InvalidDataException), $"Point {pointRefd} is referenced yet not present on {Shape.Header.Name}", false); // uh, we didn't find it.
+                    vertices.TryAdd(pointRefd.PointIndex, new Vector3d(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer                    
+                    indices.Add(pointRefd.PointIndex); // add the index
+                }                              
+            }
+            List<Vector3d> finalVerts = new List<Vector3d>();
+            int lastIndex = 0;
+            //build the vertex list taking care to ensure order preserved
+            foreach(var vertID in vertices.OrderBy(x => x.Key))
+            {
+                int makeAmt = (vertID.Key - lastIndex)-1;
+                lastIndex = vertID.Key;
+                for (int i = 0; i < makeAmt; i++)
+                    finalVerts.Add(default);
+                finalVerts.Add(vertices[vertID.Key]);
+            }
+            //build the mesh
+            DMesh3 meshData = DMesh3Builder.Build(finalVerts, indices, normals);
+            try
+            { // check if it is valid.. our models might not be compatible with this algorithm?
+                meshData.CheckValidity();
+            }
+            catch (Exception e) 
+            {
+                userMsg += e.Message + "... this model might not look right. "; // alert the user there may be an issue
+            }
+            meshData.EnableVertexColors(new Vector3f(0, 1, .25));
+            //Setup colors
+            foreach (var face in Shape.Faces)
+            {
+                for (int i = 0; i < face.PointIndices.Count(); i++)
+                {
+                    int vID = face.PointIndices[i].PointIndex;
+                    var colorRef = Group.Definitions.ElementAt(face.Color);
+                    meshData.SetVertexColor(vID, GetMaterialEntry(colorRef, Palette));
+                }
+            }
+            return new BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName, meshData, new WriteOptions()
+            {
+                bWriteBinary = false,
+                bPerVertexNormals = false,
+                bPerVertexColors = true,
+                bWriteGroups = false,
+                bPerVertexUVs = false,
+                bCombineMeshes = false,
+                bWriteMaterials = false,
+                ProgressFunc = null,
+                RealPrecisionDigits = 15
+            }),userMsg);
+        }
+
+        static Vector3f GetColor(COLDefinition.CallTypes Type, int colIndex, SFPalette palette)
         { // Get a color for a COLDefinition from the sfPalette
             var fooColor = System.Drawing.Color.Blue;
             switch (Type)
@@ -81,9 +129,9 @@ namespace StarFox.Interop.BSP
                     fooColor = palette.Coldepths.ElementAtOrDefault(colIndex).Value;
                     break;
             }
-            return new Color(fooColor.R, fooColor.G, fooColor.B);
+            return new(fooColor.R/255.0, fooColor.G/255.0, fooColor.B/255.0);
         }
-        static Color GetMaterialEntry(COLDefinition definition, SFPalette currentSFPalette)
+        static Vector3f GetMaterialEntry(COLDefinition definition, SFPalette currentSFPalette)
         {
             int colIndex = 0;
             switch (definition.CallType)
@@ -103,7 +151,7 @@ namespace StarFox.Interop.BSP
                     
                     break;
             }
-            return new Color();
+            return new Vector3f(1,1,1);
         }
     }
 }

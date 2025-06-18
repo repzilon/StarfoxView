@@ -557,20 +557,27 @@ namespace StarFoxMapVisualizer.Misc
             };
         }
 
-        internal static void ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette)
+        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette)
         {
             SaveFileDialog saveDialog = new()
             {
-                Title = "Save FBX File",
+                Title = "Save 3D Object File",
                 AddExtension = true,
-                Filter = "FBX Files|*.fbx",
+                Filter = BSPExporter.FILE_EXTENSION.ToUpper() + " Files|*" + BSPExporter.FILE_EXTENSION,
                 CheckPathExists = true,
                 FileName = currentShape.Header.Name,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
             };
             if (!saveDialog.ShowDialog() ?? true)
-                return;
-            BSPExporter.ExportShapeFBX(saveDialog.FileName, currentShape, Group, Palette, -1, 0);
+                return BSPExporter.BSPIOWriteResult.Cancelled;
+            try
+            { // try invoking the BSP exporter
+                return BSPExporter.ExportShapeFBX(saveDialog.FileName, currentShape, Group, Palette, -1, 0);
+            }
+            catch (Exception ex)
+            { // an error has occurred
+                return BSPExporter.BSPIOWriteResult.Faulted(ex);
+            }
         }
     }
 }
