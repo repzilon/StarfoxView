@@ -466,12 +466,7 @@ namespace StarFoxMapVisualizer.Misc
                                 var textDef = definition as COLTexture;
                                 try
                                 {
-                                    var (bmp, sprite) = RenderMSprite(textDef.Reference, Palette.Name).Result;
-                                    /*var imgBrush = new ImageBrush(bmp)
-                                    {
-                                        Stretch = Stretch.Fill,
-                                        TileMode = TileMode.None
-                                    };*/                                   
+                                    var (bmp, sprite) = RenderMSprite(textDef.Reference, Palette.Name).Result;                                
                                     material = GetNearestNeighborTextureMaterial(bmp);
                                     shape.UsingTextures.Add(textDef.Reference);
                                     hasTextureProperties = true;

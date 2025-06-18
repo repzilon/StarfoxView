@@ -45,9 +45,11 @@ namespace StarFox.Interop.BSP
 
             string userMsg = "";
 
-            Dictionary<int, Vector3d> vertices = new();
+            List<Vector3d> vertices = new();
             List<int> indices = new List<int>();
             List<Vector3f> normals = null;
+
+            int overallIndex = 0;
 
             //Set up mesh geometry
             foreach (var face in Shape.Faces)
@@ -63,23 +65,13 @@ namespace StarFox.Interop.BSP
                     var point = Shape.GetPointOrDefault(pointRefd.PointIndex, Frame); // find the referenced point itself
                     if (point == null)
                         return new BSPIOWriteResult(nameof(InvalidDataException), $"Point {pointRefd} is referenced yet not present on {Shape.Header.Name}", false); // uh, we didn't find it.
-                    vertices.TryAdd(pointRefd.PointIndex, new Vector3d(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer                    
-                    indices.Add(pointRefd.PointIndex); // add the index
+                    vertices.Add(new Vector3d(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer
+                    indices.Add(overallIndex); // add the index
+                    overallIndex++;
                 }                              
             }
-            List<Vector3d> finalVerts = new List<Vector3d>();
-            int lastIndex = 0;
-            //build the vertex list taking care to ensure order preserved
-            foreach(var vertID in vertices.OrderBy(x => x.Key))
-            {
-                int makeAmt = (vertID.Key - lastIndex)-1;
-                lastIndex = vertID.Key;
-                for (int i = 0; i < makeAmt; i++)
-                    finalVerts.Add(default);
-                finalVerts.Add(vertices[vertID.Key]);
-            }
             //build the mesh
-            DMesh3 meshData = DMesh3Builder.Build(finalVerts, indices, normals);
+            DMesh3 meshData = DMesh3Builder.Build(vertices, indices, normals);
             try
             { // check if it is valid.. our models might not be compatible with this algorithm?
                 meshData.CheckValidity();
@@ -89,14 +81,18 @@ namespace StarFox.Interop.BSP
                 userMsg += e.Message + "... this model might not look right. "; // alert the user there may be an issue
             }
             meshData.EnableVertexColors(new Vector3f(0, 1, .25));
+            overallIndex = 0;
             //Setup colors
             foreach (var face in Shape.Faces)
             {
+                if (face.PointIndices.Length % 3 != 0) // must be triangulated and not quads or lines
+                    continue;
+
                 for (int i = 0; i < face.PointIndices.Count(); i++)
                 {
-                    int vID = face.PointIndices[i].PointIndex;
+                    //int vID = face.PointIndices[i].PointIndex;
                     var colorRef = Group.Definitions.ElementAt(face.Color);
-                    meshData.SetVertexColor(vID, GetMaterialEntry(colorRef, Palette));
+                    meshData.SetVertexColor(overallIndex++, GetMaterialEntry(colorRef, Palette));
                 }
             }
             return new BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName, meshData, new WriteOptions()
