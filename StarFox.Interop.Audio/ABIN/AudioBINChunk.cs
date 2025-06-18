@@ -1,4 +1,7 @@
-﻿using System.Drawing.Drawing2D;
+﻿using System;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
 
 namespace StarFox.Interop.Audio.ABIN
 {
@@ -32,9 +35,20 @@ namespace StarFox.Interop.Audio.ABIN
         public ushort SPCAddress { get; set; }
         public int FilePosition { get; set; }
         public int Length { get; set; }
-        public static bool IsTable(AudioBINChunk Current) => Current.ChunkType is ChunkTypes.SampleTable or ChunkTypes.SongTable or ChunkTypes.AmbiguousTables;
+
+        public static bool IsTable(AudioBINChunk Current)
+        {
+            var enuChunkType = Current.ChunkType;
+            return (enuChunkType == ChunkTypes.SampleTable) || (enuChunkType == ChunkTypes.SongTable) ||
+             (enuChunkType == ChunkTypes.AmbiguousTables);
+        }
+
         public bool IsTable() => IsTable(this);
-        public static bool IsData(AudioBINChunk Current) => Current.ChunkType is ChunkTypes.SongData or ChunkTypes.SampleData;
+        public static bool IsData(AudioBINChunk Current)
+        {
+			var enuChunkType = Current.ChunkType;
+            return (enuChunkType == ChunkTypes.SongData) || (enuChunkType == ChunkTypes.SampleData);
+		}
         public bool IsData() => IsData(this);
         public void SeekStart(Stream Stream) => Stream.Seek(FilePosition + (2 * sizeof(ushort)), SeekOrigin.Begin);
         /// <summary>
@@ -60,7 +74,7 @@ namespace StarFox.Interop.Audio.ABIN
                 //seek back to original caller stream position
                 ChunkDataStream.Seek(fooFilePos, SeekOrigin.Begin);
                 return type;
-            }            
+            }
             //Go to the start of this chunk in the data stream
             SeekStart(ChunkDataStream);
             byte firstByte = (byte)(ChunkDataStream.ReadByte());
@@ -92,7 +106,7 @@ namespace StarFox.Interop.Audio.ABIN
                     if (cont)
                         return Exit(ChunkTypes.SongData); // SONG DATA
                 }
-            }                
+            }
             return Exit(ChunkTypes.AmbiguousTables); // A TABLE
         }
         /// <summary>
@@ -104,15 +118,15 @@ namespace StarFox.Interop.Audio.ABIN
         /// <param name="Chunks">The chunks contained in the parent <see cref="AudioBINFile"/></param>
         /// <returns></returns>
         public ChunkTypes AmbiguityConjecture(params AudioBINChunk[] Chunks) {
-            if (ChunkType != ChunkTypes.AmbiguousTables) 
+            if (ChunkType != ChunkTypes.AmbiguousTables)
                 throw new InvalidOperationException($"{nameof(ChunkType)} is not {nameof(ChunkTypes.AmbiguousTables)}, it is {ChunkType}.");
             IOrderedEnumerable<AudioBINChunk> orderedChunks = Chunks.OrderBy(x => x.SPCAddress);
             ChunkTypes? previousDataChunk = default;
             foreach(AudioBINChunk orderedChunk in orderedChunks)
             {
                 if (orderedChunk.ChunkType == ChunkTypes.NotCalculated) continue;
-                if (orderedChunk.ChunkType is ChunkTypes.SongData or ChunkTypes.SampleData)
-                    previousDataChunk = orderedChunk.ChunkType;                
+                if ((orderedChunk.ChunkType == ChunkTypes.SongData) || (orderedChunk.ChunkType == ChunkTypes.SampleData))
+                    previousDataChunk = orderedChunk.ChunkType;
                 //Ignore every chunk before me (except if this is the last chunk)
                 if (orderedChunk.SPCAddress <= SPCAddress) continue;
                 //Yikes, I found another table before a data chunk...
@@ -120,25 +134,30 @@ namespace StarFox.Interop.Audio.ABIN
                     continue;
                 if (orderedChunk.IsData()) // FOUND SOME DATA :D
                 { // Find the type of data that comes after this
-                    var retType = orderedChunk.ChunkType switch
-                    {
-                        ChunkTypes.SampleData => ChunkTypes.SampleTable,
-                        ChunkTypes.SongData => ChunkTypes.SongTable,
-                        _ => ChunkTypes.SongData
-                    };
+                    ChunkTypes retType;
+                    if (orderedChunk.ChunkType == ChunkTypes.SampleData) {
+                        retType = ChunkTypes.SampleTable;
+                    } else if (orderedChunk.ChunkType == ChunkTypes.SongData) {
+                        retType = ChunkTypes.SongTable;
+                    } else {
+                        retType = ChunkTypes.SongData;
+                    }
+
                     return ChunkType = retType; // Set the chunk type accordingly
                 }
             }
             // this is the last chunk
-            if (previousDataChunk != default && previousDataChunk is ChunkTypes.SampleData or ChunkTypes.SongData)                
+            if ((previousDataChunk != null) && ((previousDataChunk == ChunkTypes.SampleData) || (previousDataChunk == ChunkTypes.SongData)))
             {
                 //The previous chunk was data, so corrospond these two together
-                var retType = previousDataChunk switch
-                {
-                    ChunkTypes.SampleData => ChunkTypes.SampleTable,
-                    ChunkTypes.SongData => ChunkTypes.SongTable,
-                    _ => ChunkTypes.SongData
-                };
+                ChunkTypes retType;
+                if (previousDataChunk == ChunkTypes.SampleData) {
+                    retType = ChunkTypes.SampleTable;
+                } else if (previousDataChunk == ChunkTypes.SongData) {
+                    retType = ChunkTypes.SongTable;
+                } else {
+                    retType = ChunkTypes.SongData;
+                }
                 return ChunkType = retType; // Set the chunk type accordingly
             }
             //Failed.

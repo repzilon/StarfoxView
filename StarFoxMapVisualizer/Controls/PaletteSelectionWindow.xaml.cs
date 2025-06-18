@@ -20,7 +20,7 @@ namespace StarFoxMapVisualizer.Controls
     /// </summary>
     public partial class PaletteSelectionWindow : Window
     {
-        public (string Name, COL Palette)? SelectedPalette => PaletteSelection.SelectedPalette;
+        public PaletteTuple? SelectedPalette => PaletteSelection.SelectedPalette;
 
         public PaletteSelectionWindow()
         {

@@ -1,10 +1,10 @@
-﻿using StarFox.Interop.GFX.CONVERT;
-using StarFox.Interop.GFX.DAT;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.GFX.CONVERT;
+using StarFox.Interop.GFX.DAT;
 
 namespace StarFox.Interop.GFX
 {

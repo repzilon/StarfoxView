@@ -4,6 +4,8 @@
 // https://www.romhacking.net/utilities/346/
 // ********************************
 
+using System.IO;
+using System.Threading.Tasks;
 using StarFox.Interop.GFX.CONVERT;
 
 namespace StarFox.Interop.GFX.DAT
@@ -24,11 +26,19 @@ namespace StarFox.Interop.GFX.DAT
         /// </summary>
         public async Task Save(string OriginalFilePath)
         {
+#if NETFRAMEWORK || NETSTANDARD
+			File.WriteAllBytes(
+				$"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_low.msx"
+				, LowBank);
+			File.WriteAllBytes($"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_high.msx"
+				, HighBank);
+#else
             await File.WriteAllBytesAsync(
                 $"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_low.msx"
                 , LowBank);
             await File.WriteAllBytesAsync($"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_high.msx"
                 , HighBank);
-        }
+#endif
+		}
     }
 }

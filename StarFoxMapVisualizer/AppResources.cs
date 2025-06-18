@@ -28,7 +28,7 @@ namespace StarFoxMapVisualizer
             {
                 try
                 {
-                    string? version = FileVersionInfo.GetVersionInfo(Environment.ProcessPath ?? "")?.FileVersion;
+                    string version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location ?? "")?.FileVersion;
                     return $"{ApplicationName} | v{version ?? "Error"} [BETA]";
                 }
                 catch (Exception ex)
@@ -46,19 +46,19 @@ namespace StarFoxMapVisualizer
         /// <summary>
         /// Files that are marked as *include files, as in containing symbol information
         /// </summary>
-        public static HashSet<ASMFile>? Includes => ImportedProject?.Includes;
+        public static HashSet<ASMFile> Includes => ImportedProject?.Includes;
         /// <summary>
         /// All files that have been imported by the <see cref="ASMImporter"/>
         /// <para/>Key is File FullName (FullPath)
         /// </summary>
-        public static Dictionary<string, IImporterObject>? OpenFiles => ImportedProject?.OpenFiles;
-        public static IEnumerable<MAPFile>? OpenMAPFiles => ImportedProject?.OpenMAPFiles;
+        public static Dictionary<string, IImporterObject> OpenFiles => ImportedProject?.OpenFiles;
+        public static IEnumerable<MAPFile> OpenMAPFiles => ImportedProject?.OpenMAPFiles;
         public static bool IsFileIncluded(FileInfo File) => ImportedProject?.IsFileIncluded(File) ?? false;
         /// <summary>
         /// The project imported by the user, if one has been imported already
         /// <para>See: </para>
         /// </summary>
-        public static SFCodeProject? ImportedProject { get; internal set; } = null;
+        public static SFCodeProject ImportedProject { get; internal set; } = null;
         /// <summary>
         /// Attempts to load a project from the given source code folder
         /// </summary>
@@ -68,7 +68,7 @@ namespace StarFoxMapVisualizer
         {
             try
             {
-                SFCodeProject codeProject = new(ProjectDirectory.FullName);
+                var codeProject = new SFCodeProject(ProjectDirectory.FullName);
                 await codeProject.EnumerateAsync(); // populate the project with files and folders
                 ImportedProject = codeProject;
             }

@@ -25,7 +25,7 @@ namespace StarFoxMapVisualizer.Controls2
     public partial class MSGViewer : UserControl
     {
         private Timer animationTimer;
-        private Dictionary<string, IEnumerable<MSGEntry>> fileMap = new();
+        private Dictionary<string, IEnumerable<MSGEntry>> fileMap = new Dictionary<string, IEnumerable<MSGEntry>>();
         public string SelectedFileName { get; private set; }
         private Characters CurrentSpeaker = Characters.FOX;
         MSGEntry currentMessage;
@@ -59,7 +59,7 @@ namespace StarFoxMapVisualizer.Controls2
             MessagesItemsHost.Children.Clear();
             await ClearUIMessages(); // fox prompts to select a file!!
             fileMap.Clear();
-            foreach(MSGFile messages in AppResources.OpenFiles.Values.OfType<MSGFile>())            
+            foreach(MSGFile messages in AppResources.OpenFiles.Values.OfType<MSGFile>())
                 fileMap.Add(System.IO.Path.GetFileNameWithoutExtension(messages.OriginalFilePath),
                     messages.Entries.Values);
             RefreshUI();
@@ -69,7 +69,7 @@ namespace StarFoxMapVisualizer.Controls2
         {
             FilesCombo.SelectionChanged -= SourceFileChanged;
             FilesCombo.Items.Clear();
-            foreach(var file in fileMap)            
+            foreach(var file in fileMap)
                 FilesCombo.Items.Add(file.Key);
             FilesCombo.SelectionChanged += SourceFileChanged;
             if (FilesCombo.Items.Count > 0)
@@ -84,14 +84,14 @@ namespace StarFoxMapVisualizer.Controls2
             //**REFRESH UI MESSAGES
             await ClearUIMessages("pick a message!!"); // have fox prompt the user to pick a message
             MessagesItemsHost.Children.Clear();
-            Dictionary<string, ListBox> personToListBoxMap = new();
+            var personToListBoxMap = new Dictionary<string, ListBox>();
             void AddMessage(MSGEntry Entry)
             {
                 if (!personToListBoxMap.TryGetValue(Entry.Speaker, out ListBox listBox))
                 { // we haven't created UI containers for this person yet
-                    listBox = new(); // make a message list
+                    listBox = new ListBox(); // make a message list
                     listBox.SelectionChanged += MessageChanged;
-                    HeaderedContentControl itemHost = new()
+                    var itemHost = new HeaderedContentControl()
                     { // make a container for the message list
                         Header = Entry.Speaker,
                         Content = listBox
@@ -147,8 +147,8 @@ namespace StarFoxMapVisualizer.Controls2
         {
             int dueTime = 50;
             int loops = 0;
-            int maxLoops = 31;            
-            async void Callback(object? state)
+            int maxLoops = 31;
+            async void Callback(object state)
             {
                 if (animationTimer == null) return;
                 loops++;

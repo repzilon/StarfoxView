@@ -1,4 +1,5 @@
-﻿using StarFox.Interop.ASM;
+﻿using System.Collections.Generic;
+using StarFox.Interop.ASM;
 
 namespace StarFox.Interop.MSG
 {
@@ -26,6 +27,6 @@ namespace StarFox.Interop.MSG
         /// <summary>
         /// The message entries in this file
         /// </summary>
-        public Dictionary<int, MSGEntry> Entries { get; } = new();
+        public Dictionary<int, MSGEntry> Entries { get; } = new Dictionary<int, MSGEntry>();
     }
 }

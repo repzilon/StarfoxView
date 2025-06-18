@@ -1,8 +1,9 @@
 ﻿//render activated? requires adding support for System.Drawing.Common which really isn't necessary at this moment
 #define RENDER
 
-using StarFox.Interop.MISC;
+using System;
 using System.Drawing;
+using StarFox.Interop.MISC;
 
 // ********************************
 // THANK YOU LUIGIBLOOD!

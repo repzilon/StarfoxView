@@ -1,17 +1,16 @@
 ﻿//#define SPECIFIC
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFox.Interop.BSP.SHAPE;
-using StarFox.Interop.MAP;
 using StarFox.Interop.MISC;
-using StarFox.Interop.MSG;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StarFox.Interop.BSP
 {
@@ -19,7 +18,7 @@ namespace StarFox.Interop.BSP
     {
         internal enum PointsModes
         {
-            None, 
+            None,
             /// <summary>
             /// Counts by 2s
             /// </summary>
@@ -27,7 +26,7 @@ namespace StarFox.Interop.BSP
             /// <summary>
             /// Counts by 1s
             /// </summary>
-            Pointsb, 
+            Pointsb,
             /// <summary>
             /// Counts by 1s
             /// </summary>
@@ -39,40 +38,43 @@ namespace StarFox.Interop.BSP
         }
 
         //*** BSP VARS
-        internal ASMFile[]? Includes;
-        internal BSPFile? CurrentFile;
-        internal BSPShape? CurrentShape = default; // the currently parsing shape
+        internal ASMFile[] Includes;
+        internal BSPFile CurrentFile;
+        internal BSPShape CurrentShape = default; // the currently parsing shape
         internal int currentFrame = -1;
-        internal string? currentFrameDefinition = default, currentFrameEndLabel = default;
+        internal string currentFrameDefinition = default, currentFrameEndLabel = default;
         internal int pointIndex = 0, framePointIndexStart = 0;
         internal int frameDefinitionAmount = 0;
         internal bool BSPMode = false;
-        internal string? BSPEndLabel;
+        internal string BSPEndLabel;
         //----
 
         /// <summary>
         /// Describes the current point parsing mode
         /// </summary>
         internal PointsModes PointsMode { get; set; }
-        /// <summary>
-        /// The data width of the point definitions
-        /// </summary>
-        internal int PointsDataWidth => PointsMode switch
-        {
-            PointsModes.PointsXb => 2,
-            PointsModes.Pointsb => 1,
-            PointsModes.Pointsw => 1,
-            PointsModes.PointsXw => 2,
-            _ => 0,
-        };
-        /// <summary>
-        /// If we're not parsing points, this is locked.
-        /// </summary>
-        internal bool pointsLocked => PointsMode == PointsModes.None;
+		/// <summary>
+		/// The data width of the point definitions
+		/// </summary>
+		internal int PointsDataWidth {
+			get {
+				if ((PointsMode == PointsModes.PointsXb) || (PointsMode == PointsModes.PointsXw)) {
+					return 2;
+				} else if ((PointsMode == PointsModes.Pointsb) || (PointsMode == PointsModes.Pointsw)) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		}
+		/// <summary>
+		/// If we're not parsing points, this is locked.
+		/// </summary>
+		internal bool pointsLocked => PointsMode == PointsModes.None;
         internal bool facesLocked = false;
         internal int frames = 0;
         //***
-        public StringBuilder? ErrorList => CurrentFile?.ImportErrors;
+        public StringBuilder ErrorList => CurrentFile?.ImportErrors;
 
         /// <summary>
         /// Resets variables to default values
@@ -172,7 +174,7 @@ namespace StarFox.Interop.BSP
 #endif
             if (CurrentShape != default) // yikes, we found a stray definition, or perhaps one that references another.
             {
-                // stray shape, push this header to the strays list.          
+                // stray shape, push this header to the strays list.
                 CurrentFile.BlankShapes.Add(CurrentShape);
                 CurrentShape = null;
             }
@@ -201,17 +203,18 @@ namespace StarFox.Interop.BSP
         {
             if (pointsLocked) // has endpoints been called?
                 throw new InvalidDataException($"You're not in POINTS mode."); // yikes!
-            bool compatible = PointsMode switch
-            {
-                PointsModes.Pointsb => PointType is PointsModes.PointsXb or PointsModes.Pointsb,
-                PointsModes.PointsXb => PointType is PointsModes.PointsXb or PointsModes.Pointsb,
-                PointsModes.PointsXw => PointType is PointsModes.Pointsw or PointsModes.PointsXw,
-                PointsModes.Pointsw => PointType is PointsModes.Pointsw or PointsModes.PointsXw,
-                _ => false
-            };
+            bool compatible;
+            if ((PointsMode == PointsModes.Pointsb) || (PointsMode == PointsModes.PointsXb)) {
+                compatible = (PointType == PointsModes.PointsXb) || (PointType == PointsModes.Pointsb);
+            } else if ((PointsMode == PointsModes.PointsXw) || (PointsMode == PointsModes.Pointsw)) {
+                compatible = (PointType == PointsModes.Pointsw) || (PointType == PointsModes.PointsXw);
+            } else {
+                compatible = facesLocked;
+            }
+
             if (!compatible)
                 throw new InvalidOperationException($"You're not in the correct mode to define a point like that. M: {PointsMode} T: {PointType}");
-            bool XMode = PointsMode is PointsModes.PointsXb or PointsModes.PointsXw;
+            bool XMode = (PointsMode == PointsModes.PointsXb) || (PointsMode == PointsModes.PointsXw);
         XMode:
             int shift = CurrentShape?.Header?.Shift ?? 0;
             shift = 0;
@@ -274,7 +277,7 @@ namespace StarFox.Interop.BSP
             "SHMACS.INC", //Shape Macros required
             "STRATEQU.INC" // Used for constants that describe sizing constraints, etc.
         };
-        BSPImporterContext? asmContext;        
+        BSPImporterContext asmContext;
 
         /// <summary>
         /// Initializes a new <see cref="BSPImporter"/>
@@ -282,7 +285,7 @@ namespace StarFox.Interop.BSP
         public BSPImporter()
         {
 
-        }                             
+        }
 
         /// <summary>
         /// After all shapes have been defined and parsed, this function can be used to attempt to turn Blank Shapes
@@ -290,12 +293,12 @@ namespace StarFox.Interop.BSP
         /// </summary>
         private void DereferenceBlankShapes(BSPFile File)
         {
-            List<BSPShape> completes = new(); // completed shapes
+            var completes = new List<BSPShape>();       // completed shapes
             foreach(var blankShape in File.BlankShapes) // blank shapes iteration
             {
                 foreach(var shape in File.Shapes) // iterate over all shapes
                 {
-                    if (shape.Equals(blankShape)) 
+                    if (shape.Equals(blankShape))
                         continue; // ignore the current blank shape, please.
                     if (shape.Header.PointPtr == blankShape.Header.PointPtr &&
                         shape.Header.FacePtr == blankShape.Header.FacePtr)
@@ -305,10 +308,10 @@ namespace StarFox.Interop.BSP
                         {
                             var tempName = shape.Header.Name;
                             if (!string.IsNullOrWhiteSpace(blankShape.Header.InlineLabelName))
-                                blankShape.Header.DataPointer = shape.Header.Name;                    
+                                blankShape.Header.DataPointer = shape.Header.Name;
                         }
                         completes.Add(blankShape);
-                    }    
+                    }
                 }
             }
             foreach (var shape in completes)
@@ -381,7 +384,7 @@ namespace StarFox.Interop.BSP
         {
             //Import the shape file as assembly first
             var baseImport = await baseImporter.ImportAsync(FilePath);
-            if (baseImport == default) throw new InvalidOperationException("That file could not be parsed.");            
+            if (baseImport == default) throw new InvalidOperationException("That file could not be parsed.");
             var file = ImportedObject = new BSPFile(baseImport); // from ASM file
             int currentLineIndex = -1; // the current line of assembly we're reading
             asmContext = new BSPImporterContext() // create a new context
@@ -398,9 +401,9 @@ namespace StarFox.Interop.BSP
                     if (chunk == null) continue; // ???
                     if (chunk is ASMLine line)//Let's always only look for lines.
                     { // found a line
-                        if (asmContext.currentFrameDefinition != null && asmContext.currentFrameEndLabel != null && 
+                        if (asmContext.currentFrameDefinition != null && asmContext.currentFrameEndLabel != null &&
                             line.Text.NormalizeFormatting().ToUpper().StartsWith(asmContext.currentFrameEndLabel.ToUpper()))
-                        { //we are leaving a keyframe                            
+                        { //we are leaving a keyframe
                             asmContext.ReturnFromFrameDataRegion();
                         }
                         if (!line.HasStructureApplied) continue; // hmm but this line doesn't have a recognized structure.
@@ -408,7 +411,7 @@ namespace StarFox.Interop.BSP
                         {
                             //ALWAYS LOOK FOR HEADERS
                             if (asmContext.LookForShapeHeader(line))
-                                continue; // Started a new shape  
+                                continue; // Started a new shape
                             if (asmContext.CurrentShape == default) continue;
                             //NOT A HEADER, CHECK IF IT HAS A LABEL (JumpTab)
                             if (line.HasInlineLabel)
@@ -431,7 +434,7 @@ namespace StarFox.Interop.BSP
                                 case "bsp":
                                     continue;
                                     asmContext.PushBSP(
-                                        macroInvoke.TryGetParameter(0).TryParseOrDefault(), 
+                                        macroInvoke.TryGetParameter(0).TryParseOrDefault(),
                                         macroInvoke.TryGetParameter(1).ParameterContent,
                                         macroInvoke.TryGetParameter(2).ParameterContent
                                     );

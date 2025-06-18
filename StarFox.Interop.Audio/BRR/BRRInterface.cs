@@ -1,4 +1,7 @@
-﻿namespace StarFox.Interop.BRR
+﻿using System;
+using System.IO;
+
+namespace StarFox.Interop.BRR
 {
     /// <summary>
     /// Contains functions for writing/exporting <see cref="BRRFile"/> instances to the disk.

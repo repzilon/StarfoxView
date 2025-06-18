@@ -39,14 +39,14 @@ namespace StarFoxMapVisualizer.Dialogs
             }
         }
 
-        bool SelectPalette(out string? PaletteName)
+        bool SelectPalette(out string PaletteName)
         {
             PaletteName = null;
 
             PaletteSelectionWindow palWnd = new PaletteSelectionWindow();
             palWnd.ShowDialog();
 
-            (string Name, StarFox.Interop.GFX.CAD.COL Palette)? selectedItem = palWnd.SelectedPalette;
+            PaletteTuple? selectedItem = palWnd.SelectedPalette;
             if (selectedItem is null) return false;
             PaletteName = System.IO.Path.GetFileNameWithoutExtension(selectedItem.Value.Name);
             return true;
@@ -59,22 +59,22 @@ namespace StarFoxMapVisualizer.Dialogs
         /// <param name="e"></param>
         private void PaletteItem_Click(object sender, RoutedEventArgs e)
         {
-            if (!SelectPalette(out string? PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
+            if (!SelectPalette(out string PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
             MapViewer.SetGraphics(PaletteName, PaletteName, MapViewer.MapBackgroundName);
-        }        
+        }
 
         private void PlanetPaletteItem_Click(object sender, RoutedEventArgs e)
         {
-            if (!SelectPalette(out string? PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
+            if (!SelectPalette(out string PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
             MapViewer.GraphicsPalette = PaletteName;
         }
 
         private void BGPaletteItem_Click(object sender, RoutedEventArgs e)
         {
-            if (!SelectPalette(out string? PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
+            if (!SelectPalette(out string PaletteName) || string.IsNullOrWhiteSpace(PaletteName)) return;
             MapViewer.MapPalette = PaletteName;
         }
-        
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape) Close();

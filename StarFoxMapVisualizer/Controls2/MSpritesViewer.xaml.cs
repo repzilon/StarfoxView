@@ -1,21 +1,17 @@
-﻿using StarFox.Interop.GFX;
-using StarFox.Interop.GFX.DAT;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 using StarFoxMapVisualizer.Controls;
 using StarFoxMapVisualizer.Misc;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace StarFoxMapVisualizer.Controls2
 {
-    /// <summary>
-    /// Interaction logic for MSpritesViewer.xaml
-    /// </summary>
-    public partial class MSpritesViewer : Window
+	/// <summary>
+	/// Interaction logic for MSpritesViewer.xaml
+	/// </summary>
+	public partial class MSpritesViewer : Window
     {
         private MSpritesDefinitionFile mSpritesDefinitionFile;
         private string PaletteName = SHAPEStandard.DefaultMSpritePalette;
@@ -33,9 +29,9 @@ namespace StarFoxMapVisualizer.Controls2
 
         private void Load(object sender, RoutedEventArgs e)
         {
-            List<MSprite> sprites = new();
-            foreach(var bank in mSpritesDefinitionFile.Banks)            
-                sprites.AddRange(bank.Value.Sprites.Values);            
+            var sprites = new List<MSprite>();
+            foreach(var bank in mSpritesDefinitionFile.Banks)
+                sprites.AddRange(bank.Value.Sprites.Values);
             SelectionCombo.ItemsSource = sprites;
         }
 
@@ -75,7 +71,7 @@ namespace StarFoxMapVisualizer.Controls2
             };
             window.Closed += delegate
             {
-                if (window.SelectedPalette == default) return;
+                if (window.SelectedPalette == null) return;
                 PaletteName = System.IO.Path.GetFileNameWithoutExtension(window.SelectedPalette?.Name) ?? "NIGHT";
                 ShowMSprite(SelectionCombo.SelectedItem as MSprite);
             };

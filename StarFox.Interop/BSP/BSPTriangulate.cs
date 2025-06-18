@@ -1,12 +1,12 @@
-﻿using EarClipperLib;
-using StarFox.Interop.BSP.SHAPE;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using EarClipperLib;
+using StarFox.Interop.BSP.SHAPE;
 
 namespace StarFox.Interop.BSP
 {
@@ -20,13 +20,13 @@ namespace StarFox.Interop.BSP
                 return new Vector3m(vector.X / length, vector.Y / length, vector.Z / length);
             }
             var verticies = FacePoints.Select(x => new Vector3m(x.X, x.Y, x.Z)).ToList();
-            EarClipping converter = new();
+            var converter = new EarClipping();
             converter.SetPoints(verticies,null,Normalize(Normal));
-            NewVerts = new();
+            NewVerts = new List<BSPPoint>();
             try
             {
                 converter.Triangulate();
-                var result = converter.Result;                
+                var result = converter.Result;
                 foreach (var point in result)
                 {
                     foreach (var bspPoint in FacePoints)
@@ -42,7 +42,7 @@ namespace StarFox.Interop.BSP
                 }
                 return NewVerts.Count % 3 == 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

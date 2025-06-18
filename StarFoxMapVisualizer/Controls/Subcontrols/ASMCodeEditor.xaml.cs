@@ -1,23 +1,16 @@
-﻿using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static StarFoxMapVisualizer.Controls.ASMControl;
-using StarFoxMapVisualizer.Screens;
-using System.IO;
+using StarFox.Interop;
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.MISC;
 using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -29,10 +22,10 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
     {
         private readonly ASMControl parent; // attached parent control
         internal ASM_FINST FileInstance { get; } // the current context for this control
-        private Dictionary<ASMChunk, Run>? symbolMap => current?.symbolMap; // where all of the symbols in the document are located
+        private Dictionary<ASMChunk, Run> symbolMap => current?.symbolMap; // where all of the symbols in the document are located
         private ASM_FINST current => FileInstance; // band-aid
-        private IEnumerable<ASMMacro>? macros; // performance cache
-        private IEnumerable<string>? macroNames; // performance cache
+        private IEnumerable<ASMMacro> macros; // performance cache
+        private IEnumerable<string> macroNames; // performance cache
         /// <summary>
         /// Invalidates the macro symbol caches, causing them to be reloaded from <see cref="AppResources.Includes"/>
         /// </summary>
@@ -105,14 +98,14 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         {
             InvalidateMacros();
 
-            FlowDocument newASMDoc = new()
+            var newASMDoc = new FlowDocument()
             {
                 FontFamily = new FontFamily("Consolas"),
                 TextAlignment = TextAlignment.Left,
                 PageWidth = 9000 // wrapping routine fixes this
             };
             Document = newASMDoc;
-            Paragraph textParagraph = new();
+            var textParagraph = new Paragraph();
             newASMDoc.Blocks.Add(textParagraph);
 
             int lineNumber = 0;
@@ -135,14 +128,14 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
             var File = current.OpenFile;
 
-            FlowDocument newASMDoc = new()
+            var newASMDoc = new FlowDocument()
             {
                 FontFamily = new FontFamily("Consolas"),
                 TextAlignment = TextAlignment.Left,
                 PageWidth = 9000 // wrapping routine fixes this
             };
             Document = newASMDoc;
-            Paragraph textParagraph = new();
+            var textParagraph = new Paragraph();
             newASMDoc.Blocks.Add(textParagraph);
 
             int lineNumber = -1;
@@ -159,7 +152,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                     _ = ProcessLine(textParagraph, line, lineNumber);
                     if (lineNumber % 75 == 0)
                     {
-                        textParagraph = new();
+                        textParagraph = new Paragraph();
                         newASMDoc.Blocks.Add(textParagraph);
                     }
                 }
@@ -173,7 +166,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             bool success = false;
             try
             {
-                var sanitizedLine = line;                
+                var sanitizedLine = line;
                 if (!string.IsNullOrWhiteSpace(sanitizedLine)) // is there any text to even highlight here?
                 { // yeah.
                     var highlights = FindHighlights(sanitizedLine, (uint)lineNumber); // find the big words
@@ -202,7 +195,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                         }
                     }
                 }
-                if (!success) textParagraph.Inlines.Add(new Run(line)); // write the text upon failure                                
+                if (!success) textParagraph.Inlines.Add(new Run(line)); // write the text upon failure
             }
             catch (Exception ex)
             { // oops! an error
@@ -210,14 +203,14 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                 {
                     Foreground = Brushes.Red
                 }); // write the text in red here to show me I messed up somewhere
-                textParagraph.Inlines.Add(new Run(line));                
+                textParagraph.Inlines.Add(new Run(line));
             }
             var lineInline = textParagraph.Inlines.LastOrDefault();
             if (lineInline != null)
                 current?.NewLineMap.TryAdd(lineNumber, lineInline);
-            textParagraph.Inlines.Add(new LineBreak()); // insert new line            
+            textParagraph.Inlines.Add(new LineBreak()); // insert new line
             return success;
-        }    
+        }
 
         /// <summary>
         /// Set Keyboard Macro Shortcuts on this particular symbol
@@ -246,7 +239,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             /// <summary>
             /// If this highlight is due to ASMCodeDom information, provide the source of the information
             /// </summary>
-            public ASMChunk? chunkHint;
+            public ASMChunk chunkHint;
             /// <summary>
             /// INDEX MODE is when this is not -1. It will highlight everything after the index of this character with the value of Word.
             /// </summary>
@@ -254,9 +247,9 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             /// <summary>
             /// Sets a generic tooltip message on this highlighted symbol. ChunkHint tooltip will not be applied if this isn't null.
             /// </summary>
-            public string? TooltipText = null;
+            public string TooltipText = null;
 
-            public HighlightDesc(string word, Brush highlightKey, ASMChunk? chunkHint)
+            public HighlightDesc(string word, Brush highlightKey, ASMChunk chunkHint)
             {
                 Word = word;
                 this.highlightKey = highlightKey;
@@ -334,19 +327,19 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                 remainingText = currentText.Substring(occurance + desc.Word.Length);
             }
             var fooWords = HighlightedWords.ToList();
-            string remainingText = line;
+            string remainingText2 = line;
             for (int i = 0; i < HighlightedWords.Count(); i++)
             {
-                HighlightDesc? nextWord = fooWords.OrderBy(x => x.Index.HasValue ? // IS INDEX MODE?
-                                            remainingText.IndexOf(x.Index.Value) : remainingText.IndexOf(x.Word)
+                HighlightDesc nextWord = fooWords.OrderBy(x => x.Index.HasValue ? // IS INDEX MODE?
+                                            remainingText2.IndexOf(x.Index.Value) : remainingText2.IndexOf(x.Word)
                                           ).FirstOrDefault(); // order first to last based on remaining text
                 if (nextWord == null) continue; // ?????
                 fooWords.Remove(nextWord); // make new list of remaining highlights
-                doHighlight(in remainingText, nextWord, out remainingText);
-                if (string.IsNullOrWhiteSpace(remainingText)) break;
+                doHighlight(in remainingText2, nextWord, out remainingText2);
+                if (string.IsNullOrWhiteSpace(remainingText2)) break;
             }
-            if (!string.IsNullOrEmpty(remainingText)) // more text exists after all inline highlights!!
-                lines.Add(new Run(remainingText));
+            if (!string.IsNullOrEmpty(remainingText2)) // more text exists after all inline highlights!!
+                lines.Add(new Run(remainingText2));
             return lines;
         }
         /// <summary>

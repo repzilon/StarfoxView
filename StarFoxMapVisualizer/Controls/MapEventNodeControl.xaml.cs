@@ -37,8 +37,8 @@ namespace StarFoxMapVisualizer.Controls
 
         public void Attach(MAPEvent MapEvent)
         {
-            HeaderedContentControl CreateComponentSelection(Type Component, string Header, string Content, Brush? Background = default)
-            {                
+            HeaderedContentControl CreateComponentSelection(Type Component, string Header, string Content, Brush Background = default)
+            {
                 var component = new HeaderedContentControl()
                 {
                     Header = Header,
@@ -81,8 +81,8 @@ namespace StarFoxMapVisualizer.Controls
                 CreateComponentSelection(typeof(IMAPLocationEvent), "Y", loc.Y.ToString());
                 CreateComponentSelection(typeof(IMAPLocationEvent), "Z", loc.Z.ToString());
             }
-            if (MapEvent is IMAPShapeEvent shape)            
-                CreateComponentSelection(typeof(IMAPShapeEvent), "SHAPE", shape.ShapeName);            
+            if (MapEvent is IMAPShapeEvent shape)
+                CreateComponentSelection(typeof(IMAPShapeEvent), "SHAPE", shape.ShapeName);
             if (MapEvent is IMAPStrategyEvent strat)
                 CreateComponentSelection(typeof(IMAPStrategyEvent), "STRATEGY", strat.StrategyName);
             if (MapEvent is IMAPPathEvent path)
@@ -102,8 +102,8 @@ namespace StarFoxMapVisualizer.Controls
                 Header = "LEVEL TIME",
                 Content = MapEvent.LevelDelay.ToString()
             });
-            if (MapEvent is IMAPBGEvent mapBG)            
-                CreateComponentSelection(typeof(IMAPBGEvent), "THEME", "preview theme", Brushes.SlateBlue);            
+            if (MapEvent is IMAPBGEvent mapBG)
+                CreateComponentSelection(typeof(IMAPBGEvent), "THEME", "preview theme", Brushes.SlateBlue);
         }
     }
 }

@@ -1,13 +1,16 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.BSP;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using StarFox.Interop.ASM;
 
 namespace StarFox.Interop
 {
     /// <summary>
     /// A <see cref="CodeImporter{T}"/> that is tailored towards importing Binary files.
     /// <para><see cref="BasicCodeImporter{T}"/> should be used in the event of importing <see cref="ASMFile"/> (Assembly Files)</para>
-    /// <para>Some types of files in StarFox are not based on Assembly code but instead compiled data in the form of Binary files. 
+    /// <para>Some types of files in StarFox are not based on Assembly code but instead compiled data in the form of Binary files.
     /// This is the proper <see cref="CodeImporter{T}"/> to use in most circumstances involving binary files.</para>
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -31,16 +34,16 @@ namespace StarFox.Interop
         /// <typeparam name="IncludeType"></typeparam>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public override ImporterContext<IncludeType>? GetCurrentContext<IncludeType>()
+        public override ImporterContext<IncludeType> GetCurrentContext<IncludeType>()
         {
             throw new InvalidOperationException("This importer is not compatible with Contexts. " +
                 "This importer cannot use Contexts because it is a binary file.");
         }
     }
     /// <summary>
-    /// A <see cref="BasicCodeImporter{T}"/> is a <see cref="CodeImporter{T}"/> that first parses data from a 
+    /// A <see cref="BasicCodeImporter{T}"/> is a <see cref="CodeImporter{T}"/> that first parses data from a
     /// <see cref="ASMFile"/> first through the <see cref="ASMImporter"/>
-    /// <para>This importer is perfect for if the data you wish to interpret is in the form of assembly, as the 
+    /// <para>This importer is perfect for if the data you wish to interpret is in the form of assembly, as the
     /// <see cref="ASMImporter"/> is already created for you and the <see cref="GetCurrentContext{IncludeType}"/> and
     /// <see cref="SetImports(ASMFile[])"/> functions are already defined for you</para>
     /// </summary>
@@ -49,20 +52,20 @@ namespace StarFox.Interop
     {
         /// <summary>
         /// <see cref="BasicCodeImporter{T}"/> utilizes a <see cref="ASMImporter"/> to import assembly
-        /// before processing the assembly data into the type <see cref="T"/> -- which is accessed through 
+        /// before processing the assembly data into the type <see cref="T"/> -- which is accessed through
         /// this property.
         /// </summary>
-        protected ASMImporter baseImporter { get; set; } = new();        
+        protected ASMImporter baseImporter { get; set; } = new ASMImporter();
         public override void SetImports(params ASMFile[] Imports)
         {
             baseImporter.SetImports(Imports);
         }
-        public override ImporterContext<IncludeType>? GetCurrentContext<IncludeType>()
+        public override ImporterContext<IncludeType> GetCurrentContext<IncludeType>()
         {
             return baseImporter.Context as ImporterContext<IncludeType>;
         }
         /// <summary>
-        /// Will import an <see cref="ASMFile"/> at the specified <paramref name="FileName"/> 
+        /// Will import an <see cref="ASMFile"/> at the specified <paramref name="FileName"/>
         /// using the <see cref="baseImporter"/>
         /// <para>This method is a macro for:</para>
         /// <code>baseImporter.ImportAsync(FileName)</code>
@@ -73,9 +76,9 @@ namespace StarFox.Interop
     }
     /// <summary>
     /// A <see cref="CodeImporter{T}"/> is an <see langword="abstract"/> type used to define functionality for interpreting a file
-    /// in the Starfox source code into usable data objects. 
+    /// in the Starfox source code into usable data objects.
     /// <para>Importers are subject to specific data types and the functionality is implemented in inheritors</para>
-    /// <para>They can specify other files expected to be included first before importing, and can offer warning messages 
+    /// <para>They can specify other files expected to be included first before importing, and can offer warning messages
     /// to users through the <see cref="CheckWarningMessage(string)"/> method</para>
     /// <para>They are all designed to be <see langword="async"/> and reusable</para>
     /// </summary>
@@ -95,9 +98,9 @@ namespace StarFox.Interop
         /// </summary>
         /// <typeparam name="IncludeType">The type of file this <see cref="ImporterContext{T}"/> expects as a file.</typeparam>
         /// <returns></returns>
-        public abstract ImporterContext<IncludeType>? GetCurrentContext<IncludeType>() where IncludeType : IImporterObject;
-        public T? ImportedObject { get; protected set; }
-        public StringBuilder ErrorOut { get; protected set; } = new();
+        public abstract ImporterContext<IncludeType> GetCurrentContext<IncludeType>() where IncludeType : IImporterObject;
+        public T ImportedObject { get; protected set; }
+        public StringBuilder ErrorOut { get; protected set; } = new StringBuilder();
         /// <summary>
         /// Sets the currently included symbol definitions files.
         /// </summary>
@@ -112,16 +115,16 @@ namespace StarFox.Interop
         /// <summary>
         /// Will throw an exception containing a warning message if the given file has warnings before import.
         /// </summary>
-        public virtual string? CheckWarningMessage(string FilePath)
+        public virtual string CheckWarningMessage(string FilePath)
         {
             var context = GetCurrentContext<ASMFile>();
             if (context == null) return default; // can't check this importer's includes
-            StringBuilder builder = new();
+            var builder = new StringBuilder();
             foreach(var expectedFile in ExpectedIncludes) {
-                if (!context.Includes?.Any(x => 
+                if (!context.Includes?.Any(x =>
                     Path.GetFileName(x.OriginalFilePath) == Path.GetFileName(expectedFile)) ?? true)
                         builder.AppendLine($"{expectedFile} was expected to be included, but not found.");
-            }            
+            }
             return builder.ToString();
         }
     }

@@ -1,4 +1,6 @@
-﻿using StarFox.Interop.ASM;
+﻿using System;
+using System.Linq;
+using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
 
@@ -7,10 +9,10 @@ namespace StarFox.Interop.MAP.CONTEXT
     internal class MAPContextImporterContext : ImporterContext<ASMFile>
     {
         internal new MAPContextFile CurrentFile { get; }
-        internal MAPContextDefinition? CurrentDefinition { get; private set; }
+        internal MAPContextDefinition CurrentDefinition { get; private set; }
         private bool BGINITIALIZED = false;
 
-        internal MAPContextImporterContext(MAPContextFile ParentFile) { 
+        internal MAPContextImporterContext(MAPContextFile ParentFile) {
             CurrentFile = ParentFile;
         }
         /// <summary>
@@ -22,7 +24,7 @@ namespace StarFox.Interop.MAP.CONTEXT
             if (!line.HasInlineLabel) return false; // needs to have a label
             //has label
             StartDefinition(line.InlineLabel);
-            return true;    
+            return true;
         }
         internal bool StartDefinition(string Name)
         {
@@ -37,7 +39,7 @@ namespace StarFox.Interop.MAP.CONTEXT
         /// </summary>
         internal void SetLevelConstraints()
         {
-            var stratequ = Includes.FirstOrDefault(x => ((IImporterObject)x).FileName == "STRATEQU");
+            var stratequ = Includes.FirstOrDefault(x => ((IImporterObject)x).FileName() == "STRATEQU");
             if (stratequ == null) throw new NullReferenceException("STRATEQU was not imported.");
 
             var Definition = CurrentDefinition;
@@ -65,11 +67,11 @@ namespace StarFox.Interop.MAP.CONTEXT
         {
             if (CurrentDefinition == null) return false;
             if (!line.HasStructureApplied) return false;
-            if (!(line.Structure is ASMMacroInvokeLineStructure macroInvokation)) return false;            
-            string? paramStr(int index) => macroInvokation.TryGetParameter(index)?.ParameterContent;
+            if (!(line.Structure is ASMMacroInvokeLineStructure macroInvokation)) return false;
+            string paramStr(int index) => macroInvokation.TryGetParameter(index)?.ParameterContent;
             string[] paramsStr = macroInvokation.Parameters.
-                Select(x => x?.ParameterContent).Where(y => !string.IsNullOrWhiteSpace(y)).ToArray();                
-            string? param1str = paramStr(0);
+                Select(x => x?.ParameterContent).Where(y => !string.IsNullOrWhiteSpace(y)).ToArray();
+            string param1str = paramStr(0);
             string macroName = macroInvokation.MacroReference.Name.ToLower();
             if (!BGINITIALIZED && macroName != "init_bg") return false; // if the bg isn't initialized this could be unsafe code.
             switch (macroName)
@@ -81,21 +83,21 @@ namespace StarFox.Interop.MAP.CONTEXT
                     SetChr(macroInvokation);
                     return true;
                 case "bg2scr": // SET SCREEN ITSELF
-                    SetScr(macroInvokation); return true;                    
+                    SetScr(macroInvokation); return true;
                 case "palette": // Background Palette
                     SetBGPalette(param1str);
                     return true;
                 case "gamepal": // Game 2D Palette
                     Set2DPalette(param1str);
                     return true;
-                case "info": // Game 2D Palette                    
+                case "info": // Game 2D Palette
                     SetGameplayFlags(paramsStr);
                     return true;
                 case "bg3chr": // SET SCREEN CHARS BG3 (TILES)
                     SetChr3(macroInvokation);
                     return true;
                 case "bg3scr": // SET SCREEN ITSELF BG3
-                    SetScr3(macroInvokation); 
+                    SetScr3(macroInvokation);
                     return true;
                 case "bg2xscroll":
                 case "bg2hoff":
@@ -144,24 +146,24 @@ namespace StarFox.Interop.MAP.CONTEXT
             }
             return false;
         }
-        private void SetupMapAppearance(string LevelMode, string? Palette3D)
+        private void SetupMapAppearance(string LevelMode, string Palette3D)
         {
             CurrentDefinition.AppearancePreset = LevelMode;
             if (Palette3D == null) return;
-            CurrentDefinition.ShapePalette = Palette3D;            
+            CurrentDefinition.ShapePalette = Palette3D;
         }
-        private void SetBgm(string? BGM)
+        private void SetBgm(string BGM)
         {
             if (BGM == null) return;
             CurrentDefinition.BackgroundMusic = BGM;
         }
         private void SetGameplayFlags(string[] paramsStr) => CurrentDefinition.ImportFlags(paramsStr);
-        private void Set2DPalette(string? GamePalette)
+        private void Set2DPalette(string GamePalette)
         {
             if (GamePalette == null) return;
             CurrentDefinition.GamePalette = GamePalette;
         }
-        private void SetBGPalette(string? PalName)
+        private void SetBGPalette(string PalName)
         {
             if (PalName == null) return;
             CurrentDefinition.BackgroundPalette = PalName;

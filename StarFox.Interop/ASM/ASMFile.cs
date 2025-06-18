@@ -1,15 +1,15 @@
-﻿using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
 
 namespace StarFox.Interop.ASM
 {
     public class ASMFile : IImporterObject
-    {        
+    {
         public string OriginalFilePath { get; protected set;  }
         /// <summary>
         /// Chunks added to this object through the <see cref="ASMImporter"/>
@@ -26,7 +26,7 @@ namespace StarFox.Interop.ASM
         /// </summary>
         public IEnumerable<ASMLine> Lines => Chunks.OfType<ASMLine>();
         /// <summary>
-        /// A macro for getting all <see cref="Chunks"/> that are <see cref="ASMLine"/> instances and have 
+        /// A macro for getting all <see cref="Chunks"/> that are <see cref="ASMLine"/> instances and have
         /// <see cref="ASMLine.StructureAsMacroInvokeStructure"/> set
         /// </summary>
         public IEnumerable<ASMMacroInvokeLineStructure> MacroInvokeLines => Lines.Select(x => x.StructureAsMacroInvokeStructure).
@@ -61,7 +61,7 @@ namespace StarFox.Interop.ASM
         /// </summary>
         /// <param name="ConstantName"></param>
         /// <returns></returns>
-        public string? GetConstantValue(string ConstantName) => 
+        public string GetConstantValue(string ConstantName) =>
             GetConstantValue(Constants.First(x => x.Name == ConstantName));
         /// <summary>
         /// Gets the value of the given constant by name.
@@ -69,7 +69,7 @@ namespace StarFox.Interop.ASM
         /// </summary>
         /// <param name="ConstantName"></param>
         /// <returns></returns>
-        public string? GetConstantValue(ASMConstant constant) => constant.Value;
+        public string GetConstantValue(ASMConstant constant) => constant.Value;
 
         public int GetConstantNumericValue(ASMConstant constant, params ASMFile[] Includes)
         {
@@ -80,7 +80,7 @@ namespace StarFox.Interop.ASM
         }
 
         /// <summary>
-        /// Gets the given constant value as an integer. 
+        /// Gets the given constant value as an integer.
         /// <para/>Will throw an exception if not found. Use <see cref="ConstantExists(string)"/> to be safe.
         /// <para>If <see cref="int"/> is not the desired type, use: <see cref="GetConstantValue(string)"/></para>
         /// </summary>

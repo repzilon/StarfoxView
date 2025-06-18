@@ -1,6 +1,12 @@
-﻿using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
+﻿using System;
+using System.Linq;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json.Serialization;
+#endif
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
 
 namespace StarFox.Interop.MAP.EVT
 {
@@ -8,7 +14,7 @@ namespace StarFox.Interop.MAP.EVT
     /// Represents an unknown map event
     /// </summary>
     public class MAPUnknownEvent : MAPEvent
-    {        
+    {
         public ASMMacroInvokeParameter[] Parameters { get; protected set; }
         protected override string[] CompatibleMacros { get; } =
         {
@@ -147,7 +153,7 @@ namespace StarFox.Interop.MAP.EVT
         internal bool IsCompatible(ASMLine Line)
         {
             if (!Line.HasStructureApplied) return false;
-            if (Line.Structure is not ASMMacroInvokeLineStructure) return false;
+            if (!(Line.Structure is ASMMacroInvokeLineStructure)) return false;
             var structure = Line.StructureAsMacroInvokeStructure;
             return CompatibleMacros.Contains(structure.MacroReference.Name.ToLower());
         }
@@ -158,7 +164,7 @@ namespace StarFox.Interop.MAP.EVT
         /// <param name="Callsite"></param>
         /// <param name="Result"></param>
         /// <returns></returns>
-        internal static bool TryParse<T>(ASMLine Callsite, out T? Result) where T : MAPEvent, new()
+        internal static bool TryParse<T>(ASMLine Callsite, out T Result) where T : MAPEvent, new()
         {
             var t = new T();
             Result = t;
@@ -175,11 +181,11 @@ namespace StarFox.Interop.MAP.EVT
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        protected int TryParseOrDefault(string? content)
+        protected int TryParseOrDefault(string content)
         {
             if (string.IsNullOrEmpty(content)) return 0;
             if (int.TryParse(content, out int result)) { return result; }
-            return 0;            
+            return 0;
         }
     }
 
@@ -270,6 +276,6 @@ namespace StarFox.Interop.MAP.EVT
         /// The name of the background as it appears in code.
         /// <see cref="MAPSetBG.TranslateNameToMAPContext(in string, string)"/>
         /// </summary>
-        string? Background { get; }
+        string Background { get; }
     }
 }

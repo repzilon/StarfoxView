@@ -7,6 +7,7 @@ using StarFoxMapVisualizer.Renderers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace StarFoxMapVisualizer.Controls2
     {
         const string DEFAULTPAL = "MAP_C";
 
-        static Dictionary<string, string> LevelAssetMap = new()
+        static Dictionary<string, string> LevelAssetMap = new Dictionary<string, string>()
         {
             { "Out of this Dimension", "starwars3" },
             { "Sector Y", "space4" },
@@ -42,10 +43,10 @@ namespace StarFoxMapVisualizer.Controls2
             { "Fortuna", "planet_planetb" },
             { "Venom", "planet_enemyplanet" },
         };
-        private string? _levelName;
+        private string _levelName;
         private string _palette = DEFAULTPAL;
 
-        public string? LevelName
+        public string LevelName
         {
             get => _levelName;
             set
@@ -55,7 +56,7 @@ namespace StarFoxMapVisualizer.Controls2
             }
         }
 
-        private PlanetRendererControl? ContentAsPlanetRenderer => (Content as PlanetRendererControl) ?? null;
+        private PlanetRendererControl ContentAsPlanetRenderer => (Content as PlanetRendererControl) ?? null;
         public double PlanetAxisRotation
         {
             get => ContentAsPlanetRenderer?.PlanetRotationDegrees ?? double.NaN;
@@ -127,7 +128,7 @@ namespace StarFoxMapVisualizer.Controls2
             {
                 if (_palette == value) return;
                 _palette = value;
-                Dispatcher.BeginInvoke(InvalidateMSprite);
+                Dispatcher.BeginInvoke((Delegate)new Action(InvalidateMSprite));
             }
         }
 
@@ -136,8 +137,8 @@ namespace StarFoxMapVisualizer.Controls2
 
         }
 
-        public LevelSelectViewerItem(string? levelName) : this()
-        {            
+        public LevelSelectViewerItem(string levelName) : this()
+        {
             LevelName = levelName;
         }
 
@@ -145,14 +146,14 @@ namespace StarFoxMapVisualizer.Controls2
         {
             if (string.IsNullOrWhiteSpace(LevelName)) return;
             if (!LevelAssetMap.TryGetValue(LevelName, out var mSprite)) return;
-            PlanetRenderer.PlanetRendererOptions? options = ContentAsPlanetRenderer?.Options;
+            PlanetRenderer.PlanetRendererOptions options = ContentAsPlanetRenderer?.Options;
             ContentAsPlanetRenderer?.Dispose();
 
             try
             {
                 if (!mSprite.StartsWith("planet_"))
                     await HandleMSprite(mSprite);
-                else 
+                else
                     await HandlePlanet(mSprite.Substring(7), options);
             }
             catch (Exception ex)
@@ -161,11 +162,11 @@ namespace StarFoxMapVisualizer.Controls2
             }
         }
 
-        async Task HandlePlanet(string mSprite, PlanetRenderer.PlanetRendererOptions? options = default)
+        async Task HandlePlanet(string mSprite, PlanetRenderer.PlanetRendererOptions options = default)
         {
-            (System.Drawing.Bitmap image, MSprite Sprite) mSpriteImage = await SHAPEStandard.RenderMSpriteBitmap(mSprite, _palette);
+            SpriteTuple<Bitmap> mSpriteImage = await SHAPEStandard.RenderMSpriteBitmap(mSprite, _palette);
 
-            var renderControl = new PlanetRendererControl(mSpriteImage.image);
+            var renderControl = new PlanetRendererControl(mSpriteImage.Image);
             if (options != null) renderControl.Options = options;
             renderControl.StartAnimation();
 
@@ -174,8 +175,8 @@ namespace StarFoxMapVisualizer.Controls2
 
         async Task HandleMSprite(string mSprite)
         {
-            (ImageSource image, MSprite Sprite) mSpriteImage = await SHAPEStandard.RenderMSprite(mSprite, _palette);
-            Content = new CopyableImage() { Source = mSpriteImage.image };
+            SpriteTuple<ImageSource> mSpriteImage = await SHAPEStandard.RenderMSprite(mSprite, _palette);
+            Content = new CopyableImage() { Source = mSpriteImage.Image };
         }
     }
 
@@ -196,7 +197,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _mapBG = value;
-                Dispatcher.BeginInvoke(InvalidateGraphics);
+                this.DispatchInvalidateGraphics();
             }
         }
 
@@ -206,7 +207,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _mapPal = value;
-                Dispatcher.BeginInvoke(InvalidateGraphics);
+                this.DispatchInvalidateGraphics();
             }
         }
 
@@ -216,7 +217,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _gfxPal = value;
-                Dispatcher.BeginInvoke(InvalidateGraphics);
+                this.DispatchInvalidateGraphics();
             }
         }
 
@@ -227,12 +228,17 @@ namespace StarFoxMapVisualizer.Controls2
             Loaded += Load;
         }
 
+        private void DispatchInvalidateGraphics()
+        {
+            Dispatcher.BeginInvoke(new Func<Task>(InvalidateGraphics));
+        }
+
         private async void Load(object sender, RoutedEventArgs e) => await InvalidateGraphics();
-        
+
         /// <summary>
         /// Changes both the <paramref name="MapPalette"/> and <paramref name="MapTexture"/>
-        /// at the same time. 
-        /// <para/>Changing <see cref="MapPalette"/> or <see cref="MapBackgroundName"/> 
+        /// at the same time.
+        /// <para/>Changing <see cref="MapPalette"/> or <see cref="MapBackgroundName"/>
         /// individually calls <see cref="InvalidateGraphics"/> twice which is a waste.
         /// </summary>
         /// <param name="MapPalette"></param>
@@ -242,7 +248,7 @@ namespace StarFoxMapVisualizer.Controls2
             _mapBG = MapTexture;
             _mapPal = MapPalette;
             _gfxPal = GraphicsPalette;
-            Dispatcher.BeginInvoke(InvalidateGraphics);
+            this.DispatchInvalidateGraphics();
         }
         /// <summary>
         /// Causes the background and planets to be invalidated and ultimately their textures
@@ -251,16 +257,19 @@ namespace StarFoxMapVisualizer.Controls2
         /// <returns></returns>
         public async Task InvalidateGraphics()
         {
-            //SHOW THE MAP SCREEN            
+            //SHOW THE MAP SCREEN
             StarFox.Interop.GFX.CAD.CGX.GlobalContext.HandlePaletteIndex0AsTransparent = false;
 
-            BitmapSource? source = null;
+            BitmapSource source = null;
             try
             {
                 //RENDER SCR
-                using System.Drawing.Bitmap mapScreen = await GFXStandard.RenderSCR(MapPalette, MapBackgroundName, null, 0);
-                source = mapScreen.Convert();
-                //DISPOSE                
+                using (var mapScreen =
+                       await GFXStandard.RenderSCR(this.MapPalette, this.MapBackgroundName, null, 0)) {
+                    source = mapScreen.Convert();
+                }
+
+                //DISPOSE
             }
             catch (Exception ex)
             { // HANDLE CRASH WITH USER MESSAGE
@@ -276,6 +285,6 @@ namespace StarFoxMapVisualizer.Controls2
             //REDRAW GRAMPHICS
             foreach (var item in MapGraphics.Children.OfType<LevelSelectViewerItem>())
                 item.SelectedPalette = GraphicsPalette;
-        } 
+        }
     }
 }

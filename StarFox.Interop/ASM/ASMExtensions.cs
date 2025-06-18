@@ -1,17 +1,17 @@
-﻿using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM
 {
     internal static class ASMExtensions
     {
-        private static IEnumerable<ASMConstant>? IncludedConstants { get; set; } = default;
+        private static IEnumerable<ASMConstant> IncludedConstants { get; set; } = default;
         private static bool ConstantsRegion => IncludedConstants != default;
         /// <summary>
         /// Sets constants to be used for all calls to <see cref="TryParseOrDefault(in string)"/>.
@@ -27,7 +27,7 @@ namespace StarFox.Interop.ASM
         /// </summary>
         public static void BeginConstantsContext(params ASMFile[] FilesWithConstants)
         {
-            List<ASMConstant> Constants = new();
+            var Constants = new List<ASMConstant>();
             foreach (var file in FilesWithConstants)
             {
                 Constants.AddRange(file.Constants);
@@ -62,7 +62,7 @@ namespace StarFox.Interop.ASM
         /// <param name="Value"></param>
         /// <param name="IncludedConstants">All constants to check through</param>
         /// <returns></returns>
-        public static int TryParseOrDefault(in string? Value, in IEnumerable<ASMConstant>? IncludedConstants)
+        public static int TryParseOrDefault(in string Value, in IEnumerable<ASMConstant> IncludedConstants)
         {
             if (string.IsNullOrWhiteSpace(Value)) return 0;
             string fValue = Value;
@@ -71,7 +71,7 @@ namespace StarFox.Interop.ASM
             {
                 var chunks = fValue.NormalizeFormatting().Split(' ');
                 reloadAgain = false;
-                StringBuilder builder = new();
+                var builder = new StringBuilder();
                 bool signFlip = false;
                 foreach (var chunk in chunks)
                 {
@@ -112,12 +112,12 @@ namespace StarFox.Interop.ASM
             while (reloadAgain);
             return 0; // unreachable
         }
-        private static int base_TryParseOrDefault(string? Value)
+        private static int base_TryParseOrDefault(string Value)
         {
             if (string.IsNullOrWhiteSpace(Value)) return 0;
-            bool getOperands(string content, char op, out int left, out int right)
+            bool getOperands(string content1, char op, out int left, out int right)
             {
-                var operands = content.Replace(" ", "").Split(op);
+                var operands = content1.Replace(" ", "").Split(op);
                 left = right = 0;
                 if (operands.Length < 2)
                     return false;
@@ -129,7 +129,7 @@ namespace StarFox.Interop.ASM
             if (string.IsNullOrEmpty(content)) return 0;
             if (content.Contains("deg")) // DEGREES
             {
-                content.Replace("deg", "");
+                content = content.Replace("deg", "");
                 if (!double.TryParse(content, out var degrees)) return 0;
                 return (int)((degrees * Math.PI) / 1800); // horrible data loss here. NEED TO FIX.
             }
@@ -155,7 +155,7 @@ namespace StarFox.Interop.ASM
                 if (!getOperands(content, '/', out var left, out var right)) return 0;
                 return (int)((double)left / right);
             }
-            if (content.Contains("$")) return TryParseHexOrDefault(Value);            
+            if (content.Contains("$")) return TryParseHexOrDefault(Value);
             return 0;
         }
         /// <summary>
@@ -163,7 +163,7 @@ namespace StarFox.Interop.ASM
         /// <para>If the content contains a $, it is assumed to be hex.</para>
         /// </summary>
         /// <returns></returns>
-        public static int TryParseOrDefault(in string? Value)
+        public static int TryParseOrDefault(in string Value)
         {
             if (string.IsNullOrWhiteSpace(Value)) return 0;
             if (ConstantsRegion)

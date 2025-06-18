@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,17 +15,17 @@ using static StarFox.Interop.GFX.CAD;
 namespace StarFox.Interop.GFX.CONVERT
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class FXImageConverter
-    {        
+    {
         /// <summary>
         /// Will convert *.MSX file to a *.CGX file for better compatibility
         /// <para>Returns a byte[] containing the file info formatted for a CGX file.</para>
         /// </summary>
         /// <returns></returns>
         public static byte[] ConvertMSXtoCGX(byte[] MSXData, int CanvasW = FXConvertConstraints.SuggestedCanvasW, int CanvasH = FXConvertConstraints.SuggestedCanvasH)
-        {            
+        {
             var genericImage = ConvertMSXToGeneric(MSXData, CanvasW, CanvasH);
             return ConvertGenericToCGX(genericImage, CanvasW, CanvasH);
         }
@@ -37,7 +38,7 @@ namespace StarFox.Interop.GFX.CONVERT
         /// <returns></returns>
         public static FXConvertImage ConvertMSXToGeneric(byte[] MSXData, int CanvasW = FXConvertConstraints.SuggestedCanvasW, int CanvasH = FXConvertConstraints.SuggestedCanvasH)
         {
-            FXConvertImage genericImage = new(CanvasW, CanvasH);            
+            var genericImage = new FXConvertImage(CanvasW, CanvasH);
             ConvertAllMemToChr(genericImage, MSXData);
             return genericImage;
         }

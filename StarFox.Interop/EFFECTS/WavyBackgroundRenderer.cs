@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.IO;
 
 namespace StarFox.Interop.EFFECTS
 {
@@ -12,9 +14,9 @@ namespace StarFox.Interop.EFFECTS
             SCR_W = StarfoxEqu.SCR_W, SCR_H = StarfoxEqu.SCR_H;
 
         private readonly Bitmap _SCRFile;
-        
+
         public WavyEffectStrategies Strategy { get; set; } = WavyEffectStrategies.None;
-        
+
         /// <summary>
         /// Dictates how the waviness is created and how the background appears
         /// </summary>
@@ -22,7 +24,7 @@ namespace StarFox.Interop.EFFECTS
         {
             None,
             Simple,
-            SineFullscreen, 
+            SineFullscreen,
             SineMirrored
         }
 
@@ -44,7 +46,6 @@ namespace StarFox.Interop.EFFECTS
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
         /// <exception cref="NotImplementedException"></exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         public override Bitmap RenderOnce(TimeSpan DeltaTime)
         {
             if (BackgroundCache == null)
@@ -54,19 +55,23 @@ namespace StarFox.Interop.EFFECTS
             if (Strategy == WavyEffectStrategies.None)
                 throw new InvalidDataException("You didn't specify a strategy to use, Strategy is None.");
 
-            Func<Bitmap>? BackgroundFunction = Strategy switch
-            {
-                WavyEffectStrategies.Simple => SetWavyBackground_Strategy1,
-                WavyEffectStrategies.SineFullscreen => SetWavyBackground_Strategy2,
-                WavyEffectStrategies.SineMirrored => SetWavyBackground_Strategy3,
-                _ => null
-            };
+            Func<Bitmap> BackgroundFunction;
+            if (this.Strategy == WavyEffectStrategies.Simple) {
+                BackgroundFunction = this.SetWavyBackground_Strategy1;
+            } else if (this.Strategy == WavyEffectStrategies.SineFullscreen) {
+                BackgroundFunction = this.SetWavyBackground_Strategy2;
+            } else if (this.Strategy == WavyEffectStrategies.SineMirrored) {
+                BackgroundFunction = this.SetWavyBackground_Strategy3;
+            } else {
+                BackgroundFunction = null;
+            }
+
             if (BackgroundFunction == null)
                 throw new NotImplementedException("That waviness function doesn't appear to have been coded yet.");
 
             animationTime += DeltaTime;
             return BackgroundFunction();
-        }        
+        }
 
         #region RENDERCODE
         // ** Dynamic Backgrounds
@@ -74,7 +79,7 @@ namespace StarFox.Interop.EFFECTS
         /// 512^2 * <see langword="sizeof"/>(<see cref="Color"/>) bytes large max
         /// </summary>
         System.Drawing.Color[,] BackgroundCache = null;
-        int SinX = 0;        
+        int SinX = 0;
         // **
 
         /// <summary>
@@ -82,7 +87,6 @@ namespace StarFox.Interop.EFFECTS
         /// and the files we're handling a limited to 512^2
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         private bool WavyBackground_CopyData2Cache()
         {
             BackgroundCache = null;
@@ -91,7 +95,6 @@ namespace StarFox.Interop.EFFECTS
             return true;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         private Bitmap SetWavyBackground_Strategy1()
         {
             int rowOffset = 0, sinX = SinX;
@@ -107,7 +110,7 @@ namespace StarFox.Interop.EFFECTS
                     pY = Math.Abs(SCR_H - ((pY % SCR_H) + 1));
                 else
                     pY = Math.Abs(pY);
-                //take row 
+                //take row
                 for (int rowX = 0; rowX < RENDER_W; rowX++)
                 {
                     int pX = rowX + rowOffset;
@@ -126,18 +129,16 @@ namespace StarFox.Interop.EFFECTS
             return CompleteBuffer(Ticket);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         private Bitmap SetWavyBackground_Strategy2()
         {
             int rowOffset = 0, sinX = SinX;
 
             long Ticket = CreateBuffer(RENDER_W, RENDER_H);
             Point renderOutPixel = new Point();
-            //SINE WAVE: Go over half the render window around .15 cycles / second (very slowly) 
+            //SINE WAVE: Go over half the render window around .15 cycles / second (very slowly)
             int yOffset = 0;
             double amplitude = RENDER_W / 4.0;
             int xOffset = (int)(amplitude * Math.Sin(2 * Math.PI * (.05) * animationTime.TotalSeconds));
-            double amplitudeModulator = 0;
             TimeSpan vScanWaveTime = animationTime;
             for (int vScan = 0; vScan < RENDER_H; vScan++)
             {
@@ -147,7 +148,7 @@ namespace StarFox.Interop.EFFECTS
                     pY = Math.Abs(SCR_H - ((pY % SCR_H) + 1));
                 else
                     pY = Math.Abs(pY);
-                //take row 
+                //take row
                 for (int rowX = 0; rowX < RENDER_W; rowX++)
                 {
                     int pX = xOffset + rowX + rowOffset;
@@ -171,18 +172,16 @@ namespace StarFox.Interop.EFFECTS
             return CompleteBuffer(Ticket);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         private Bitmap SetWavyBackground_Strategy3()
-        {            
+        {
             int rowOffset = 0, sinX = SinX;
 
             long Ticket = CreateBuffer(RENDER_W, RENDER_H);
             Point renderOutPixel = new Point();
-            //SINE WAVE: Go over half the render window around .15 cycles / second (very slowly) 
+            //SINE WAVE: Go over half the render window around .15 cycles / second (very slowly)
             int yOffset = 0;
             double amplitude = RENDER_W / 4.0;
             int xOffset = (int)(RENDER_W / 4.0 * Math.Sin(2 * Math.PI * (.05) * animationTime.TotalSeconds));
-            double amplitudeModulator = 0;
             TimeSpan vScanWaveTime = animationTime;
             for (int vScan = 0; vScan < RENDER_H / 2; vScan++)
             {
@@ -192,7 +191,7 @@ namespace StarFox.Interop.EFFECTS
                     pY = Math.Abs(SCR_H - ((pY % SCR_H) + 1));
                 else
                     pY = Math.Abs(pY);
-                //take row 
+                //take row
                 for (int rowX = 0; rowX < RENDER_W; rowX++)
                 {
                     int pX = xOffset + rowX + rowOffset;
@@ -222,7 +221,6 @@ namespace StarFox.Interop.EFFECTS
         }
         #endregion
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         protected override bool OnDispose()
         {
             if (Disposing)
@@ -231,12 +229,12 @@ namespace StarFox.Interop.EFFECTS
                 AnimatorStatus = AnimatorStatus.DISPOSING;
 
             //**Dispose
-            BackgroundCache = null;            
+            BackgroundCache = null;
             if (_SCRFile != null)
-                lock (_SCRFile) 
+                lock (_SCRFile)
                     _SCRFile.Dispose();
             //
             return true;
-        }        
+        }
     }
 }

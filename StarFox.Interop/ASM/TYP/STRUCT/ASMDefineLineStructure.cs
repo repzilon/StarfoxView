@@ -1,4 +1,6 @@
-﻿using StarFox.Interop.MISC;
+﻿using System;
+using System.IO;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP.STRUCT
 {

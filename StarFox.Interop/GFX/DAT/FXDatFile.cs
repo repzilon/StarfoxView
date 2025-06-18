@@ -4,6 +4,8 @@
 // https://www.romhacking.net/utilities/346/
 // ********************************
 
+using System.IO;
+using System.Threading.Tasks;
 using StarFox.Interop.GFX.CONVERT;
 
 namespace StarFox.Interop.GFX.DAT
@@ -18,7 +20,7 @@ namespace StarFox.Interop.GFX.DAT
         }
         public FXDatFile(FXGraphicsHiLowBanks HiLowBanks, string originalFilePath):
             this(FXImageConverter.ConvertMSXToGeneric(HiLowBanks.LowBank),
-                FXImageConverter.ConvertMSXToGeneric(HiLowBanks.HighBank), 
+                FXImageConverter.ConvertMSXToGeneric(HiLowBanks.HighBank),
                 originalFilePath)
         {
 
@@ -37,11 +39,19 @@ namespace StarFox.Interop.GFX.DAT
         /// </summary>
         public async Task Save()
         {
-            await File.WriteAllBytesAsync(
+#if NETFRAMEWORK || NETSTANDARD
+            File.WriteAllBytes(
                 $"{Path.Combine(Path.GetDirectoryName(OriginalFilePath),Path.GetFileNameWithoutExtension(OriginalFilePath))}_low.cgx"
                 , FXImageConverter.ConvertGenericToCGX(Low));
-            await File.WriteAllBytesAsync($"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_high.cgx" 
+            File.WriteAllBytes($"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_high.cgx"
                 , FXImageConverter.ConvertGenericToCGX(High));
+#else
+			await File.WriteAllBytesAsync(
+                $"{Path.Combine(Path.GetDirectoryName(OriginalFilePath),Path.GetFileNameWithoutExtension(OriginalFilePath))}_low.cgx"
+                , FXImageConverter.ConvertGenericToCGX(Low));
+            await File.WriteAllBytesAsync($"{Path.Combine(Path.GetDirectoryName(OriginalFilePath), Path.GetFileNameWithoutExtension(OriginalFilePath))}_high.cgx"
+                , FXImageConverter.ConvertGenericToCGX(High));
+#endif
         }
     }
 }

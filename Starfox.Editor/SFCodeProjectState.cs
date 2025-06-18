@@ -1,10 +1,12 @@
-﻿using Starfox.Editor.Settings;
+﻿using System;
+using System.Collections.Generic;
+using Starfox.Editor.Settings;
 
 namespace Starfox.Editor
 {
 
     /// <summary>
-    /// A serializable <see cref="SFCodeProject"/> that can be saved to disk that saves 
+    /// A serializable <see cref="SFCodeProject"/> that can be saved to disk that saves
     /// Settings, Special Paths, etc. without runtime information like Open files and Includes
     /// </summary>
     [Serializable] public class SFCodeProjectState
@@ -17,7 +19,7 @@ namespace Starfox.Editor
         /// The path to the SHAPES directory -- if this project has one set.
         /// <para>See: <see cref="ShapesDirectoryPathSet"/> to check for this scenario</para>
         /// </summary>
-        public string? ShapesDirectoryPath { get; set; } = default;
+        public string ShapesDirectoryPath { get; set; } = default;
 
         /// <summary>
         /// Public for serialization -- not recommended to make direct changes

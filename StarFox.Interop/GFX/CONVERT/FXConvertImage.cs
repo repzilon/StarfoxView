@@ -11,7 +11,7 @@ namespace StarFox.Interop.GFX.CONVERT
     /// </summary>
     public class FXConvertImage
     {
-        public CanvasSizeDefinition Canvas { get; set; } = new()
+        public CanvasSizeDefinition Canvas { get; set; } = new CanvasSizeDefinition()
         {
             Width = FXConvertConstraints.SuggestedCanvasW,
             Height = FXConvertConstraints.SuggestedCanvasH,
@@ -23,7 +23,7 @@ namespace StarFox.Interop.GFX.CONVERT
         public int ColorBPP = 4;
         public byte[] ImageData = new byte[0];
 
-        public FXConvertImage(int W, int H) : this(new()
+        public FXConvertImage(int W, int H) : this(new CanvasSizeDefinition()
         {
             Width= W,
             Height= H

@@ -59,7 +59,7 @@ namespace EarClipperLib
             Normal = normal;
         }
 
-        private void LinkAndAddToList(Polygon polygon, List<Vector3m> points)
+        private static void LinkAndAddToList(Polygon polygon, List<Vector3m> points)
         {
             ConnectionEdge prev = null, first = null;
             Dictionary<Vector3m, Vector3m> pointsHashSet = new Dictionary<Vector3m, Vector3m>();

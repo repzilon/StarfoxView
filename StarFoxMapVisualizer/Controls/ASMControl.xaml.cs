@@ -1,40 +1,31 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.MISC;
-using StarFoxMapVisualizer.Controls.Subcontrols;
-using StarFoxMapVisualizer.Misc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Documents;
 using System.Windows.Threading;
+using StarFox.Interop.ASM;
+using StarFoxMapVisualizer.Controls.Subcontrols;
+using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Controls
 {
-    /// <summary>
-    /// Interaction logic for ASMControl.xaml
-    /// </summary>
-    public partial class ASMControl : UserControl
+	/// <summary>
+	/// Interaction logic for ASMControl.xaml
+	/// </summary>
+	public partial class ASMControl : UserControl
     {
         private const double BASE_TEXT_SIZE = 12;
 
-        private ASM_FINST? current;        
-        private ASMCodeEditor EditorScreen => current?.EditorScreen;        
-        private Dictionary<string, ASM_FINST> fileInstanceMap = new();
+        private ASM_FINST current;
+        private ASMCodeEditor EditorScreen => current?.EditorScreen;
+        private Dictionary<string, ASM_FINST> fileInstanceMap = new Dictionary<string, ASM_FINST>();
         /// <summary>
         /// The queue of <see cref="OpenFileContents(FileInfo, ASMFile?)"/> calls made while paused
         /// </summary>
-        private Queue<FOPENCALL> chewQueue = new();
+        private Queue<FOPENCALL> chewQueue = new Queue<FOPENCALL>();
 
         /// <summary>
         /// Gets whether this control is paused. See: <see cref="Pause"/>
@@ -43,12 +34,12 @@ namespace StarFoxMapVisualizer.Controls
 
         public ASMControl()
         {
-            InitializeComponent();            
+            InitializeComponent();
             FileBrowserTabView.Items.Clear();
-        }                
+        }
 
         /// <summary>
-        /// Any calls made to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> are queued until this control is <see cref="Unpause"/>'d 
+        /// Any calls made to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> are queued until this control is <see cref="Unpause"/>'d
         /// </summary>
         public void Pause()
         {
@@ -63,13 +54,30 @@ namespace StarFoxMapVisualizer.Controls
         {
             Paused = false;
             IsEnabled = true;
-            while (chewQueue.TryDequeue(out var call))
-                await doFileOpenTaskAsync(call);            
+            while (TryDequeue(chewQueue, out var call))
+                await doFileOpenTaskAsync(call);
         }
+
+        private static bool TryDequeue<T>(/*this*/ Queue<T> self, out T result)
+        {
+            if ((self != null) && (self.Count > 0)) {
+                try {
+                    result = self.Dequeue();
+                    return true;
+                } catch (Exception) {
+					result = default;
+					return false;
+				}
+            } else {
+                result = default;
+                return false;
+            }
+        }
+
         private class FOPENCALL
         {
             public FileInfo FileSelected;
-            public ASMFile? FileData = default;
+            public ASMFile FileData;
             /// <summary>
             /// The symbol to jump to after opening, if applicable
             /// </summary>
@@ -104,14 +112,13 @@ namespace StarFoxMapVisualizer.Controls
                     return;
                 }
             }
-            TabItem tab = new()
+            var tab = new TabItem()
             {
                 Header = Call.FileSelected.Name,
             };
-            ASM_FINST instance = current = new ASM_FINST()
-            {
+            var instance = current = new ASM_FINST() {
                 OpenFile = Call.FileSelected,
-                symbolMap = new(),
+                symbolMap = new Dictionary<ASMChunk, Run>(),
                 Tab = tab,
                 FileImportData = Call.FileData
             };
@@ -131,7 +138,7 @@ namespace StarFoxMapVisualizer.Controls
             TabShown();
         }
 
-        public async Task OpenFileContents(FileInfo FileSelected, ASMFile? FileData = default, ASMChunk? Symbol = default)
+        public async Task OpenFileContents(FileInfo FileSelected, ASMFile FileData = default, ASMChunk Symbol = default)
         {
             var call = new FOPENCALL()
             {
@@ -149,7 +156,7 @@ namespace StarFoxMapVisualizer.Controls
         public Task OpenSymbol(ASMChunk chunk) => OpenFileContents(new FileInfo(chunk.OriginalFileName), null, chunk);
 
         private DispatcherOperation ParseAsync(FileInfo File)
-        {            
+        {
             return Dispatcher.InvokeAsync(async delegate
             {
                 await EditorScreen.InvalidateFileContents();

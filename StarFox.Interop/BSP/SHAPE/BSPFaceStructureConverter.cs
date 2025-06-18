@@ -1,10 +1,10 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
 
 namespace StarFox.Interop.BSP.SHAPE
 {

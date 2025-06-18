@@ -13,7 +13,7 @@ namespace StarFoxMapVisualizer.Renderers
     /// Interaction logic for BackgroundRenderer.xaml
     /// </summary>
     public partial class BackgroundRenderer : SCRRendererControlBase, IDisposable
-    {       
+    {
         public BackgroundRenderer()
         {
             InitializeComponent();
@@ -45,7 +45,7 @@ namespace StarFoxMapVisualizer.Renderers
         /// it cannot be used without a valid <see cref="LevelContext"/> property.
         /// <para>This function will take a ScreenSize, and optionally some screen scroll registers,
         /// and setup the view to match the given parameters and also match the mode in the <see cref="LevelContext"/></para>
-        /// <para>Remember that <see cref="MAPContextDefinition.AppearancePreset"/> determines how the Background is displayed. This 
+        /// <para>Remember that <see cref="MAPContextDefinition.AppearancePreset"/> determines how the Background is displayed. This
         /// function will handle that for you.</para>
         /// </summary>
         /// <param name="ScreenBG2XScroll">Measured as the original game does, in viewport units as if the background was 512 wide and tall.</param>
@@ -53,12 +53,12 @@ namespace StarFoxMapVisualizer.Renderers
         /// <param name="ScreenBG3XScroll">Measured as the original game does, in viewport units as if the background was 512 wide and tall.</param>
         /// <param name="ScreenBG3YScroll">Measured as the original game does, in viewport units as if the background was 512 wide and tall.</param>
         /// <param name="K">The size of the *.SCR file itself</param>
-        public void SetViewportsToUniformSize(double ViewableWidth, double ViewableHeight, 
+        public void SetViewportsToUniformSize(double ViewableWidth, double ViewableHeight,
             double ScreenBG2XScroll = 0, double ScreenBG2YScroll = 0,
             double ScreenBG3XScroll = 0, double ScreenBG3YScroll = 0,
             int K = 1024)
         {
-            if (LevelContext == null) return; 
+            if (LevelContext == null) return;
             //Most backgrounds should be bound to height of control so we don't overextend past the lower bound of the control
             var awidth = ViewableHeight;
             //Converts units to screen space
@@ -75,15 +75,15 @@ namespace StarFoxMapVisualizer.Renderers
                 ConvertUnits(ref ScreenBG3XScroll, MaxWidth);
                 ConvertUnits(ref ScreenBG2YScroll, MaxWidth);
                 ConvertUnits(ref ScreenBG3YScroll, MaxWidth);
-            }                                   
+            }
             double nwidth = awidth;
             switch (LevelContext.AppearancePreset)
-            {                
+            {
                 case "water":
                 case "tunnel":
                 case "undergnd":
                     //Base calculations on the Width of the control
-                    awidth = ViewableWidth;                    
+                    awidth = ViewableWidth;
                     nwidth = awidth * 1.60;
                     ConvertAll(awidth);
                     ResetViewports(
@@ -117,9 +117,9 @@ namespace StarFoxMapVisualizer.Renderers
             var BG2X = LevelContext.BG2.HorizontalOffset;
             var BG2Y = LevelContext.BG2.VerticalOffset;
             SetViewportsToUniformSize(Width, Height, BG2X, BG2Y, BG3X, BG3Y);
-        }                             
-        
-        public override async Task SetContext(MAPContextDefinition? SelectedContext,
+        }
+
+        public override async Task SetContext(MAPContextDefinition SelectedContext,
             WavyBackgroundRenderer.WavyEffectStrategies Animation = WavyBackgroundRenderer.WavyEffectStrategies.None,
             bool ExtractCCR = false, bool ExtractPCR = false)
         {
@@ -144,7 +144,7 @@ namespace StarFoxMapVisualizer.Renderers
             //if animating, start the animation clock
             if (AnimationMode != WavyBackgroundRenderer.WavyEffectStrategies.None &&
                 bgRenderer != null)
-                StartAnimatedBackground(AnimatorEffect<object>.GetFPSTimeSpan(60));                
+                StartAnimatedBackground(AnimatorEffect<object>.GetFPSTimeSpan(60));
         }
 
         public override void DebugInfoUpdated(AnimatorEffect<Bitmap>.DiagnosticInfo DiagnosticInformation)
@@ -159,7 +159,7 @@ namespace StarFoxMapVisualizer.Renderers
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-           //maybe dispose here? causes too many issues though   
+           //maybe dispose here? causes too many issues though
         }
 
         /// <summary>

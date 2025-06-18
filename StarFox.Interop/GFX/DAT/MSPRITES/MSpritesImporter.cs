@@ -1,27 +1,42 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.BSP;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM;
 
 namespace StarFox.Interop.GFX.DAT.MSPRITES
 {
-    /// <summary>
-    /// Creates a new <see cref="MSprite"/> -- which represents one sprite in a HIGH/LOW bank
-    /// </summary>
-    /// <param name="Name">The name given to this sprite</param>
-    /// <param name="X">The X position in the texturemap this appears at</param>
-    /// <param name="Y">The Y position in the texturemap this appears at</param>
-    /// <param name="Width"></param>
-    /// <param name="Height"></param>
-    /// <param name="HighBank">True if in High bank, otherwise low bank is inferred</param>
-    public record MSprite(string Name, int X, int Y, int Width, int Height, bool HighBank)
+    public class MSprite
     {
+        /// <summary>
+        /// Creates a new <see cref="MSprite"/> -- which represents one sprite in a HIGH/LOW bank
+        /// </summary>
+        /// <param name="name">The name given to this sprite</param>
+        /// <param name="x">The X position in the texturemap this appears at</param>
+        /// <param name="y">The Y position in the texturemap this appears at</param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="highBank">True if in High bank, otherwise low bank is inferred</param>
+        public MSprite(string name, int x, int y, int width, int height, bool highBank)
+        {
+            this.Name     = name;
+            this.X        = x;
+            this.Y        = y;
+            this.Width    = width;
+            this.Height   = height;
+            this.HighBank = highBank;
+        }
+
+        public string Name { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public bool HighBank { get; private set; }
+
         public MSpriteBank Parent { get; internal set; }
         public override string ToString() => Name;
     }
+
     public class MSpriteBank
     {
         public MSpriteBank(string name)
@@ -31,7 +46,7 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
 
         public string Name { get; }
         public int BankIndex { get; internal set; }
-        public Dictionary<string, MSprite> Sprites { get; } = new();
+        public Dictionary<string, MSprite> Sprites { get; } = new Dictionary<string, MSprite>();
         internal int LowX;
         internal int LowY;
         internal int HighX;
@@ -42,23 +57,21 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
 
     public class MSpritesDefinitionFile : ASMFile
     {
-        public Dictionary<string, MSpriteBank> Banks { get; } = new();
+        public Dictionary<string, MSpriteBank> Banks { get; } = new Dictionary<string, MSpriteBank>();
 
         internal MSpritesDefinitionFile(string OriginalFilePath) : base(OriginalFilePath) { }
         internal MSpritesDefinitionFile(ASMFile From) : base(From) { }
-
-        public string OriginalFilePath { get; set; }
 
         /// <summary>
         /// Returns the sprite matching the name provided, if it exists in any of the <see cref="Banks"/>
         /// </summary>
         /// <param name="mSpriteName"></param>
         /// <returns></returns>
-        public MSprite? GetSpriteByName(string mSpriteName)
+        public MSprite GetSpriteByName(string mSpriteName)
         {
             foreach(var bank in Banks)
             {
-                if (bank.Value.Sprites.TryGetValue(mSpriteName, out var sprite)) 
+                if (bank.Value.Sprites.TryGetValue(mSpriteName, out var sprite))
                     return sprite;
             }
             return null;
@@ -69,7 +82,7 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
         /// <param name="mSpriteName"></param>
         /// <param name="Sprite"></param>
         /// <returns></returns>
-        public bool TryGetSpriteByName(string mSpriteName, out MSprite? Sprite) =>
+        public bool TryGetSpriteByName(string mSpriteName, out MSprite Sprite) =>
             (Sprite = GetSpriteByName(mSpriteName)) != null;
     }
 
@@ -93,8 +106,8 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
             var file = ImportedObject = new MSpritesDefinitionFile(baseImport); // from ASM file
 
             //VARS
-            int bankIndex = -1;            
-            MSpriteBank? currentBank = default;
+            int bankIndex = -1;
+            MSpriteBank currentBank = default;
 
             void defspr(string Name, bool HiBank, int Chars = DEF_TEXT_SIZE_CHARS, int YInc = DEF_TEXT_SIZE_CHARS * CHAR_H)
             {
@@ -125,6 +138,7 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
                 if (currentBank == default)
                     throw new InvalidOperationException("A bank has not been created yet, but we tried to add a sprite to it!");
                 currentBank.Sprites.TryAdd(Name, new MSprite(Name, X, Y, W, H, HiBank) { Parent = currentBank });
+
             }
 
             foreach (var line in file.Lines)

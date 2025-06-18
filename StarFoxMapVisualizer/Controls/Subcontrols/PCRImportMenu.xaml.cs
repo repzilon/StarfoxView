@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Starfox.Editor;
 using static StarFox.Interop.SFFileType;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -41,7 +42,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         private void showOptions()
         {
             TypeMenu.Items.Clear();
-            foreach(var type in Enum.GetValues<CAD.BitDepthFormats>())
+            foreach(var type in SFCodeProject.GetValues<CAD.BitDepthFormats>())
             {
                 var item = new MenuItem()
                 {

@@ -4,17 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WPF.UI.Extensions.Controls
 {
@@ -29,17 +21,17 @@ namespace WPF.UI.Extensions.Controls
             ArrayInfoConverter,
             Custom
         }
-        private TypeConversionTechniques technique = TypeConversionTechniques.Unconvertable;
+        private TypeConversionTechniques _technique = TypeConversionTechniques.Unconvertable;
 
         /// <summary>
         /// The property attached to this object; if applicable
         /// </summary>
-        public PropertyInfo? AttachedProperty { get; private set; }
+        public PropertyInfo AttachedProperty { get; private set; }
         /// <summary>
         /// The property attached to this object's parent instance.
         /// </summary>
-        public object? ParentObject { get; private set; }
-        private List<FrameworkElement> inputs = new();
+        public object ParentObject { get; private set; }
+        private readonly List<FrameworkElement> _inputs = new List<FrameworkElement>();
 
         public PropertyViewerItem() : base()
         {
@@ -64,12 +56,12 @@ namespace WPF.UI.Extensions.Controls
         /// <returns></returns>
         public void ShowError(string ErrorText)
         {
-            var ctrl = inputs[0];
-            if (inputs.Any() && ctrl is TextBox tbox)
+            var ctrl = _inputs[0];
+            if (_inputs.Any() && ctrl is TextBox tbox)
                 tbox.Foreground = tbox.BorderBrush = Brushes.Red;            
-            if (ctrl.ToolTip == default) return; // no tooltip
+            if (ctrl.ToolTip == null) return; // no tooltip
             var ttip = ((ToolTip)ctrl.ToolTip);
-            if (ttip == default) return; // cast issue
+            if (ttip == null) return; // cast issue
             ttip.PlacementTarget = ctrl;         
             ttip.IsOpen = true;           
             ttip.Content = ErrorText;
@@ -82,12 +74,12 @@ namespace WPF.UI.Extensions.Controls
         public void ClearError()
         {
             if (!_errorShown) return;
-            var ctrl = inputs[0];
-            if (inputs.Any() && ctrl is TextBox tbox)
+            var ctrl = _inputs[0];
+            if (_inputs.Any() && ctrl is TextBox tbox)
                 tbox.Foreground = tbox.BorderBrush = Brushes.Black;
-            if (ctrl.ToolTip == default) return; // no tooltip
+            if (ctrl.ToolTip == null) return; // no tooltip
             var ttip = ((ToolTip)ctrl.ToolTip);
-            if (ttip == default) return; // cast issue
+            if (ttip == null) return; // cast issue
             ttip.IsOpen = false;
             ttip.Content = "";
             _errorShown = false;
@@ -130,41 +122,41 @@ namespace WPF.UI.Extensions.Controls
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
-                switch (technique)
+                switch (_technique)
                 {
                     default:
                     case TypeConversionTechniques.Unconvertable:
                         return;
                     case TypeConversionTechniques.TypeConverter:
                         var conv = TypeDescriptor.GetConverter(AttachedProperty.PropertyType);
-                        AttachedProperty.SetValue(ParentObject, conv.ConvertFromString(((TextBox)inputs[0]).Text));
+                        AttachedProperty.SetValue(ParentObject, conv.ConvertFromString(((TextBox)_inputs[0]).Text));
                         break;
                     case TypeConversionTechniques.StrListConverter:
-                        string[] values = new string[inputs.Count];
-                        for (int i = 0; i < inputs.Count; i++)
-                            if (inputs[i] is TextBox box)
+                        string[] values = new string[_inputs.Count];
+                        for (int i = 0; i < _inputs.Count; i++)
+                            if (_inputs[i] is TextBox box)
                                 values[i] = box.Text;
                         AttachedProperty.SetValue(ParentObject, values);
                         break;
                     case TypeConversionTechniques.Custom:
                         var context = PropertyViewer.CustomConverters[AttachedProperty.PropertyType] as PropertyViewer.RangeCustomConverter;
                         var rangedObject = AttachedProperty.GetValue(ParentObject);
-                        rangedObject.GetType().GetProperty(context.ValuePropName).SetValue(rangedObject, ((Slider)inputs[0]).Value);
+                        rangedObject.GetType().GetProperty(context.ValuePropName).SetValue(rangedObject, ((Slider)_inputs[0]).Value);
                         break;
                     case TypeConversionTechniques.DecimalConverter:
-                        AttachedProperty.SetValue(ParentObject, decimal.Parse(((TextBox)inputs[0]).Text));
+                        AttachedProperty.SetValue(ParentObject, decimal.Parse(((TextBox)_inputs[0]).Text));
                         break;
                 }
             });
         }
-        private string NormalizeName(string PropertyName)
+        private static string NormalizeName(string PropertyName)
         {
-            StringBuilder builder = new();
+            var builder = new StringBuilder();
             int index = -1;
             foreach (var character in PropertyName)
             {
                 index++;
-                if (index is not 0 && char.IsUpper(character))
+                if (index != 0 && char.IsUpper(character))
                     builder.Append(' ');
                 builder.Append(character);
             }
@@ -186,8 +178,8 @@ namespace WPF.UI.Extensions.Controls
                 return tbox;
             }
 
-            inputs.Clear();
-            switch (technique)
+            _inputs.Clear();
+            switch (_technique)
             {
                 case TypeConversionTechniques.DecimalConverter:
                     var value = AttachedProperty.GetValue(ParentObject)?.ToString();
@@ -195,14 +187,14 @@ namespace WPF.UI.Extensions.Controls
                     decimal dValue = 0.0M;
                     if (hasValue)
                         hasValue = decimal.TryParse(value, out dValue);
-                    inputs.Add(GetTextBox(dValue.ToString(), AttachedProperty.CanWrite));
-                    Children.Add(inputs[0]);
-                    SetColumn(inputs[0], 1);
+                    _inputs.Add(GetTextBox(dValue.ToString(), AttachedProperty.CanWrite));
+                    Children.Add(_inputs[0]);
+                    SetColumn(_inputs[0], 1);
                     break;
                 case TypeConversionTechniques.TypeConverter:                    
-                    inputs.Add(GetTextBox(AttachedProperty.GetValue(ParentObject)?.ToString() ?? "", AttachedProperty.CanWrite));
-                    Children.Add(inputs[0]);
-                    SetColumn(inputs[0], 1);
+                    _inputs.Add(GetTextBox(AttachedProperty.GetValue(ParentObject)?.ToString() ?? "", AttachedProperty.CanWrite));
+                    Children.Add(_inputs[0]);
+                    SetColumn(_inputs[0], 1);
                     break;
                 case TypeConversionTechniques.Custom:
                     var context = PropertyViewer.CustomConverters[AttachedProperty.PropertyType] as PropertyViewer.RangeCustomConverter;
@@ -229,13 +221,13 @@ namespace WPF.UI.Extensions.Controls
                     {
                         tooltipText.Text = slider.Value.ToString();
                     };
-                    inputs.Add(slider);
+                    _inputs.Add(slider);
                     var placeholder = new Border();
                     Children.Add(placeholder);
                     SetColumn(placeholder, 1);
-                    Children.Add(inputs[0]);
-                    SetColumnSpan(inputs[0], 2);
-                    SetRow(inputs[0],1);
+                    Children.Add(_inputs[0]);
+                    SetColumnSpan(_inputs[0], 2);
+                    SetRow(_inputs[0],1);
 
                     TextBlock valueTextBlock = new TextBlock()
                     {
@@ -274,13 +266,13 @@ namespace WPF.UI.Extensions.Controls
 
                         void AddLine(string data = default)
                         {
-                            inputs.Add(GetTextBox(data ?? "", true));
+                            _inputs.Add(GetTextBox(data ?? "", true));
                             int index = stack.Children.Count - 1;
                             if (index < 0)
                                 index = 0;
-                            stack.Children.Insert(index, inputs.Last());                            
+                            stack.Children.Insert(index, _inputs.Last());                            
                         }
-                        var existingData = AttachedProperty.GetValue(ParentObject) as IEnumerable<String>;
+                        var existingData = AttachedProperty.GetValue(ParentObject) as IEnumerable<string>;
                         if (existingData != null && existingData.Any())
                         {
                             foreach (var dataItem in existingData)
@@ -296,7 +288,7 @@ namespace WPF.UI.Extensions.Controls
                         button.Click += delegate
                         {
                             AddLine();
-                            inputs.Last().Focus();
+                            _inputs.Last().Focus();
                         };
                         stack.Children.Add(button);
                     }
@@ -306,7 +298,7 @@ namespace WPF.UI.Extensions.Controls
                     {
                         var msg = new TextBlock()
                         {
-                            Text = $"{AttachedProperty.PropertyType.Name} is not convertable.",
+                            Text = $"{AttachedProperty.PropertyType.Name} is not convertible.",
                             Foreground = Brushes.Red,
                         };
                         Children.Add(msg);
@@ -329,28 +321,28 @@ namespace WPF.UI.Extensions.Controls
         {
             if (PropertyViewer.CustomConverters.ContainsKey(AttachedProperty.PropertyType))
             {
-                technique = TypeConversionTechniques.Custom;
+                _technique = TypeConversionTechniques.Custom;
                 return true;
             }
-            if (AttachedProperty.PropertyType.IsAssignableFrom(typeof(IEnumerable<String>))) // STR list
+            if (AttachedProperty.PropertyType.IsAssignableFrom(typeof(IEnumerable<string>))) // STR list
             {
-                technique = TypeConversionTechniques.StrListConverter;
+                _technique = TypeConversionTechniques.StrListConverter;
                 return true;
             }
             var conv = TypeDescriptor.GetConverter(AttachedProperty.PropertyType);
             if (conv.CanConvertTo(AttachedProperty.PropertyType))
             {
-                technique = TypeConversionTechniques.TypeConverter;
+                _technique = TypeConversionTechniques.TypeConverter;
                 return true;
             }    
             if (AttachedProperty.PropertyType == typeof(decimal))
             {
-                technique = TypeConversionTechniques.DecimalConverter;
+                _technique = TypeConversionTechniques.DecimalConverter;
                 return true;
             }
-            if (AttachedProperty.PropertyType.IsAssignableTo(typeof(Array)))
+            if (AttachedProperty.PropertyType.IsArray)
             {
-                technique = TypeConversionTechniques.ArrayInfoConverter;
+                _technique = TypeConversionTechniques.ArrayInfoConverter;
                 return true;
             }
             return false;
@@ -382,12 +374,24 @@ namespace WPF.UI.Extensions.Controls
             public string MinValuePropName { get; set; }
         }
 
-        internal static Dictionary<Type, CustomConverter> CustomConverters = new Dictionary<Type, CustomConverter>();
-        public static bool RegisterRangedCustomConverter(Type PropertyType, string ValuePropertyName = "Value",
-            string MaxValuePropertyName = "MaxValue", string MinValuePropertyName = "MinValue") =>
-            CustomConverters.TryAdd(PropertyType, new RangeCustomConverter(ValuePropertyName, MaxValuePropertyName, MinValuePropertyName));
+        internal static readonly Dictionary<Type, CustomConverter> CustomConverters = new Dictionary<Type, CustomConverter>();
 
-        private Dictionary<object, PropertyInfo> propMap = new();
+        public static bool RegisterRangedCustomConverter(Type PropertyType, string ValuePropertyName = "Value", 
+	    string MaxValuePropertyName = "MaxValue", string MinValuePropertyName = "MinValue")
+        {
+#if NETFRAMEWORK
+			try {
+				CustomConverters.Add(PropertyType, new RangeCustomConverter(ValuePropertyName, MaxValuePropertyName, MinValuePropertyName));
+				return true;
+			} catch (Exception) {
+				return false;
+			}
+#else
+            return CustomConverters.TryAdd(PropertyType, new RangeCustomConverter(ValuePropertyName, MaxValuePropertyName, MinValuePropertyName));
+#endif
+        }
+
+        private readonly Dictionary<object, PropertyInfo> _propMap = new Dictionary<object, PropertyInfo>();
         public PropertyViewer()
         {
             InitializeComponent();
@@ -399,7 +403,7 @@ namespace WPF.UI.Extensions.Controls
             Loaded += PropertyViewer_Initialized; ;            
         }
 
-        private void PropertyViewer_Initialized(object? sender, EventArgs e)
+        private void PropertyViewer_Initialized(object sender, EventArgs e)
         {
             Loaded -= PropertyViewer_Initialized;
             Init();

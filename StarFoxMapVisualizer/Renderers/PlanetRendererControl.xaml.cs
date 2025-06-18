@@ -18,7 +18,7 @@ namespace StarFoxMapVisualizer.Renderers
 
         public PlanetRenderer.PlanetRendererOptions Options
         {
-            get => planetRenderer.Options; 
+            get => planetRenderer.Options;
             set => planetRenderer.Options = value;
         }
         public double SpotlightPositionX
@@ -46,22 +46,23 @@ namespace StarFoxMapVisualizer.Renderers
 
         private void PlanetRendererControl_Unloaded(object sender, System.Windows.RoutedEventArgs e) => Dispose();
 
-        public PlanetRendererControl(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions? Options = null) : this() => Load(PlanetTexture, Options);
+        public PlanetRendererControl(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) : this() => Load(PlanetTexture, Options);
 
-        public void Load(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions? Options = null) => planetRenderer.LoadTexture(PlanetTexture, Options);
+        public void Load(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) => planetRenderer.LoadTexture(PlanetTexture, Options);
 
         public void StartAnimation(TimeSpan? FrameRate = default)
         {
             FrameRate = FrameRate ?? PlanetRenderer.GetFPSTimeSpan(DefaultFrameRate);
             if (planetRenderer == null) throw new NullReferenceException("PlanetRenderer is null, call Load first.");
-            planetRenderer.StartAsync((Bitmap bmp) =>
-            {
-                Dispatcher.BeginInvoke(() =>
-                {
-                    RenderImage.Source = bmp.Convert();
-                    bmp.Dispose();
-                });
+            planetRenderer.StartAsync((Bitmap bmp) => {
+                Dispatcher.BeginInvoke(new Action(delegate { SetRenderSource(bmp); }));
             }, false, FrameRate, TimeSpan.Zero);
+        }
+
+        private void SetRenderSource(Bitmap bmp)
+        {
+            RenderImage.Source = bmp.Convert();
+            bmp.Dispose();
         }
 
         public void Dispose()

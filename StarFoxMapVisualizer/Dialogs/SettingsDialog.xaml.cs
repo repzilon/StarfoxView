@@ -21,7 +21,7 @@ namespace StarFoxMapVisualizer.Dialogs
     /// </summary>
     public partial class SettingsDialog : Window
     {
-        Dictionary<SFEditorSettings, PropertyViewer> propViewerMap = new();
+        Dictionary<SFEditorSettings, PropertyViewer> propViewerMap = new Dictionary<SFEditorSettings, PropertyViewer>();
 
         public SettingsDialog()
         {
@@ -43,10 +43,10 @@ namespace StarFoxMapVisualizer.Dialogs
             foreach ( SFEditorSettings item in settings.Values )
             {
                 SFCodeProjectSettingsTypes type = item.SettingsType;
-                PropertyViewer propsViewerControl = new PropertyViewer((GraphicsUserSettings)item);                
+                PropertyViewer propsViewerControl = new PropertyViewer((GraphicsUserSettings)item);
                 TabItem newItem = new TabItem()
                 {
-                    Header = Enum.GetName(type),
+                    Header = Enum.GetName(typeof(SFCodeProjectSettingsTypes), type),
                     Content = new ScrollViewer()
                     {
                         Padding = new Thickness(10),
@@ -54,7 +54,7 @@ namespace StarFoxMapVisualizer.Dialogs
                     }
                 };
                 propViewerMap.Add(item, propsViewerControl);
-                SettingsTabs.Items.Add(newItem);                
+                SettingsTabs.Items.Add(newItem);
             }
         }
 

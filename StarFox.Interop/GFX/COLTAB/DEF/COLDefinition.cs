@@ -24,7 +24,7 @@ namespace StarFox.Interop.GFX.COLTAB.DEF
         /// </summary>
         /// <param name="MacroExpression"></param>
         /// <returns></returns>
-        public static COLDefinition? Parse(ASMMacroInvokeLineStructure MacroExpression)
+        public static COLDefinition Parse(ASMMacroInvokeLineStructure MacroExpression)
         {
             var param1Int = MacroExpression.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
             var param2Int = MacroExpression.TryGetParameter(1)?.TryParseOrDefault() ?? 0;
@@ -50,7 +50,7 @@ namespace StarFox.Interop.GFX.COLTAB.DEF
         }
         public override string ToString()
         {
-            return $"{CallType} {(this is ICOLColorIndexDefinition def ? def.ColorByte : "")}";
+            return $"{CallType} {(this is ICOLColorIndexDefinition def ? def.ColorByte.ToString() : "")}";
         }
     }
 }

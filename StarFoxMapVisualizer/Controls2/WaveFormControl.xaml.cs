@@ -24,7 +24,7 @@ namespace StarFoxMapVisualizer.Controls2
     {
         /// <summary>
         /// Measures how simple this waveform is in comparison to the amount of lateral space it can fill.
-        /// <para>Default is 1.0 -- as in if the control is 200px wide it will display 200 samples as 1px wide lines. 
+        /// <para>Default is 1.0 -- as in if the control is 200px wide it will display 200 samples as 1px wide lines.
         /// .5 would double this amount, and 2.0 would half it.</para>
         /// </summary>
         public double Simplicity { get; set; } = 1.0;
@@ -39,11 +39,11 @@ namespace StarFoxMapVisualizer.Controls2
             Loaded += delegate
             {
                 Display(Sample);
-            };            
+            };
         }
 
         public void Display(BRRSample Sample)
-        {            
+        {
             WaveFormHost.Children.Clear();
             if (Sample.SampleData.Count < 1) return;
             double widthMeasurement = HOST.ActualWidth == 0 ? HOST.Width : HOST.ActualWidth;
@@ -51,18 +51,18 @@ namespace StarFoxMapVisualizer.Controls2
             double halfDesignHeight = 100; // distance from median to top / bottom of control
             double designWidth = 1;
             double totalSamples = (int)(Math.Max(widthMeasurement, Sample.SampleData.Count) * Simplicity);
-            double step = totalSamples / widthMeasurement;            
+            double step = totalSamples / widthMeasurement;
             short HighBound = Sample.SampleData.Max();
             short LowBound = 0;
             int distance = HighBound - LowBound;
             int currentX = -1;
-            List<int> addedSamples = new();
+            var addedSamples = new List<int>();
             void AddPoint(int index)
             {
                 currentX++;
                 var dataPoint = Sample.SampleData[index];
-                if (dataPoint == short.MaxValue || 
-                    dataPoint == short.MinValue) 
+                if (dataPoint == short.MaxValue ||
+                    dataPoint == short.MinValue)
                     return;
                 var value = Math.Abs(dataPoint);
                 var Percentage = (double)value / distance;

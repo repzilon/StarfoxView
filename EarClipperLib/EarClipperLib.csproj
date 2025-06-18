@@ -1,15 +1,40 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
+    <TargetFrameworks>net6.0;net5.0;net48;net46;netstandard2.0</TargetFrameworks>
+    <NoWarn>NETSDK1138</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' != '17.0' ">
+    <TargetFrameworks>netstandard2.0;net46;net40</TargetFrameworks>
+  </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <PackageReference Include="Unofficial.Microsoft.Solver.Foundation.Express" Version="3.0.4" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="Unofficial.Microsoft.Solver.Foundation.Express" Version="3.0.4" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="Microsoft.Solver.Foundation" Version="3.1.0" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Reloaded.SolverFoundation" Version="1.0.6" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="Reloaded.SolverFoundation" Version="1.0.6" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Reloaded.SolverFoundation" Version="1.0.6" />
   </ItemGroup>
 </Project>

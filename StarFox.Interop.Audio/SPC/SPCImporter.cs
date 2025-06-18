@@ -1,17 +1,13 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.Audio.ABIN;
-using StarFox.Interop.BSP;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.Audio.ABIN;
 
 namespace StarFox.Interop.SPC
 {
     /// <summary>
-    /// Imports a *.SPC file that is compatible with the SPC File Format v0.30 as defined by 
+    /// Imports a *.SPC file that is compatible with the SPC File Format v0.30 as defined by
     /// <see href="http://snesmusic.org/files/spc_file_format.txt."/>
     /// <para>This importer is compatible with emulators that support this standard.</para>
     /// </summary>
@@ -25,7 +21,7 @@ namespace StarFox.Interop.SPC
         /// <param name="AppendDefaultRegisters">Optionally, will insert default DSP Registers at the end of the SPC</param>
         /// <returns></returns>
         public static async Task WriteBINtoSPCAsync(SPCFile SPCFile, AudioBINFile BINFile, AudioBINSongData Song, bool AppendDefaultRegisters = true)
-        {            
+        {
             int offset = 0;// 0x1C;
             ushort spcOffset = 0x00;
             //COPY JUST THE SONG WE WANT
@@ -44,7 +40,7 @@ namespace StarFox.Interop.SPC
             {
                 if (!table.Contains(new AudioBINSongTableEntry(Song.SPCAddress))) continue;
                 spcOffset = table.SPCAddress;
-                using (MemoryStream tableStream = new())
+                using (var tableStream = new MemoryStream())
                 { // USE STREAMS TO MAKE BYTE ARRAYS
                     foreach (var tableEntry in table)
                     {
@@ -83,14 +79,14 @@ namespace StarFox.Interop.SPC
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         public static async Task WriteAsync(SPCFile File, Stream Destination)
-        {            
+        {
             var spc = File;
             byte[] array = new byte[(int)SPCFile.FILE_LENGTH];
             using (var fs = new MemoryStream(array))
-            {                
+            {
                 if (fs.Length < SPCFile.FILE_LENGTH)
                     throw new Exception("This file is less than " + SPCFile.FILE_LENGTH + " bytes long.");
-                //HEADER                
+                //HEADER
                 if (spc.Header != SPCFile.SupportedHeader) throw new Exception("Header does not match supported " +
                     "header: " + SPCFile.SupportedHeader + $". Recv: {spc.Header}");
                 WriteString(fs, spc.Header, (int)SPCFile.SPCStandardValueSizes.HEADER);
@@ -102,7 +98,7 @@ namespace StarFox.Interop.SPC
                 WriteValue(fs, spc.A);
                 WriteValue(fs, spc.X);
                 WriteValue(fs, spc.Y);
-                WriteValue(fs, spc.PSW); 
+                WriteValue(fs, spc.PSW);
                 WriteValue(fs, spc.SP);
                 WriteValue(fs, (short)0);
                 //ID666 INFORMATION (text format)
@@ -129,8 +125,9 @@ namespace StarFox.Interop.SPC
                 fs.Seek((int)SPCFile.SPCStandardAddresses.ExtraRAM, SeekOrigin.Begin);
                 await fs.WriteAsync(spc.ExtraRAM, 0, (int)SPCFile.SPCStandardValueSizes.ExtraRAM);
 
-                await Destination.WriteAsync(fs.ToArray());
-            }                 
+                var bytarInMemory = fs.ToArray();
+                await Destination.WriteAsync(bytarInMemory, 0, bytarInMemory.Length);
+            }
         }
         private static void WriteString(Stream stream, string Data, byte ByteLength)
         {
@@ -157,7 +154,7 @@ namespace StarFox.Interop.SPC
                 buffer = Encoding.ASCII.GetBytes(s);
             else throw new Exception($"The data type: {Data.GetType().Name} is not supported by this function.");
             stream.Write(buffer, 0, buffer.Length);
-        }        
+        }
         /// <summary>
         /// Reads a Well-Formed <see cref="SPCFile"/> and returns it as an object
         /// </summary>

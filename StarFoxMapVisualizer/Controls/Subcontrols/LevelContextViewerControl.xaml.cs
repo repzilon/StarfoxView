@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Starfox.Editor;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
 {
@@ -35,14 +36,14 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             Loaded += delegate
             {
                 //item selector for dynamic backgrounds
-                DynamicBackgroundAnimationSelector.ItemsSource = Enum.GetValues<WavyBackgroundRenderer.WavyEffectStrategies>();
+                DynamicBackgroundAnimationSelector.ItemsSource = SFCodeProject.GetValues<WavyBackgroundRenderer.WavyEffectStrategies>();
                 PendingChangesMessage.Visibility = Visibility.Collapsed; // pending changes message for dynamic backgrounds
             };
             Unloaded += delegate
             { // Dispose of the Background Renderer as it is IDisposable
                 ImageContent.Dispose();
             };
-        }        
+        }
 
         public MAPContextDefinition LevelContext { get; private set; }
         public async Task Attach(MAPContextDefinition levelContext, bool ExtractCCR = false, bool ExtractPCR = false)
@@ -61,7 +62,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             ViewOptions.YScrollSlider2.Value = BG2Y;
             IgnoreUserInput = false;
 
-            ApplyButton.IsEnabled = false;            
+            ApplyButton.IsEnabled = false;
             ContextDataGrid.ItemsSource = new[] { levelContext };
             await ImageContent.SetContext(LevelContext, StarFox.Interop.EFFECTS.
                 WavyBackgroundRenderer.WavyEffectStrategies.None, ExtractCCR, ExtractPCR);
@@ -77,16 +78,16 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             LatencyBox.TextChanged += LatencyBox_TextChanged;
 
             ResetViewSettings();
-        }        
+        }
 
         private void ResetViewSettings()
-        {            
-            ImageContent.SetViewportsToUniformSize(ScrWidth, ScrHeight, BG2X, BG2Y, BG3X, BG3Y, 1024);                                
+        {
+            ImageContent.SetViewportsToUniformSize(ScrWidth, ScrHeight, BG2X, BG2Y, BG3X, BG3Y, 1024);
         }
 
         private void ContextDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            ApplyButton.IsEnabled = true;   
+            ApplyButton.IsEnabled = true;
         }
 
         private async void ApplyButton_Click(object sender, RoutedEventArgs e)
@@ -103,7 +104,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         }
 
         private void LatencyBox_TextChanged(object sender, TextChangedEventArgs e)
-        {            
+        {
             string text = LatencyBox.Text;
             if (string.IsNullOrWhiteSpace(text)) return;
             if (!double.TryParse(text, out var milliseconds)) return;
@@ -113,7 +114,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             PendingChangesMessage.Visibility = Visibility.Visible;
         }
 
-        private void SixtyFPSButton_Click(object sender, RoutedEventArgs e) => 
+        private void SixtyFPSButton_Click(object sender, RoutedEventArgs e) =>
             LatencyBox.Text = WavyBackgroundRenderer.GetFPSTimeSpan(60).TotalMilliseconds.ToString();
 
         private void TwelveFPSButton_Click(object sender, RoutedEventArgs e) =>
@@ -126,11 +127,11 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             double width = ImageContent.Width;
             ImageContentHost.Content = null;
             //POP OUT LARGE VIEW
-            Window hwnd = new()
+            var hwnd = new Window()
             {
-                Title = "Large Background Image Viewer",                
+                Title = "Large Background Image Viewer",
                 Content = ImageContent,
-                Width = 512, 
+                Width = 512,
                 Height = 512,
                 Owner = Application.Current.MainWindow
             };
@@ -158,21 +159,21 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             MessageBox.Show(string.Join("\n",ImageContent.ReferencedFiles.Select(x => $"{x.Key}: {x.Value}")));
         }
 
-        private void ViewOptions_BG2_ScrollValueChanged(object sender, (bool Horizontal, double Value) e)
+        private void ViewOptions_BG2_ScrollValueChanged(object sender, ScrollEventArgs e)
         {
             if (IgnoreUserInput) return;
             if (e.Horizontal)
-                BG2X = e.Value;
-            else BG2Y = e.Value;
+                BG2X = e.ScrollValue;
+            else BG2Y = e.ScrollValue;
             ResetViewSettings();
         }
 
-        private void ViewOptions_BG3_ScrollValueChanged(object sender, (bool Horizontal, double Value) e)
+        private void ViewOptions_BG3_ScrollValueChanged(object sender, ScrollEventArgs e)
         {
             if (IgnoreUserInput) return;
             if (e.Horizontal)
-                BG3X = e.Value;
-            else BG3Y = e.Value;
+                BG3X  = e.ScrollValue;
+            else BG3Y = e.ScrollValue;
             ResetViewSettings();
         }
     }

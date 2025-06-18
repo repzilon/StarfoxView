@@ -28,12 +28,13 @@ namespace StarFox.Interop
             /// <summary>
             /// Messages for commentary in the game
             /// </summary>
-            MSG,   
+            MSG,
             /// <summary>
             /// 3D MSprites Definition
             /// </summary>
             DEFSPR,
         }
+
         /// <summary>
         /// Files that are stored and interpreted as Binary
         /// </summary>
@@ -52,21 +53,21 @@ namespace StarFox.Interop
             /// </summary>
             SPC,
         }
-        public static string GetSummary(ASMFileTypes Type) => Type switch
+
+        public static string GetSummary(ASMFileTypes Type)
         {
-            ASMFileTypes.ASM => "Just Assembly",
-            ASMFileTypes.MAP => "Map-Script File",
-            ASMFileTypes.BSP => "Compiled 3D Models",
-            ASMFileTypes.MSG => "Communications",
-            ASMFileTypes.DEFSPR => "3D Textures (MSprites)",
-            _ => "Not found", // default case
-        };
-        public static string GetSummary(BINFileTypes Type) => Type switch
+            var karSummaries = new string[] {
+                "Just Assembly", "Map-Script File", "Compiled 3D Models", "Communications", "3D Textures (MSprites)"
+            };
+            return (Type >= ASMFileTypes.ASM) && (Type <= ASMFileTypes.DEFSPR) ? karSummaries[(int)Type] : "Not found";
+        }
+
+        public static string GetSummary(BINFileTypes Type)
         {
-            BINFileTypes.COMPRESSED_CGX => "Crunch'd Graphics (CGX)",
-            BINFileTypes.BRR => "Sound Effects (Samples) (BRR)",
-            BINFileTypes.SPC => "Unpack Audio BIN (ABIN)",
-            _ => "Not found", // default case
-        };
+            var karSummaries = new string[] {
+                "Crunch'd Graphics (CGX)", "Sound Effects (Samples) (BRR)", "Unpack Audio BIN (ABIN)"
+            };
+            return (Type >= BINFileTypes.COMPRESSED_CGX) && (Type <= BINFileTypes.SPC) ? karSummaries[(int)Type] : "Not found";
+        }
     }
 }

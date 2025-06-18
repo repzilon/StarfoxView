@@ -1,9 +1,10 @@
-﻿using StarFox.Interop.ASM.TYP;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM.TYP;
 
 namespace StarFox.Interop.MAP.EVT
 {
@@ -12,7 +13,7 @@ namespace StarFox.Interop.MAP.EVT
         /// <summary>
         /// The name of the macro (inline label) to jump to for this MapLoop event
         /// </summary>
-        public string? LoopMacroName { get; set; }
+        public string LoopMacroName { get; set; }
         public int LoopAmount { get; set; } = 0;
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            LoopMacroName = structure.TryGetParameter(0)?.ParameterContent; // parameter 0 is Inline Label            
+            LoopMacroName = structure.TryGetParameter(0)?.ParameterContent; // parameter 0 is Inline Label
             LoopAmount = TryParseOrDefault(structure.TryGetParameter(1)?.ParameterContent); // parameter 1 is Amount of Loops
             if (LoopAmount < 0) throw new InvalidDataException("MapLoop event has negative loops, which is undefined. \n " + ToString());
         }

@@ -19,15 +19,15 @@ namespace StarFox.Interop.MAP.EVT
         /// translated using <see cref="MAPSetBG.TranslateNameToMAPContext(in string, string)"/>
         /// <para>This value is the exact same as <see cref="MAPSetBG.Background"/> as they both use the same function.</para>
         /// </summary>
-        public string? Background { get; set; }
+        public string Background { get; set; }
         /// <summary>
         /// The type of fade selected
         /// </summary>
-        public string? FadeStyle { get; set; }
+        public string FadeStyle { get; set; }
         /// <summary>
         /// The type of Wipe selected -- or a screen transition.
         /// </summary>
-        public string? WipeStyle { get; set; }
+        public string WipeStyle { get; set; }
         string IMAPNamedEvent.Name => Background ?? "";
 
         protected override void Parse(ASMLine Line)

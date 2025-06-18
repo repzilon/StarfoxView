@@ -1,9 +1,9 @@
-﻿using StarFox.Interop.GFX.DAT;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.GFX.DAT;
 
 namespace StarFox.Interop.GFX.CONVERT
 {
@@ -23,7 +23,7 @@ namespace StarFox.Interop.GFX.CONVERT
         internal static CanvasSizeDefinition[] GeneralCanvasSizes =
         {
             //3D MSPRITES
-            new()
+            new CanvasSizeDefinition()
             {
                 Width = SuggestedCanvasW,
                 Height = SuggestedCanvasH,
@@ -31,7 +31,7 @@ namespace StarFox.Interop.GFX.CONVERT
                 CharHeight = SNES_CHAR_SIZE
             },
             //CGX REGULAR
-            new()
+            new CanvasSizeDefinition()
             {
                 Width = FXCGXFile.SuggestedCanvasW,
                 Height = FXCGXFile.SuggestedCanvasH,

@@ -1,16 +1,18 @@
-﻿using StarFox.Interop.GFX.COLTAB.DEF;
+﻿using System.Collections.Generic;
+using StarFox.Interop.BSP.SHAPE;
+using StarFox.Interop.GFX.COLTAB.DEF;
 
 namespace StarFox.Interop.GFX.COLTAB
 {
     /// <summary>
     /// Represents a group of Color references that can be attached to a <see cref="BSPShape"/> to give it color and/or texture.
     /// </summary>
-    public class COLGroup 
+    public class COLGroup
     {
         /// <summary>
         /// The definitions included in this group
         /// </summary>
-        public HashSet<COLDefinition> Definitions { get; } = new();
+        public HashSet<COLDefinition> Definitions { get; } = new HashSet<COLDefinition>();
 
         public COLGroup(string name)
         {

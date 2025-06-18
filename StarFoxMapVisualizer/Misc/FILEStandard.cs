@@ -4,7 +4,6 @@ using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.BRR;
 using StarFox.Interop.BSP;
-using StarFox.Interop.BSP.SHAPE;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.DAT.MSPRITES;
@@ -17,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -28,24 +26,24 @@ namespace StarFoxMapVisualizer.Misc
     /// </summary>
     internal static class FILEStandard
     {
-        internal static readonly ASMImporter ASMImport = new();
-        internal static readonly MAPImporter MAPImport = new();
-        internal static readonly BSPImporter BSPImport = new();
-        internal static readonly MSGImporter MSGImport = new();
-        internal static readonly COLTABImporter COLTImport = new();
-        internal static readonly BRRImporter BRRImport = new();
-        internal static readonly SPCImporter SPCImport = new();
-        internal static readonly MSpritesImporter DEFSPRImport = new();
+        internal static readonly ASMImporter ASMImport = new ASMImporter();
+        internal static readonly MAPImporter MAPImport = new MAPImporter();
+        internal static readonly BSPImporter BSPImport = new BSPImporter();
+        internal static readonly MSGImporter MSGImport = new MSGImporter();
+        internal static readonly COLTABImporter COLTImport = new COLTABImporter();
+        internal static readonly BRRImporter BRRImport = new BRRImporter();
+        internal static readonly SPCImporter SPCImport = new SPCImporter();
+        internal static readonly MSpritesImporter DEFSPRImport = new MSpritesImporter();
 
         /// <summary>
-        /// Includes a <see cref="SFCodeProjectFileTypes.Assembly"/>, <see cref="SFCodeProjectFileTypes.Include"/> or 
+        /// Includes a <see cref="SFCodeProjectFileTypes.Assembly"/>, <see cref="SFCodeProjectFileTypes.Include"/> or
         /// <see cref="SFCodeProjectFileTypes.Palette"/>.
         /// <para>Note that passing generic type T is optional, since it will return default if it is not a matching type.</para>
         /// <para>Note that unless ContextualFileType is passed and not default, a dialog is displayed asking the user what kind of file this is.</para>
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
-        public static async Task<T?> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default) where T : class
+        public static async Task<T> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default) where T : class
         {
             if (!AppResources.IsFileIncluded(File))
             {
@@ -54,7 +52,7 @@ namespace StarFoxMapVisualizer.Misc
                     case SFCodeProjectFileTypes.Include:
                     case SFCodeProjectFileTypes.Assembly:
                         var asmFile = await ParseFile(File, ContextualFileType);
-                        if (asmFile == default) return default; // USER CANCEL                                                              
+                        if (asmFile == default) return default; // USER CANCEL
                         AppResources.Includes.Add(asmFile); // INCLUDE FILE FOR SYMBOL LINKING
                         return asmFile as T;
                     case SFCodeProjectFileTypes.Palette:
@@ -78,7 +76,7 @@ namespace StarFoxMapVisualizer.Misc
                 AppResources.Includes.Add(asmFile);
             }
         }
-        public static bool SearchProjectForFile(string FileName, out FileInfo? File, bool IgnoreHyphens = false)
+        public static bool SearchProjectForFile(string FileName, out FileInfo File, bool IgnoreHyphens = false)
         {
             File = null;
             var results = AppResources.ImportedProject.SearchFile(FileName, IgnoreHyphens);
@@ -91,7 +89,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <summary>
         /// Common helper function that will set imports on all <see cref="CodeImporter{T}"/>s
         /// to be <see cref="AppResources.Includes"/>
-        /// <code>COLTImport, ASMImport, MAPImport, BSPImport and MSGImport</code>        
+        /// <code>COLTImport, ASMImport, MAPImport, BSPImport and MSGImport</code>
         /// </summary>
         public static void ReadyImporters()
         {
@@ -131,13 +129,13 @@ namespace StarFoxMapVisualizer.Misc
                         $" {string.Join(", ", autoIncluded)}");
                 //** END AUTO INCLUDE
             }
-            var message = importer.CheckWarningMessage(File.FullName);
-            await AutoIncludeNow(message, importer.ExpectedIncludes);
+            var message2 = importer.CheckWarningMessage(File.FullName);
+            await AutoIncludeNow(message2, importer.ExpectedIncludes);
             ReadyImporters();
-            message = importer.CheckWarningMessage(File.FullName);
-            if (!string.IsNullOrWhiteSpace(message))
+            message2 = importer.CheckWarningMessage(File.FullName);
+            if (!string.IsNullOrWhiteSpace(message2))
             {
-                if (MessageBox.Show(message, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
+                if (MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
                     return false;
             }
             return true;
@@ -173,7 +171,7 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
-        public static async Task<CAD.COL?> GetPalette(FileInfo File)
+        public static async Task<CAD.COL> GetPalette(FileInfo File)
         {
             if (!AppResources.IsFileIncluded(File))
             {
@@ -195,13 +193,13 @@ namespace StarFoxMapVisualizer.Misc
                 if (!success) return;
             }
             var col = AppResources.ImportedProject.Palettes[File.FullName];
-            PaletteView view = new()
+            var view = new PaletteView()
             {
                 Owner = Application.Current.MainWindow
             };
             view.SetupControl(col);
-            view.Show();            
-        }       
+            view.Show();
+        }
         /// <summary>
         /// If the file is in <see cref="AppResources.OpenFiles"/>, the file will be closed
         /// </summary>
@@ -222,7 +220,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="File"></param>
         /// <param name="ForceReload">Forces the library to reload the file from disk.</param>
         /// <returns></returns>
-        public static async Task<BSPFile?> OpenBSPFile(FileInfo File, bool ForceReload = false)
+        public static async Task<BSPFile> OpenBSPFile(FileInfo File, bool ForceReload = false)
         {
             if (AppResources.ImportedProject.OpenFiles.TryGetValue(File.FullName, out var fileInstance))
             { // FILE IS OPEN
@@ -244,16 +242,16 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
-        public static async Task<MAPFile?> OpenMAPFile(FileInfo File)
+        public static async Task<MAPFile> OpenMAPFile(FileInfo File)
         {
-            //MAP IMPORT LOGIC   
+            //MAP IMPORT LOGIC
             if (!await HandleImportMessages(File, MAPImport)) return default;
             if (!MAPImport.MapContextsSet)
                 await MAPImport.ProcessLevelContexts();
             var rObj = await MAPImport.ImportAsync(File.FullName);
             var errors = MAPImport.ErrorOut.ToString();
             if (!string.IsNullOrWhiteSpace(errors))
-                MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.", 
+                MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
                     "Errors Occured when Importing this File");
             return rObj;
         }
@@ -262,9 +260,9 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
-        public static async Task<ASMFile?> OpenMSGFile(FileInfo File)
+        public static async Task<ASMFile> OpenMSGFile(FileInfo File)
         {
-            //MSG IMPORT LOGIC   
+            //MSG IMPORT LOGIC
             if (!await HandleImportMessages(File, MSGImport)) return default;
             var rObj = await MSGImport.ImportAsync(File.FullName);
             var errors = MSGImport.ErrorOut.ToString();
@@ -275,7 +273,7 @@ namespace StarFoxMapVisualizer.Misc
         }
         /// <summary>
         /// Will import an *.ASM file into the project's OpenFiles collection and return the parsed result.
-        /// <para>NOTE: This function WILL call a dialog to have the user select which kind of file this is. 
+        /// <para>NOTE: This function WILL call a dialog to have the user select which kind of file this is.
         /// This can cause a softlock if this logic is nested with other Parse logic.</para>
         /// <para>To avoid this, please make diligent use of the <paramref name="ContextualFileType"/> parameter.</para>
         /// </summary>
@@ -283,20 +281,21 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="ContextualFileType">Will skip the Dialog asking what kind of file this is parsing by using this value
         /// <para>If <see langword="default"/>, a dialog is displayed.</para></param>
         /// <returns></returns>
-        private static async Task<ASMFile?> ParseFile(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default)
-        {                     
+        private static async Task<ASMFile> ParseFile(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default)
+        {
             //GET IMPORTS SET
             ReadyImporters();
-            //DO FILE PARSE NOW            
-            ASMFile? asmfile = default;
-            if (File.GetSFFileType() is SFCodeProjectFileTypes.Assembly or
-                                        SFCodeProjectFileTypes.Include) // assembly file
+            //DO FILE PARSE NOW
+            ASMFile asmfile  = default;
+            var     fileType = File.GetSFFileType();
+            if ((fileType == SFCodeProjectFileTypes.Assembly) ||
+            (fileType == SFCodeProjectFileTypes.Include)) // assembly file
             { // DOUBT AS TO FILE TYPE
                 //CREATE THE MENU WINDOW
                 SFFileType.ASMFileTypes selectFileType = SFFileType.ASMFileTypes.ASM;
                 if (!ContextualFileType.HasValue)
                 {
-                    FileImportMenu importMenu = new()
+                    var importMenu = new FileImportMenu()
                     {
                         Owner = Application.Current.MainWindow
                     };
@@ -361,10 +360,10 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static async Task<MSpritesDefinitionFile?> OpenDEFSPRFile(FileInfo file, bool IgnoreSFOptimMissing = false)
+        public static async Task<MSpritesDefinitionFile> OpenDEFSPRFile(FileInfo file, bool IgnoreSFOptimMissing = false)
         {
             if (AppResources.OpenFiles.TryGetValue(file.FullName, out var DefSpr)) return DefSpr as MSpritesDefinitionFile;
-            //DEFSPR IMPORT LOGIC   
+            //DEFSPR IMPORT LOGIC
             if (!IgnoreSFOptimMissing)
             {
                 if (AppResources.ImportedProject?.GetOptimizerByTypeOrDefault(SFOptimizerTypeSpecifiers.MSprites) == null)
@@ -385,10 +384,10 @@ namespace StarFoxMapVisualizer.Misc
             return rObj;
         }
 
-        internal static async Task<ASMFile?> OpenASMFile(FileInfo File, bool IgnoreDialogs = false)
+        internal static async Task<ASMFile> OpenASMFile(FileInfo File, bool IgnoreDialogs = false)
         {
-            //DO FILE PARSE NOW            
-            return await ParseFile(File, IgnoreDialogs ? SFFileType.ASMFileTypes.ASM : null);            
+            //DO FILE PARSE NOW
+            return await ParseFile(File, IgnoreDialogs ? (SFFileType.ASMFileTypes?)SFFileType.ASMFileTypes.ASM : null);
         }
 
         /// <summary>
@@ -399,7 +398,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="InitialDirectory"></param>
         /// <param name="Multiselect"></param>
         /// <returns></returns>
-        internal static IEnumerable<string>? ShowGenericFileBrowser(string Title, bool FolderBrowser = false, string? InitialDirectory = null, bool Multiselect = false)
+        internal static IEnumerable<string> ShowGenericFileBrowser(string Title, bool FolderBrowser = false, string InitialDirectory = null, bool Multiselect = false)
         {
             if (InitialDirectory == default) InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName;
             CommonOpenFileDialog d = new CommonOpenFileDialog()
@@ -409,7 +408,7 @@ namespace StarFoxMapVisualizer.Misc
                 Multiselect = Multiselect,
                 InitialDirectory = InitialDirectory
             }; // CREATE THE FOLDER PICKER
-            if (d.ShowDialog() is not CommonFileDialogResult.Ok) return default; // OOPSIES x2
+            if (d.ShowDialog() != CommonFileDialogResult.Ok) return default; // OOPSIES x2
             return d.FileNames;
         }
         /// <summary>
@@ -439,7 +438,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <para/>This will look up the level by it's name as it appears in it's header.
         /// </summary>
         /// <returns></returns>
-        internal static async Task<MAPScript?> GetMapScriptByMacroName(string LevelMacroName)
+        internal static async Task<MAPScript> GetMapScriptByMacroName(string LevelMacroName)
         {
             var HeaderName = LevelMacroName;
             var stageOptim = GetOptimizerByType(SFOptimizerTypeSpecifiers.Maps);

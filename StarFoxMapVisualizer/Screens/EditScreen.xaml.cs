@@ -51,8 +51,8 @@ namespace StarFoxMapVisualizer.Screens
             GFX,
             MSG,
             BRR
-        }        
-        
+        }
+
         public ViewMode CurrentMode { get; set; }
 
         public EditScreen()
@@ -60,7 +60,7 @@ namespace StarFoxMapVisualizer.Screens
             InitializeComponent();
 
             SolutionExplorerView.Items.Clear();
-            MacroExplorerView.Items.Clear();            
+            MacroExplorerView.Items.Clear();
 
             Loaded += OnLoad;
         }
@@ -80,16 +80,16 @@ namespace StarFoxMapVisualizer.Screens
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
         internal async Task ImportCodeProject(bool Flush = false)
-        {            
+        {
             var currentProject = AppResources.ImportedProject;
             if (currentProject == null)
                 throw new InvalidDataException("No project loaded.");
 
             //Show welcome wagon if not shown once to the user yet this session
-            bool changesMade = await EDITORStandard.WelcomeWagon();            
+            bool changesMade = await EDITORStandard.WelcomeWagon();
 
             if (Flush || changesMade)
-                await currentProject.EnumerateAsync();            
+                await currentProject.EnumerateAsync();
 
             var expandedHeaders = new List<string>();
             void CheckNode(in TreeViewItem Node)
@@ -157,7 +157,7 @@ namespace StarFoxMapVisualizer.Screens
                     await UpdateInterface();
                     CurrentMode = ViewMode.BRR;
                     await HandleViewModes();
-                    EDITORStandard.HideLoadingWindow();                    
+                    EDITORStandard.HideLoadingWindow();
                 };
                 contextMenu.Items.Add(importItem);
             }
@@ -197,7 +197,7 @@ namespace StarFoxMapVisualizer.Screens
 
             async Task<TreeViewItem> AddProjectNode(SFCodeProjectNode Node)
             {
-                TreeViewItem node = new()
+                var node = new TreeViewItem()
                 {
                     IsExpanded = true,
                     Tag = Node
@@ -219,8 +219,8 @@ namespace StarFoxMapVisualizer.Screens
             }
             async Task AddDirectory(TreeViewItem Parent, SFCodeProjectNode DirNode)
             {
-                ContextMenu menu = new();
-                TreeViewItem thisTreeNode = new()
+                var menu = new ContextMenu();
+                var thisTreeNode = new TreeViewItem()
                 {
                     Header = System.IO.Path.GetFileName(DirNode.FilePath),
                     Tag = DirNode,
@@ -325,7 +325,7 @@ namespace StarFoxMapVisualizer.Screens
                     item.BringIntoView();
                 Parent.Items.Add(item);
             }
-            SolutionExplorerView.Items.Add(await AddProjectNode(currentProject.ParentNode));            
+            SolutionExplorerView.Items.Add(await AddProjectNode(currentProject.ParentNode));
         }
         /// <summary>
         /// Changes the current Editor View Mode to the one provided
@@ -348,14 +348,14 @@ namespace StarFoxMapVisualizer.Screens
             //FIRST LOAD
             MainViewerBorder.Visibility = Visibility.Visible;
 
-            //UNSUBSCRIBE FROM ALL BUTTONS FIRST 
+            //UNSUBSCRIBE FROM ALL BUTTONS FIRST
             ViewASMButton.Checked -= ViewASMButton_Checked;
             ViewMapButton.Checked -= ViewMapButton_Checked;
             ViewBSTButton.Checked -= ViewBSTButton_Checked;
             ViewGFXButton.Checked -= ViewGFXButton_Checked;
             ViewMSGButton.Checked -= ViewMSGButton_Checked;
             ViewBRRButton.Checked -= ViewBRRButton_Checked;
-            
+
             //UNCHECK EM ALL
             ViewGFXButton.IsChecked = false;
             ViewASMButton.IsChecked = false;
@@ -377,7 +377,7 @@ namespace StarFoxMapVisualizer.Screens
                     MainViewerBorder.Visibility = Visibility.Collapsed;
                     break;
                 case ViewMode.ASM:
-                    await ASMViewer.Unpause();                
+                    await ASMViewer.Unpause();
                     ViewModeHost.SelectedItem = ASMTab;
                     ViewASMButton.IsChecked = true;
                     TitleBlock.Text = "Assembly Viewer";
@@ -388,13 +388,13 @@ namespace StarFoxMapVisualizer.Screens
                     ViewMapButton.IsChecked = true;
                     TitleBlock.Text = "Map Event Node Viewer";
                     break;
-                case ViewMode.OBJ:                                        
+                case ViewMode.OBJ:
                     OBJViewer.Unpause();
                     ViewModeHost.SelectedItem = OBJTab;
                     ViewBSTButton.IsChecked = true;
                     TitleBlock.Text = "Shape Viewer";
                     break;
-                case ViewMode.GFX:                    
+                case ViewMode.GFX:
                     GFXViewer.RefreshFiles();
                     ViewModeHost.SelectedItem = GFXTab;
                     ViewGFXButton.IsChecked = true;
@@ -419,7 +419,7 @@ namespace StarFoxMapVisualizer.Screens
             ViewGFXButton.Checked += ViewGFXButton_Checked;
             ViewMSGButton.Checked += ViewMSGButton_Checked;
             ViewBRRButton.Checked += ViewBRRButton_Checked;
-        });               
+        });
         /// <summary>
         /// Will handle known file types and return true if handled.
         /// <para>Returns false if not handled. Returns default if the user cancels.</para>
@@ -451,7 +451,7 @@ namespace StarFoxMapVisualizer.Screens
                     // DOUBT AS TO FILE TYPE
                     //CREATE THE MENU WINDOW
                     SFFileType.BINFileTypes selectFileType = SFFileType.BINFileTypes.COMPRESSED_CGX;
-                    BINImportMenu importMenu = new()
+                    var importMenu = new BINImportMenu()
                     {
                         Owner = Application.Current.MainWindow
                     };
@@ -515,7 +515,7 @@ namespace StarFoxMapVisualizer.Screens
         /// <param name="File"></param>
         /// <returns></returns>
         private async Task FileSelected(FileInfo File)
-        {                        
+        {
             EDITORStandard.ShowLoadingWindow();
             //CHECK IF ITS A KNOWN FILE
             var result = await HandleKnownFileTypes(File);
@@ -524,7 +524,7 @@ namespace StarFoxMapVisualizer.Screens
             CurrentMode = ViewMode.ASM;
             //HANDLE VIEW MODES -- PAUSE / ENABLE VIEW MODE CONTROLS
             await HandleViewModes();
-            //DO FILE PARSE NOW            
+            //DO FILE PARSE NOW
             var asmfile = await FILEStandard.OpenASMFile(File);
             bool isMap = asmfile is MAPFile;
             bool isObj = asmfile is BSPFile;
@@ -564,7 +564,7 @@ namespace StarFoxMapVisualizer.Screens
             else
             {
                 //ENQUEUE THIS FILE TO BE OPENED BY THE ASM VIEWER
-                await ASMViewer.OpenFileContents(File, asmfile); // tell the ASMControl to look at the new file            
+                await ASMViewer.OpenFileContents(File, asmfile); // tell the ASMControl to look at the new file
             }
             await UpdateInterface();
             EDITORStandard.HideLoadingWindow();
@@ -592,10 +592,10 @@ namespace StarFoxMapVisualizer.Screens
         {
             void AddSymbol<T>(T symbol) where T : ASMChunk, IASMNamedSymbol
             {
-                MacroTooltip tooltip = new();
+                var tooltip = new MacroTooltip();
                 tooltip.Attach(symbol);
 
-                ListBoxItem item = new()
+                var item = new ListBoxItem()
                 {
                     Content = symbol.Name,
                     ToolTip = new ToolTip()
@@ -744,7 +744,7 @@ namespace StarFoxMapVisualizer.Screens
 
         private async Task SFOptimRefreshBase(SFOptimizerTypeSpecifiers Type, string Noun)
         {
-            _ = await EDITORStandard.Editor_RefreshMap(Type);            
+            _ = await EDITORStandard.Editor_RefreshMap(Type);
             UpdateInterface(true); // files updated!
         }
 
@@ -754,7 +754,7 @@ namespace StarFoxMapVisualizer.Screens
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="FileNotFoundException"></exception>
-        private async void SHAPEMapRefreshButton_Click(object sender, RoutedEventArgs e) => 
+        private async void SHAPEMapRefreshButton_Click(object sender, RoutedEventArgs e) =>
             await SFOptimRefreshBase(SFOptimizerTypeSpecifiers.Shapes, "ShapesMap");
         /// <summary>
         /// Refreshes the STAGESMAP SFOptimizer directory with the latest level list
@@ -762,7 +762,7 @@ namespace StarFoxMapVisualizer.Screens
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="FileNotFoundException"></exception>
-        private async void STAGEMapRefreshButton_Click(object sender, RoutedEventArgs e) => 
+        private async void STAGEMapRefreshButton_Click(object sender, RoutedEventArgs e) =>
             await SFOptimRefreshBase(SFOptimizerTypeSpecifiers.Maps, "StagesMap");
         /// <summary>
         /// Opens the Level Background viewer dialog
@@ -795,7 +795,7 @@ namespace StarFoxMapVisualizer.Screens
         }
 
         private void CloseProjectMenuItem_Click(object sender, RoutedEventArgs e)
-        {            
+        {
             //Delete old project
             AppResources.ImportedProject = null;
             //switch to landing screen
@@ -804,7 +804,7 @@ namespace StarFoxMapVisualizer.Screens
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            SettingsDialog settings = new();
+            var settings = new SettingsDialog();
             settings.Show();
         }
 
@@ -814,15 +814,15 @@ namespace StarFoxMapVisualizer.Screens
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void GoItem_Load(object sender, RoutedEventArgs e)
-        {            
+        {
             GoItem.Items.Clear();
             foreach(var map in AppResources.ImportedProject.Optimizers)
             {
                 if (map.OptimizerData == default) continue;
                 MenuItem item = new MenuItem()
                 {
-                    Header = Enum.GetName(map.OptimizerData.TypeSpecifier),
-                };                
+                    Header = Enum.GetName(typeof(SFOptimizerTypeSpecifiers), map.OptimizerData.TypeSpecifier),
+                };
                 foreach(var mapItem in map.OptimizerData.ObjectMap)
                 {
                     var subItem = new MenuItem()
@@ -837,9 +837,9 @@ namespace StarFoxMapVisualizer.Screens
                             EDITORStandard.ShowLoadingWindow();
                             await EDITORStandard.InvokeOptimizerMapItem(map.OptimizerData.TypeSpecifier, name);
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            AppResources.ShowCrash(e, false, $"Couldn't open this {map.OptimizerData.TypeSpecifier} item.");
+                            AppResources.ShowCrash(ex, false, $"Couldn't open this {map.OptimizerData.TypeSpecifier} item.");
                         }
                         finally
                         {
@@ -860,7 +860,7 @@ namespace StarFoxMapVisualizer.Screens
         /// <param name="e"></param>
         private void LevelSelectItem_Click(object sender, RoutedEventArgs e)
         {
-            LevelSelectWindow wnd = new();
+            var wnd = new LevelSelectWindow();
             wnd.Show();
         }
     }

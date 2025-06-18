@@ -1,25 +1,30 @@
-﻿using StarFox.Interop.GFX.COLTAB;
-using StarFox.Interop.GFX;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static StarFox.Interop.GFX.CAD;
-using System.Windows;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json;
-using System.Windows.Shapes;
-using StarFox.Interop.BSP.SHAPE;
-using StarFox.Interop.GFX.COLTAB.DEF;
-using System.Windows.Controls;
-using System.Windows.Media.Media3D;
+#endif
+using System.Threading.Tasks;
 using System.Windows.Media;
-using StarFox.Interop.ASM;
+using System.Windows.Media.Media3D;
 using Starfox.Editor;
+using StarFox.Interop;
+using StarFox.Interop.BSP.SHAPE;
+using StarFox.Interop.GFX;
+using StarFox.Interop.GFX.COLTAB;
+using StarFox.Interop.GFX.COLTAB.DEF;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
-using System.Windows.Media.Imaging;
+using static StarFox.Interop.GFX.CAD;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using Image = System.Windows.Controls.Image;
+using Point = System.Windows.Point;
 
 namespace StarFoxMapVisualizer.Misc
 {
@@ -29,17 +34,17 @@ namespace StarFoxMapVisualizer.Misc
     internal static class SHAPEStandard
     {
         internal const string DefaultMSpritePalette = "NIGHT.COL";
-        static Dictionary<string, SFPalette> SFPaletteCache { get; } = new();
+        static Dictionary<string, SFPalette> SFPaletteCache { get; } = new Dictionary<string, SFPalette>();
         /// <summary>
         /// Gets the Color Table defined in this project
         /// </summary>
-        internal static COLTABFile? ProjectColorTable => AppResources.Includes?.OfType<COLTABFile>().FirstOrDefault();
+        internal static COLTABFile ProjectColorTable => AppResources.Includes?.OfType<COLTABFile>().FirstOrDefault();
         /// <summary>
         /// The directory to extract models using the <see cref="ExportShapeToSfShape(BSPShape, out IEnumerable{string})"/> function to
         /// <para>Is Export/Shapes by <see langword="default"/></para>
         /// </summary>
         internal static string DefaultShapeExtractionDirectory { get; set; } = System.IO.Path.Combine(Environment.CurrentDirectory, "export/shapes");
-                            
+
         /// <summary>
         /// Tries to create a new palette using the COLTABFile added to the project and a ColorPalettePtr
         /// </summary>
@@ -48,7 +53,7 @@ namespace StarFoxMapVisualizer.Misc
         internal static bool CreateSFPalette(string ColGroupName, out SFPalette Palette, out COLGroup Group, string ColorPaletteName = "BLUE")
         {
             ColorPaletteName = ColorPaletteName.ToUpper().Replace(".COL", "");
-            COL? palette = AppResources.ImportedProject.Palettes.FirstOrDefault
+            COL palette = AppResources.ImportedProject.Palettes.FirstOrDefault
                 (x => System.IO.Path.GetFileNameWithoutExtension(x.Key).ToUpper() == ColorPaletteName).Value;
             var group = default(COLGroup);
             if (ProjectColorTable != null)
@@ -56,10 +61,10 @@ namespace StarFoxMapVisualizer.Misc
             if (palette == null || group == null)
                 throw new Exception($"There was a problem loading the palette: {ColorPaletteName} and/or color table group: {ColGroupName}.");
             Group = group;
-            if (SFPaletteCache.TryGetValue(ColGroupName, out Palette)) { return true; }            
+            if (SFPaletteCache.TryGetValue(ColGroupName, out Palette)) { return true; }
             SFPalette sfPalette = new SFPalette(ColorPaletteName, in palette, in group);
             sfPalette.GetPalette();
-            Palette = sfPalette;            
+            Palette = sfPalette;
             SFPaletteCache.Add(ColGroupName, Palette);
             return true;
         }
@@ -70,9 +75,9 @@ namespace StarFoxMapVisualizer.Misc
         internal static void ClearSFPaletteCache() => SFPaletteCache.Clear();
 
         private static List<FXCGXFile> CGXCache = new List<FXCGXFile>();
-        private static string? RenderCachePalette;
-        private static Dictionary<MSprite, ImageSource> RenderCache = new();
-        private static Dictionary<string, MSprite> MSpriteNameMap = new();
+        private static string RenderCachePalette;
+        private static Dictionary<MSprite, ImageSource> RenderCache = new Dictionary<MSprite, ImageSource>();
+        private static Dictionary<string, MSprite> MSpriteNameMap = new Dictionary<string, MSprite>();
 
         /// <summary>
         /// Prepares for a <see cref="RenderMSprite(MSprite, string)"/> call
@@ -82,8 +87,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        private static async Task<(MSpritesDefinitionFile SpriteDef, 
-            COL Palette, IEnumerable<FXCGXFile> CGXs)> BaseRenderMSprite(string PaletteName, string SpriteDefFileName)
+        private static async Task<SpriteRenderTuple> BaseRenderMSprite(string PaletteName, string SpriteDefFileName)
         {
             string defAsmName = SpriteDefFileName;
             //Try to load the MSpriteDefinition added to the project
@@ -132,7 +136,7 @@ namespace StarFoxMapVisualizer.Misc
             if (pCol == default)
                 throw new InvalidDataException($"Palette: {PaletteName} was not found.");
             pCol = COL.TransmutateByRow(pCol, 7, 0);
-            return (mSpriteDef, pCol, CGXCache);
+            return new SpriteRenderTuple(mSpriteDef, pCol, CGXCache);
         }
 
         /// <summary>
@@ -142,12 +146,12 @@ namespace StarFoxMapVisualizer.Misc
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        internal static async Task<(ImageSource Image, MSprite Sprite)> RenderMSprite(string MSpriteName, string PaletteName = DefaultMSpritePalette)
+        internal static async Task<SpriteTuple<ImageSource>> RenderMSprite(string MSpriteName, string PaletteName = DefaultMSpritePalette)
         {
             if (MSpriteNameMap.TryGetValue(MSpriteName, out var cachedSprite))
-                if (RenderCache.TryGetValue(cachedSprite, out var render)) return (render, cachedSprite);
+                if (RenderCache.TryGetValue(cachedSprite, out var render)) return new SpriteTuple<ImageSource>(render, cachedSprite);
             var result = await RenderMSpriteBitmap(MSpriteName, PaletteName);
-            var newTuple = (result.Image.Convert(), result.Sprite);
+            var newTuple = new SpriteTuple<ImageSource>(result.Image.Convert(), result.Sprite);
             result.Image.Dispose();
             return newTuple;
         }
@@ -158,22 +162,22 @@ namespace StarFoxMapVisualizer.Misc
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        internal static async Task<(System.Drawing.Bitmap Image, MSprite Sprite)> RenderMSpriteBitmap(string MSpriteName, string PaletteName = DefaultMSpritePalette)
+        internal static async Task<SpriteTuple<Bitmap>> RenderMSpriteBitmap(string MSpriteName, string PaletteName = DefaultMSpritePalette)
         {
             if (MSpriteName.EndsWith("_spr")) MSpriteName = MSpriteName.Replace("_spr", "");
             if (RenderCachePalette == null || PaletteName != RenderCachePalette)
                 RenderCache.Clear();
-            RenderCachePalette = PaletteName;            
+            RenderCachePalette = PaletteName;
             string defAsmName = "DEFSPR.ASM";
-            var (mSpriteDef, pCol, cgxs) = await BaseRenderMSprite(PaletteName, defAsmName);
+            var rendering = await BaseRenderMSprite(PaletteName, defAsmName);
             //Try to render the sprite
-            if (mSpriteDef.TryGetSpriteByName(MSpriteName, out MSprite? Sprite) && Sprite != null)
+            if (rendering.SpriteDef.TryGetSpriteByName(MSpriteName, out MSprite Sprite) && Sprite != null)
             {
-                var bmp = SFGFXInterface.RenderMSprite(Sprite, pCol, cgxs.ToArray());
+                var bmp = SFGFXInterface.RenderMSprite(Sprite, rendering.Palette, rendering.CGXs.ToArray());
                 var image = bmp;
                 MSpriteNameMap.TryAdd(MSpriteName, Sprite);
                 RenderCache.TryAdd(Sprite, image.Convert());
-                return (image, Sprite);
+                return new SpriteTuple<Bitmap>(image, Sprite);
             }
             throw new FileNotFoundException($"{MSpriteName} was not found in {defAsmName}.");
         }
@@ -192,9 +196,9 @@ namespace StarFoxMapVisualizer.Misc
             if (RenderCache.TryGetValue(Sprite, out var render)) return render;
             string defAsmName = "DEFSPR.ASM";
             if (PaletteName == null) PaletteName = DefaultMSpritePalette;
-            var (mSpriteDef, pCol, cgxs) = await BaseRenderMSprite(PaletteName, defAsmName);
+            var rendering = await BaseRenderMSprite(PaletteName, defAsmName);
             //Try to render the sprite
-            using (var bmp = SFGFXInterface.RenderMSprite(Sprite, pCol, cgxs.ToArray()))
+            using (var bmp = SFGFXInterface.RenderMSprite(Sprite, rendering.Palette, rendering.CGXs.ToArray()))
             {
                 var image =  bmp.Convert();
                 RenderCache.TryAdd(Sprite, image);
@@ -208,19 +212,29 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="Shape">The shape to export</param>
         /// <returns></returns>
-        internal static async Task<IEnumerable<String>> ExportShapeToSfShape(BSPShape Shape)
+        internal static async Task<IEnumerable<string>> ExportShapeToSfShape(BSPShape Shape)
         {
             var filesCreated = new List<string>();
             var fileName = System.IO.Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}.sfshape");
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(fileName));
             using (var modelFile = File.Create(fileName))
             {
-                using (Utf8JsonWriter writer = new(modelFile))
+#if NET46
+                using (var wrtStream = new StreamWriter(modelFile)) {
+                    using (var wrtJson = new JsonTextWriter(wrtStream)) {
+                        Shape.Serialize(wrtJson);
+                    }
+                }
+#else
+                using (var writer = new Utf8JsonWriter(modelFile)) {
                     Shape.Serialize(writer);
+                }
+#endif
+
                 filesCreated.Add(fileName);
             }
             var colorPalPtr = Shape.Header.ColorPalettePtr;
-            fileName = System.IO.Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.sfpal");                
+            fileName = System.IO.Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.sfpal");
             if (!File.Exists(fileName))
             {
                 CreateSFPalette(colorPalPtr, out var sfPal, out _);
@@ -235,7 +249,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <para/>This will look up the shape by it's name as it appears in it's header.
         /// </summary>
         /// <returns></returns>
-        public static async Task<IEnumerable<BSPShape>?> GetShapesByHeaderNameOrDefault(string HeaderName)
+        public static async Task<IEnumerable<BSPShape>> GetShapesByHeaderNameOrDefault(string HeaderName)
         {
             HeaderName = HeaderName.ToUpper();
             var shapeOptim = FILEStandard.GetOptimizerByType(SFOptimizerTypeSpecifiers.Shapes);
@@ -255,7 +269,7 @@ namespace StarFoxMapVisualizer.Misc
             //and load the shape it points to
             if (!hitsWithoutDataPointer.Any())
                 return file.Shapes.Where(x => x.Header.Name.ToLower() ==
-                hits.Where(x => x.Header.HasDataPointer).First().Header.DataPointer);
+                 hits.First(x1 => x1.Header.HasDataPointer).Header.DataPointer);
             else return hitsWithoutDataPointer; // else, return all shapes that don't point anywhere else
         }
         public static GeometryModel3D CreateLine(Point3D Point1, Point3D Point2, Material Material)
@@ -267,11 +281,11 @@ namespace StarFoxMapVisualizer.Misc
         public static bool PushLine(ref MeshGeometry3D geometry, Point3D Point1, Point3D Point2)
         {
             double thickness = .5;
-            int index = geometry.Positions.Count(); // used to push indices
-            geometry.Positions.Add(new(Point1.X, Point1.Y, Point1.Z)); // i
-            geometry.Positions.Add(new(Point1.X - thickness, Point1.Y, Point1.Z + thickness)); // i + 1            
-            geometry.Positions.Add(new(Point2.X, Point2.Y, Point2.Z)); // i + 2
-            geometry.Positions.Add(new(Point2.X + thickness, Point2.Y, Point2.Z - thickness)); // i + 3
+            int    index     = geometry.Positions.Count(); // used to push indices
+            geometry.Positions.Add(new Point3D(Point1.X, Point1.Y, Point1.Z)); // i
+            geometry.Positions.Add(new Point3D(Point1.X - thickness, Point1.Y, Point1.Z + thickness)); // i + 1
+            geometry.Positions.Add(new Point3D(Point2.X, Point2.Y, Point2.Z)); // i + 2
+            geometry.Positions.Add(new Point3D(Point2.X + thickness, Point2.Y, Point2.Z - thickness)); // i + 3
             geometry.TriangleIndices.Add(index);
             geometry.TriangleIndices.Add(index + 1);
             geometry.TriangleIndices.Add(index + 2);
@@ -292,7 +306,7 @@ namespace StarFoxMapVisualizer.Misc
         public static bool PushLine(ref MeshGeometry3D geometry, BSPShape Shape, in BSPFace Face, int Frame)
         { // Pushes a line to the mesh geometry provided to this function
             var ModelPoints = Face.PointIndices.Select(x => Shape.GetPointOrDefault(x.PointIndex, Frame)).Where(y => y != default).ToArray();
-            if (ModelPoints.Length != 2) return false; // not a line!!                        
+            if (ModelPoints.Length != 2) return false; // not a line!!
             return PushLine(ref geometry, new Point3D(ModelPoints[0].X, ModelPoints[0].Y, ModelPoints[0].Z),
                 new Point3D(ModelPoints[1].X, ModelPoints[1].Y, ModelPoints[1].Z));
         }
@@ -321,7 +335,7 @@ namespace StarFoxMapVisualizer.Misc
                     return MakeBSPShapeMeshGeometry(Shape, in group, in palette, Frame, MaterialAnimationFrame, TexturesActivated);
                 }
                 else throw ex;
-            }            
+            }
         }
 
         public static GeometryModel3D Make3DTexturedPlaneGeometry(ImageSource image)
@@ -331,7 +345,7 @@ namespace StarFoxMapVisualizer.Misc
             {
                 Positions = new Point3DCollection
                 {
-                    new Point3D(0, 0, 0),                    
+                    new Point3D(0, 0, 0),
                     new Point3D(1, 0, 0),
                     new Point3D(0, 1, 0),
                     new Point3D(1, 1, 0),
@@ -341,30 +355,29 @@ namespace StarFoxMapVisualizer.Misc
                 {
                     new Point(1, 0),
                     new Point(0, 0),
-                    new Point(1, 1),                     
+                    new Point(1, 1),
                     new Point(0, 1),
                     new Point(0, 0),
                     new Point(1, 1)
                 }
             };
             //Make the model that uses this geom we made
-            GeometryModel3D model = new()
+            var model = new GeometryModel3D()
             {
                 Material = material, // front-face color
-                BackMaterial = material, // back-face color (CullMode None)                    
+                BackMaterial = material, // back-face color (CullMode None)
                 Geometry = geom,
                 Transform = new ScaleTransform3D(10,10,10)
             };
             return model;
         }
 
-        public static async Task<GeometryModel3D?> Make3DMSpriteGeometry(string MSpriteName, string? PaletteName = default)
+        public static async Task<GeometryModel3D> Make3DMSpriteGeometry(string MSpriteName, string PaletteName = default)
         {
             var mSprite = await RenderMSprite(MSpriteName, PaletteName);
-            if (mSprite == default) return default;
             return Make3DTexturedPlaneGeometry(mSprite.Image);
         }
-        public static async Task<GeometryModel3D?> Make3DMSpriteGeometry(MSprite MSprite, string? PaletteName = default)
+        public static async Task<GeometryModel3D> Make3DMSpriteGeometry(MSprite MSprite, string PaletteName = default)
         {
             var mSprite = await RenderMSprite(MSprite, PaletteName);
             if (mSprite == default) return default;
@@ -382,7 +395,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <returns></returns>
         public static List<GeometryModel3D> MakeBSPShapeMeshGeometry(
             BSPShape Shape, in COLGroup Group, in SFPalette Palette, int Frame, int MaterialAnimationFrame,
-            bool TexturesActivated = false, BSPFace? HighlightFace = default, Brush? HighlightColor = default)            
+            bool TexturesActivated = false, BSPFace HighlightFace = default, Brush HighlightColor = default)
         {
             //SET VARS
             var models = new List<GeometryModel3D>();
@@ -398,7 +411,7 @@ namespace StarFoxMapVisualizer.Misc
                 var fooColor = System.Drawing.Color.Blue;
                 switch (Type)
                 {
-                    case COLDefinition.CallTypes.Collite: // diffuse                    
+                    case COLDefinition.CallTypes.Collite: // diffuse
                         fooColor = palette.Collites[colIndex];
                         break;
                     case COLDefinition.CallTypes.Colnorm: // normal? not sure.
@@ -416,10 +429,10 @@ namespace StarFoxMapVisualizer.Misc
                     G = fooColor.G,
                     R = fooColor.R,
                 };
-            }            
+            }
             foreach (var face in shape.Faces)
-            { // find all faces
-                MeshGeometry3D geom = new(); // create geometry
+            {                                    // find all faces
+                var geom = new MeshGeometry3D(); // create geometry
                 Material material = new DiffuseMaterial()
                 {
                     Brush = new SolidColorBrush(Colors.Blue),
@@ -450,7 +463,7 @@ namespace StarFoxMapVisualizer.Misc
                                 //attempt to make a palette for this animation
                                 if (!CreateSFPalette(animDef.TableName, out var animSFPal, out var animGroup)) break;
                                 shape.UsingColGroups.Add(animDef.TableName);
-                                int index = MaterialAnimationFrame > -1 ? MaterialAnimationFrame % 
+                                int index = MaterialAnimationFrame > -1 ? MaterialAnimationFrame %
                                     animGroup.Definitions.Count : 0; // adjust color based on MatAnimFrame parameter
                                 var animMemberDefinition = animGroup.Definitions.ElementAt(index); // jump to color
                                 color = GetColor(animMemberDefinition.CallType, // finally get the color from the animPalette
@@ -464,17 +477,17 @@ namespace StarFoxMapVisualizer.Misc
                                 var textDef = definition as COLTexture;
                                 try
                                 {
-                                    var (bmp, sprite) = RenderMSprite(textDef.Reference, Palette.Name).Result;
+                                    var pair = RenderMSprite(textDef.Reference, Palette.Name).Result;
                                     /*var imgBrush = new ImageBrush(bmp)
                                     {
                                         Stretch = Stretch.Fill,
                                         TileMode = TileMode.None
-                                    };*/                                   
-                                    material = GetNearestNeighborTextureMaterial(bmp);
+                                    };*/
+                                    material = GetNearestNeighborTextureMaterial(pair.Image);
                                     shape.UsingTextures.Add(textDef.Reference);
                                     hasTextureProperties = true;
                                 }
-                                catch { } // This is caught later in the SHAPEControl                                
+                                catch { } // This is caught later in the SHAPEControl
                             }
                             break;
                     }
@@ -501,10 +514,10 @@ namespace StarFoxMapVisualizer.Misc
                     }
                 }
                 //Make the model that uses this geom we made
-                GeometryModel3D model = new()
+                var model = new GeometryModel3D()
                 {
                     Material = material, // front-face color
-                    BackMaterial = material, // back-face color (CullMode None)                    
+                    BackMaterial = material, // back-face color (CullMode None)
                     Geometry = geom,
                 };
                 models.Add(model);
@@ -528,17 +541,17 @@ namespace StarFoxMapVisualizer.Misc
                     var pointRefd = orderedIndicies[i]; // get the PointReference
                     var point = shape.GetPointOrDefault(pointRefd.PointIndex, Frame); // find the referenced point itself
                     if (point == null) break; // shit, we didn't find it.
-                    geom.Positions.Add(new Point3D(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer                    
+                    geom.Positions.Add(new Point3D(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer
                     geom.TriangleIndices.Add(i); // add the index
                 }
                 if (hasTextureProperties)
-                {                                      
-                    geom.TextureCoordinates.Add(new Point(0, 1));                 
-                    geom.TextureCoordinates.Add(new Point(0, 0));   
-                    geom.TextureCoordinates.Add(new Point(1, 0)); 
-                    geom.TextureCoordinates.Add(new Point(1, 1)); 
+                {
                     geom.TextureCoordinates.Add(new Point(0, 1));
-                    geom.TextureCoordinates.Add(new Point(1, 0));                     
+                    geom.TextureCoordinates.Add(new Point(0, 0));
+                    geom.TextureCoordinates.Add(new Point(1, 0));
+                    geom.TextureCoordinates.Add(new Point(1, 1));
+                    geom.TextureCoordinates.Add(new Point(0, 1));
+                    geom.TextureCoordinates.Add(new Point(1, 0));
                 }
             }
             return models;

@@ -1,5 +1,8 @@
-﻿using StarFox.Interop.MISC;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP.STRUCT
 {
@@ -26,18 +29,18 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public ASMMacroInvokeParameter? TryGetParameter(int index) => Parameters.ElementAtOrDefault(index);
+        public ASMMacroInvokeParameter TryGetParameter(int index) => Parameters.ElementAtOrDefault(index);
         enum ParseModes
         {
             REG,
             STRINGS
         }
         private static List<string> ParseParameters(string ParameterList)
-        {            
-            var paramText = ParameterList;  
+        {
+            var paramText = ParameterList;
             var parameters = new List<string>();
             ParseModes currParseMode = ParseModes.REG;
-            StringBuilder parameterBuilder = new();
+            var parameterBuilder = new StringBuilder();
             for (int i = 0; i < paramText.Length; i++)
             {
                 char current = paramText[i];
@@ -99,7 +102,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
             if (blocks.Length <= 0) return false;
             var macro = SymbolOperations.MatchMacro(Reference, blocks[0]);
             if (macro == default) return false;
-            ASMMacroInvokeParameter[]? parameters = { };
+            ASMMacroInvokeParameter[] parameters = { };
             if (blocks.Length > 1) // parameters?
             {
                 var paramText = input.Substring(input.IndexOf(' ') + 1);
@@ -107,9 +110,9 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
                 int i = -1;
                 parameters = new ASMMacroInvokeParameter[strParameters.Count];
                 foreach(var param in strParameters)
-                { 
+                {
                     i++;
-                    string? paramName = default;
+                    string paramName = default;
                     if (macro.Parameters.Length > i)
                         paramName = macro.Parameters[i];
                     var p = new ASMMacroInvokeParameter(param, paramName);

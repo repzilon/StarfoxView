@@ -32,20 +32,20 @@ namespace StarFoxMapVisualizer.Controls
     /// Interaction logic for SHAPEControl.xaml
     /// </summary>
     public partial class SHAPEControl : UserControl, IPausable
-    {        
+    {
         public int SelectedFrame { get; private set; } = 0;
         public int SelectedShape { get; private set; } = 0;
 
-        public Dictionary<BSPShape, BSPFile> FileMap = new();
+        public Dictionary<BSPShape, BSPFile> FileMap = new Dictionary<BSPShape, BSPFile>();
 
         /// <summary>
         /// The selected face in the editor control
         /// </summary>
-        private BSPFace? EDITOR_SelectedFace = default;
+        private BSPFace EDITOR_SelectedFace = default;
         /// <summary>
         /// The current shape
         /// </summary>
-        private BSPShape? currentShape;
+        private BSPShape currentShape;
         /// <summary>
         /// The currently open BSPFile
         /// </summary>
@@ -53,7 +53,7 @@ namespace StarFoxMapVisualizer.Controls
         /// <summary>
         /// Invokes the model to update positions
         /// </summary>
-        private Timer? animationClock;
+        private Timer animationClock;
         private bool animating = false;
         /// <summary>
         /// Blocks invokes to update the model
@@ -70,10 +70,10 @@ namespace StarFoxMapVisualizer.Controls
             GetSettings<GraphicsUserSettings>(SFCodeProjectSettingsTypes.Graphics).AnimationFPS.Value;
         private bool CanShowTextures = false;
 
-        SFPalette? currentSFPalette;
-        COLGroup? currentGroup;
+        SFPalette currentSFPalette;
+        COLGroup currentGroup;
         string modelPaletteName = "NIGHT";
-        string? cachedModelPaletteName;
+        string cachedModelPaletteName;
 
         private Storyboard SceneAnimation;
 
@@ -82,22 +82,22 @@ namespace StarFoxMapVisualizer.Controls
 
         public SHAPEControl()
         {
-            InitializeComponent();            
+            InitializeComponent();
             NameScope.SetNameScope(this, new NameScope());
 
-            Loaded += SHAPEControl_Loaded;            
+            Loaded += SHAPEControl_Loaded;
         }
 
         private void SHAPEControl_Loaded(object sender, RoutedEventArgs e)
-        {            
+        {
             RedoLineWork();
             SetRotation3DAnimation();
             BSPTreeView.Items.Clear();
             PointsView.Items.Clear();
         }
-        
+
         /// <summary>
-        /// Opens/Closes the toolbox on the right side. 
+        /// Opens/Closes the toolbox on the right side.
         /// <para/><paramref name="EnsureState"/> can be used to manually set the state to ON/OFF.
         /// </summary>
         /// <param name="EnsureState"></param>
@@ -147,7 +147,7 @@ namespace StarFoxMapVisualizer.Controls
             {
                 MessageBox.Show($"While trying to make a SFPalette, this error occured: \n{ex.ToString()}\n" +
                     $"\n\nWant to try viewing with id_0_c for compatibility?", "Palette Parse Procedure Error");
-                return false;                
+                return false;
             }
         }
 
@@ -156,13 +156,13 @@ namespace StarFoxMapVisualizer.Controls
         /// </summary>
         private void SetRotation3DAnimation()
         {
-            if (SceneAnimation != default) return;            
+            if (SceneAnimation != default) return;
 
             SceneAnimation = new Storyboard()
             {
                 RepeatBehavior = RepeatBehavior.Forever
             };
-            var rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), 0);            
+            var rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), 0);
             this.RegisterName("SceneRotation", rotation);
             var transformGroup = new Transform3DGroup();
             transformGroup.Children.Add(new RotateTransform3D()
@@ -175,7 +175,7 @@ namespace StarFoxMapVisualizer.Controls
                 ScaleY = -1,
                 ScaleZ = 1
             });
-            var animation = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(30));                      
+            var animation = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(30));
             SceneAnimation.Children.Add(animation);
             Storyboard.SetTargetName(animation, "SceneRotation");
             Storyboard.SetTargetProperty(animation, new PropertyPath(AxisAngleRotation3D.AngleProperty));
@@ -211,19 +211,19 @@ namespace StarFoxMapVisualizer.Controls
             if (e.MouseDevice.LeftButton is MouseButtonState.Pressed)
             {
                 var angle = (distance / Camera.FieldOfView) % 45d;
-                Camera.Rotate(new(dy, -dx, 0d), angle);
+                Camera.Rotate(new Vector3D(dy, -dx, 0d), angle);
             }
         }
         /// <summary>
         /// Updates the model to show the next frame of animation
         /// </summary>
         /// <param name="state"></param>
-        public void ChangeFrame(object? state)
+        public void ChangeFrame(object state)
         {
             //animate colors on the shape
             materialAnimationFrame++;
-            if (materialAnimationFrame > 999) materialAnimationFrame = 0;            
-            
+            if (materialAnimationFrame > 999) materialAnimationFrame = 0;
+
             void Show()
             {
                 ShowShape(currentShape, SelectedFrame);
@@ -325,7 +325,7 @@ namespace StarFoxMapVisualizer.Controls
             foreach (var file in AppResources.OpenFiles.Values.OfType<BSPFile>())
                 OpenFile(file);
             ShapeSelector.SelectedIndex = -1;
-            ShapeSelector.SelectionChanged += ShapeSelector_SelectionChanged;  
+            ShapeSelector.SelectionChanged += ShapeSelector_SelectionChanged;
             //ShapeSelector.SelectedIndex = SelectedShape;
         }
 
@@ -344,17 +344,17 @@ namespace StarFoxMapVisualizer.Controls
                     Tag = shape
                 });
                 FileMap.Add(shape, file);
-            }                                                                  
+            }
         }
 
         private void Clear3DScreen()
         {
             MainSceneGroup.Children.Clear();
             //MainSceneGroup.Children.Add(MainLight);
-        }        
+        }
 
         /// <summary>
-        /// Uses the <see cref="SHAPEStandard.GetShapesByHeaderNameOrDefault(string)"/> to attempt to get the 
+        /// Uses the <see cref="SHAPEStandard.GetShapesByHeaderNameOrDefault(string)"/> to attempt to get the
         /// shape by the name provided and show it in the viewer
         /// </summary>
         /// <param name="ShapeName"></param>
@@ -364,7 +364,7 @@ namespace StarFoxMapVisualizer.Controls
             ShapeSelector.SelectionChanged -= ShapeSelector_SelectionChanged;
             ShapeSelector.SelectedValue = ShapeName;
             ShapeSelector.SelectionChanged += ShapeSelector_SelectionChanged;
-            
+
             var results = await SHAPEStandard.GetShapesByHeaderNameOrDefault(ShapeName);
 
             if (!results?.Any() ?? true)
@@ -380,7 +380,7 @@ namespace StarFoxMapVisualizer.Controls
                 }
                 if (!results?.Any() ?? true)
                     return false;
-            }            
+            }
 
             return ShowShape(results.First(), Frame);
         }
@@ -390,10 +390,10 @@ namespace StarFoxMapVisualizer.Controls
         /// </summary>
         /// <param name="shape"></param>
         /// <param name="Frame"></param>
-        private bool ShowShape(BSPShape? shape, int Frame = -1, bool ForceRefreshViews = false)
-        {           
+        private bool ShowShape(BSPShape shape, int Frame = -1, bool ForceRefreshViews = false)
+        {
             if (!canShowShape) return false; // showing shapes is blocked rn
-            if (shape == null) return false; // there is no shape to speak of            
+            if (shape == null) return false; // there is no shape to speak of
             // our palette hasn't been rendered or we're forced to update it
             if (!CreateSFPalette(shape.Header.ColorPalettePtr))
             {
@@ -407,7 +407,7 @@ namespace StarFoxMapVisualizer.Controls
             bool shapeChanging = currentShape != null ? currentShape != shape : true;
 
             currentShape = shape;
-            
+
             //Block additional calls to render
             canShowShape = false;
             //Stop animating, please
@@ -416,7 +416,7 @@ namespace StarFoxMapVisualizer.Controls
             Clear3DScreen();
 
             var group = currentGroup;
-            List<GeometryModel3D> models = new();
+            var models = new List<GeometryModel3D>();
             try
             {
                 if (shapeChanging)
@@ -435,7 +435,7 @@ namespace StarFoxMapVisualizer.Controls
                 canShowShape = true;
                 return false;
             }
-                                           
+
             canShowShape = true;
 
             foreach (var model in models)
@@ -542,7 +542,7 @@ namespace StarFoxMapVisualizer.Controls
                     prompt(Ex, "Populating the palettes view");
                 }
                 ErrorText.Text = CurrentFile?.ImportErrors?.ToString();
-            }            
+            }
         }
 
         private void PopulatePaletteView(BSPShape Shape, SFPalette Palette)
@@ -577,8 +577,8 @@ namespace StarFoxMapVisualizer.Controls
             {
                 try
                 {
-                    var (bmp, sprite) = await SHAPEStandard.RenderMSprite(MSpriteName, modelPaletteName);
-                    bool Loaded = bmp != default;
+                    var pair = await SHAPEStandard.RenderMSprite(MSpriteName, modelPaletteName);
+                    bool Loaded = pair.Image != default;
 
                     TextBlock block = new TextBlock()
                     {
@@ -590,7 +590,7 @@ namespace StarFoxMapVisualizer.Controls
                     {
                         CopyableImage img = new CopyableImage()
                         {
-                            Source = bmp
+                            Source = pair.Image
                         };
                         PalettesViewer.Children.Add(img);
                     }
@@ -607,13 +607,13 @@ namespace StarFoxMapVisualizer.Controls
             AddColGroup(Shape.Header.ColorPalettePtr, Palette);
 
             foreach (var referencedPalette in Shape.UsingColGroups)
-            { // add any color animations                                
+            { // add any color animations
                 AddOne(referencedPalette);
             }
             foreach (var referencedPalette in Shape.UsingTextures)
-            { // add any textures                                
+            { // add any textures
                 AddMSprite(referencedPalette);
-            }            
+            }
         }
 
         /// <summary>
@@ -647,7 +647,7 @@ namespace StarFoxMapVisualizer.Controls
         /// <param name="Frame"></param>
         private void PopulatePointsView(BSPShape Shape, int Frame)
         {
-            PointsView.Items.Clear(); 
+            PointsView.Items.Clear();
             try
             {
                 foreach (var point in Shape.GetPoints(Frame))
@@ -664,14 +664,14 @@ namespace StarFoxMapVisualizer.Controls
                 var item = (ComboBoxItem)ShapeSelector.SelectedItem;
                 if (item == default) return;
                 var selectedShape = (BSPShape)item.Tag;
-                CurrentFile = FileMap[selectedShape];                
+                CurrentFile = FileMap[selectedShape];
                 FrameSelector.SelectionChanged -= FrameSelector_SelectionChanged;
                 FrameSelector.SelectedIndex = -1;
                 FrameSelector.ItemsSource = selectedShape.Frames.Select(x => x.Value);
                 FrameSelector.SelectionChanged += FrameSelector_SelectionChanged;
                 FrameSelector.SelectedIndex = selectedShape.Frames.Any() ? 0 : -1;
                 //if (selectedShape.Frames.Any())
-                    ShowShape(selectedShape);                
+                    ShowShape(selectedShape);
             }
         }
 
@@ -682,7 +682,7 @@ namespace StarFoxMapVisualizer.Controls
             {
                 var selectedShape = shapes.ElementAtOrDefault(ShapeSelector.SelectedIndex);
                 var currentFrame = FrameSelector.SelectedIndex;
-                ShowShape(selectedShape, currentFrame);                
+                ShowShape(selectedShape, currentFrame);
             }
         }
 
@@ -711,24 +711,24 @@ namespace StarFoxMapVisualizer.Controls
 
         private async void ExportSFShapeButton_Click(object sender, RoutedEventArgs e)
         {
-            var files = await SHAPEStandard.ExportShapeToSfShape(currentShape);         
+            var files = await SHAPEStandard.ExportShapeToSfShape(currentShape);
             if (MessageBox.Show($"{files.Count()} file(s) were successfully exported to:\n" +
                 $"{SHAPEStandard.DefaultShapeExtractionDirectory}\n" +
-                $"Do you want to copy its location to the clipboard?", "Complete", 
+                $"Do you want to copy its location to the clipboard?", "Complete",
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 Clipboard.SetText(SHAPEStandard.DefaultShapeExtractionDirectory);
         }
 
         private void ThreeDViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            RedoLineWork((int)ThreeDViewer.ActualWidth, 
-                (int)ThreeDViewer.ActualHeight, (int)(ThreeDViewer.ActualHeight / 20));            
+            RedoLineWork((int)ThreeDViewer.ActualWidth,
+                (int)ThreeDViewer.ActualHeight, (int)(ThreeDViewer.ActualHeight / 20));
         }
 
         private void RotButton_Click(object sender, RoutedEventArgs e)
         {
             bool paused = SceneAnimation.GetIsPaused(this);
-            if (paused) 
+            if (paused)
                 SceneAnimation.Resume(this);
             else SceneAnimation.Pause(this);
             paused = !paused;
@@ -760,13 +760,13 @@ namespace StarFoxMapVisualizer.Controls
 
             var bitmap = new RenderTargetBitmap(
                 (int)rect.Width, (int)rect.Height, 96, 96, PixelFormats.Default);
-            bitmap.Render(visual);            
-            
+            bitmap.Render(visual);
+
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bitmap));
             using (MemoryStream stm = new MemoryStream()) {
                 encoder.Save(stm);
-                
+
                 var path = System.IO.Path.Combine(Environment.CurrentDirectory, "clipboard.png");
                 File.WriteAllBytes(path, stm.ToArray());
 
@@ -791,7 +791,7 @@ namespace StarFoxMapVisualizer.Controls
             };
             window.Closed += delegate
             {
-                if (window.SelectedPalette == default) return;
+                if (window.SelectedPalette == null) return;
                 modelPaletteName = System.IO.Path.GetFileNameWithoutExtension(window.SelectedPalette?.Name) ?? "NIGHT";
                 ShowShape(true);
             };

@@ -28,7 +28,7 @@ namespace StarFoxMapVisualizer.Dialogs
                 int.TryParse(HBox.Text, out int height);
                 int.TryParse(CWBox.Text, out int cwidth);
                 int.TryParse(CHBox.Text, out int cheight);
-                return new()
+                return new CanvasSizeDefinition()
                 {
                     Width = width,
                     Height = height,
@@ -36,13 +36,13 @@ namespace StarFoxMapVisualizer.Dialogs
                     CharWidth= cwidth,
                 };
             }
-        }        
+        }
 
-        public GFXCanvasSizeDialog() : 
+        public GFXCanvasSizeDialog() :
             this(FXConvertConstraints.GetDefinition(FXConvertConstraints.FXCanvasTemplates.CGX))
         {
-            
-            
+
+
         }
         public GFXCanvasSizeDialog(CanvasSizeDefinition ExistingDefinition)
         {
@@ -72,10 +72,10 @@ namespace StarFoxMapVisualizer.Dialogs
             Close();
         }
 
-        private void TemplateCGX_Click(object sender, RoutedEventArgs e) => 
+        private void TemplateCGX_Click(object sender, RoutedEventArgs e) =>
             FromExisting(FXConvertConstraints.GetDefinition(FXConvertConstraints.FXCanvasTemplates.CGX));
 
-        private void Template3DM_Click(object sender, RoutedEventArgs e) => 
+        private void Template3DM_Click(object sender, RoutedEventArgs e) =>
             FromExisting(FXConvertConstraints.GetDefinition(FXConvertConstraints.FXCanvasTemplates.MSPRITES));
 
         private void Apply() => FromExisting(CalculatedCanvasSize);

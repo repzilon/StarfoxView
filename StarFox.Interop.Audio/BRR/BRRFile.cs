@@ -1,14 +1,16 @@
-﻿namespace StarFox.Interop.BRR
+﻿using System.Collections.Generic;
+
+namespace StarFox.Interop.BRR
 {
     /// <summary>
     /// A file containing BRR (Bit Rate Reduction) samples
     /// </summary>
     public class BRRFile : IImporterObject
-    {       
+    {
         /// <summary>
         /// Provides access to the <see cref="BRRSample"/>s extracted from this <see cref="BRRFile"/>
         /// </summary>
-        public Dictionary<ushort, BRRSample> Effects { get; } = new();
+        public Dictionary<ushort, BRRSample> Effects { get; } = new Dictionary<ushort, BRRSample>();
         /// <summary>
         /// The original file path of this object
         /// </summary>

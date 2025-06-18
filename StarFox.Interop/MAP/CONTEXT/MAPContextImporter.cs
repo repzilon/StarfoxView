@@ -1,13 +1,13 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
-using StarFox.Interop.BSP;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
+using StarFox.Interop.BSP;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.MAP.CONTEXT
 {
@@ -20,15 +20,15 @@ namespace StarFox.Interop.MAP.CONTEXT
         /// <summary>
         /// Maps the <see cref="MAPContextDefinition"/> to it's name as it appears in the code
         /// </summary>
-        public Dictionary<string, MAPContextDefinition> Definitions { get; set; } = new();
-        public StringBuilder LoadErrors { get; } = new();
+        public Dictionary<string, MAPContextDefinition> Definitions { get; set; } = new Dictionary<string, MAPContextDefinition>();
+        public StringBuilder LoadErrors { get; } = new StringBuilder();
         /// <summary>
         /// Creates a blank <see cref="MAPContextFile"/> with the given original file path.
         /// </summary>
         /// <param name="OriginalFilePath"></param>
         public MAPContextFile(string OriginalFilePath) : base(OriginalFilePath)
         {
-            
+
         }
         /// <summary>
         /// Creates a new <see cref="MAPContextFile"/> with information sourced from the given <see cref="ASMFile"/>
@@ -36,9 +36,9 @@ namespace StarFox.Interop.MAP.CONTEXT
         /// <param name="From"></param>
         public MAPContextFile(ASMFile From) : base(From)
         {
-            
-        }        
-    }    
+
+        }
+    }
 
     /// <summary>
     /// This will import a file containing context about the levels defined in Starfox.
@@ -47,7 +47,7 @@ namespace StarFox.Interop.MAP.CONTEXT
     internal class MAPContextImporter : CodeImporter<MAPContextFile>
     {
         private MAPContextImporterContext _context;
-        private ASMImporter _baseImporter = new();
+        private ASMImporter _baseImporter = new ASMImporter();
         /// <summary>
         /// Creates a new <see cref="MAPContextImporter"/>
         /// </summary>
@@ -56,7 +56,7 @@ namespace StarFox.Interop.MAP.CONTEXT
 
         }
         public override void SetImports(params ASMFile[] Includes)
-        {            
+        {
             _baseImporter.SetImports(Includes);
         }
         private void ReadLine(ASMLine currentLine)
@@ -67,13 +67,13 @@ namespace StarFox.Interop.MAP.CONTEXT
         public override async Task<MAPContextFile> ImportAsync(string FilePath)
         {
             var baseImport = await _baseImporter.ImportAsync(FilePath);
-            if (baseImport == default) throw new InvalidOperationException("That file could not be parsed.");            
+            if (baseImport == default) throw new InvalidOperationException("That file could not be parsed.");
             return ImportAsync(baseImport);
         }
         public MAPContextFile ImportAsync(ASMFile BGSASMFile)
-        {            
+        {
             var file = ImportedObject = new MAPContextFile(BGSASMFile); // from ASM file
-            _context = new(file)
+            _context = new MAPContextImporterContext(file)
             {
                 Includes = _baseImporter.CurrentIncludes
             };
@@ -93,12 +93,12 @@ namespace StarFox.Interop.MAP.CONTEXT
                     }
                     continue;
                 }
-                if (line.Structure is not ASMMacroInvokeLineStructure) continue; // we can't do much with these right now
-                ReadLine(line); // read the current line to find information 
+                if (!(line.Structure is ASMMacroInvokeLineStructure)) continue; // we can't do much with these right now
+                ReadLine(line); // read the current line to find information
             }
             ASMExtensions.EndConstantsContext();
             return file;
         }
-        public override ImporterContext<IncludeType>? GetCurrentContext<IncludeType>() => _context as ImporterContext<IncludeType>;
+        public override ImporterContext<IncludeType> GetCurrentContext<IncludeType>() => _context as ImporterContext<IncludeType>;
     }
 }

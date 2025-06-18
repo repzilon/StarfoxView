@@ -1,4 +1,8 @@
-﻿namespace Starfox.Editor
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Starfox.Editor
 {
     /// <summary>
     /// An abstract class that represents a node in a <see cref="SFCodeProject"/>
@@ -18,7 +22,7 @@
         /// <summary>
         /// The children nodes attached to this parent node, if any.
         /// </summary>
-        public List<SFCodeProjectNode> ChildNodes { get; } = new();
+        public List<SFCodeProjectNode> ChildNodes { get; } = new List<SFCodeProjectNode>();
 
         /// <summary>
         /// Makes a new <see cref="SFCodeProjectNode"/> with the given type and file path

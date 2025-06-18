@@ -33,11 +33,11 @@ namespace StarFoxMapVisualizer.Controls
             InitializeComponent();
             ViewBar.Visibility = Visibility.Collapsed;
         }
-        public LevelContextViewer(MAPContextDefinition? levelContext) : this()
+        public LevelContextViewer(MAPContextDefinition levelContext) : this()
         {
             if (levelContext != null)
-                Loaded += async delegate { 
-                    await Attach(levelContext); 
+                Loaded += async delegate {
+                    await Attach(levelContext);
                 };
         }
         public LevelContextViewer(MAPContextFile ContextFile) : this()
@@ -45,7 +45,7 @@ namespace StarFoxMapVisualizer.Controls
             if (ContextFile != default)
                 Loaded += async delegate {
                     await AttachMany(ContextFile);
-                }; 
+                };
         }
         public LevelContextViewer(params MAPContextDefinition[] Contexts) : this()
         {
@@ -53,8 +53,8 @@ namespace StarFoxMapVisualizer.Controls
                 await AttachMany(Contexts);
             };
         }
-        public MAPContextDefinition? SelectedLevelContext { get; private set; }
-        public MAPContextFile? SelectedFile { get; private set; }
+        public MAPContextDefinition SelectedLevelContext { get; private set; }
+        public MAPContextFile SelectedFile { get; private set; }
         private MAPContextDefinition ViewSwitcherSelectionAsContext => (MAPContextDefinition)ViewSwitcher.SelectedItem;
 
         public async Task Attach(MAPContextDefinition levelContext, bool ExtractCCR = false, bool ExtractPCR = false)

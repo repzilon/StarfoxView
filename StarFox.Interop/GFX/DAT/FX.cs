@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace StarFox.Interop.GFX.DAT
     /// Interfaces with *.DAT files to decompress them into asset files.
     /// </summary>
     internal static partial class FX
-    {                
+    {
         internal static void Read_8x8(in byte[] buffer, int row, int col, MemoryStream Bank, bool mode)
         {
             // grab 8x8 4-bpp pixels
@@ -66,9 +67,9 @@ namespace StarFox.Interop.GFX.DAT
                     for (int row = 0; row < 384; row += 8)
                     {
                         for (int col = 0; col < 256; col += 8)
-                        {                            
+                        {
                             Read_8x8(fileData, row, col, fx_low, false); // read low bank
-                            Read_8x8(fileData, row, col, fx_high, true); // read high bank                         
+                            Read_8x8(fileData, row, col, fx_high, true); // read high bank
                         }
                     }
                     return new FXGraphicsHiLowBanks(fx_high.ToArray(),fx_low.ToArray());

@@ -1,10 +1,11 @@
-﻿using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM
 {
@@ -42,7 +43,7 @@ namespace StarFox.Interop.ASM
             FileStream.BaseStream.Seek(Position, SeekOrigin.Begin);
             FileStream.DiscardBufferedData();
         }
-        public abstract void Parse(StreamReader FileStream); 
+        public abstract void Parse(StreamReader FileStream);
 
         /// <summary>
         /// Supplied with the first line of a chunk this function will guess what it is.
@@ -59,10 +60,10 @@ namespace StarFox.Interop.ASM
                 return ASMChunks.Macro; // macro spotted
             return ASMChunks.Line; // probably a line? TODO: add more checking
         }
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
-            if (obj is ASMChunk chunk)            
-                return chunk.OriginalFileName == OriginalFileName && chunk.Position== Position && chunk.Length == Length;            
+            if (obj is ASMChunk chunk)
+                return chunk.OriginalFileName == OriginalFileName && chunk.Position== Position && chunk.Length == Length;
             return base.Equals(obj);
         }
     }

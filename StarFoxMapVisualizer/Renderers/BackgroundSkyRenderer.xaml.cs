@@ -64,7 +64,7 @@ namespace StarFoxMapVisualizer.Renderers
             double xRotation = Math.Atan2(pixelpos.Y, pixelpos.X) * (FOV / 100);
             double yRotation = -LookAt.Y * .5;
 
-            double YOffset = LevelContext?.BG2.VerticalOffset ?? (.235 * SCR_H);            
+            double YOffset = LevelContext?.BG2.VerticalOffset ?? (.235 * SCR_H);
 
             double desiredY = ((SCR_H + YOffset) / 2) - (RENDER_H / 2) + (yRotation * screenYBound);
             if (desiredY > screenYBound)
@@ -75,7 +75,7 @@ namespace StarFoxMapVisualizer.Renderers
             UpdateViewport();
         }
 
-        public override async Task SetContext(MAPContextDefinition? SelectedContext, 
+        public override async Task SetContext(MAPContextDefinition SelectedContext,
             WavyBackgroundRenderer.WavyEffectStrategies Animation = WavyBackgroundRenderer.WavyEffectStrategies.None,
             bool ExtractCCR = false, bool ExtractPCR = false)
         {

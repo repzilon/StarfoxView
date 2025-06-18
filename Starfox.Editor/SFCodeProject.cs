@@ -5,8 +5,8 @@ using StarFox.Interop.BRR;
 using StarFox.Interop.MAP;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static StarFox.Interop.GFX.CAD;
 
@@ -35,29 +35,29 @@ namespace Starfox.Editor
         /// Palettes that have been included in this project
         /// <para>FilePath, COL</para>
         /// </summary>
-        public Dictionary<string, COL> Palettes { get; } = new();
+        public Dictionary<string, COL> Palettes { get; } = new Dictionary<string, COL>();
         /// <summary>
         /// SampleFiles that have been included in this project
         /// <para>FilePath, BRR</para>
         /// </summary>
-        public Dictionary<string, BRRFile> Samples { get; } = new();
+        public Dictionary<string, BRRFile> Samples { get; } = new Dictionary<string, BRRFile>();
         /// <summary>
         /// Files that are marked as *include files, as in containing symbol information
         /// </summary>
-        public HashSet<ASMFile> Includes { get; } = new();
+        public HashSet<ASMFile> Includes { get; } = new HashSet<ASMFile>();
         /// <summary>
         /// All files that have been imported by a <see cref="CodeImporter"/>
         /// </summary>
-        public Dictionary<string,IImporterObject> OpenFiles { get; } = new();
+        public Dictionary<string,IImporterObject> OpenFiles { get; } = new Dictionary<string,IImporterObject>();
         public IEnumerable<MAPFile> OpenMAPFiles => OpenFiles.Values.OfType<MAPFile>();
         /// <summary>
         /// A map of all directory nodes by their name
         /// </summary>
-        public Dictionary<string, SFCodeProjectNode> DirectoryNodes = new();
+        public Dictionary<string, SFCodeProjectNode> DirectoryNodes = new Dictionary<string, SFCodeProjectNode>();
         /// <summary>
         /// A map of all file nodes by their file name
         /// </summary>
-        public Dictionary<string, SFCodeProjectNode> FileNodes = new();
+        public Dictionary<string, SFCodeProjectNode> FileNodes = new Dictionary<string, SFCodeProjectNode>();
         /// <summary>
         /// Looks for the specified file (or palette) to see if it's included
         /// </summary>
@@ -70,7 +70,7 @@ namespace Starfox.Editor
             value = IsPaletteIncluded(File.FullName);
             return value;
         }
-        public ASMFile? GetInclude(FileInfo File) => Includes.FirstOrDefault(x => x.OriginalFilePath == File.FullName);
+        public ASMFile GetInclude(FileInfo File) => Includes.FirstOrDefault(x => x.OriginalFilePath == File.FullName);
         /// <summary>
         /// Looks to see if that palette has been referenced already
         /// </summary>
@@ -95,14 +95,14 @@ namespace Starfox.Editor
             var dirInfo = new DirectoryInfo(workspaceDirectory);
             if (!dirInfo.Exists) throw new ArgumentException("The given directory doesn't actually exist.");
             WorkspaceDirectory = dirInfo;
-            ParentNode = new(SFCodeProjectNodeTypes.Project, workspaceDirectory);            
+            ParentNode = new SFCodeProjectNode(SFCodeProjectNodeTypes.Project, workspaceDirectory);
         }
         /// <summary>
         /// Searches for all files with matching filename (not fullpath)
         /// </summary>
         /// <param name="FileName"></param>
         /// <returns></returns>
-        public IEnumerable<SFCodeProjectNode> SearchFile(string FileName, bool IgnoreHyphens = false) => 
+        public IEnumerable<SFCodeProjectNode> SearchFile(string FileName, bool IgnoreHyphens = false) =>
             FileNodes.Where(x => Path.GetFileName(IgnoreHyphens ? x.Key.Replace("-", "") : x.Key).ToLower()
             == FileName.ToLower()).Select(y => y.Value);
         /// <summary>
@@ -120,18 +120,18 @@ namespace Starfox.Editor
         /// </summary>
         /// <returns></returns>
         public Task EnumerateAsync()
-        { 
+        {
             SFCodeProjectNode processFile(FileInfo File, SFCodeProjectNode ParentNode)
-            {// make a new node that represents this file in the parent node   
+            {// make a new node that represents this file in the parent node
                 var node = ParentNode.AddFile(File);
                 FileNodes.Add(File.FullName, node);
                 return node;
-            }                                    
-            SFCodeProjectNode processDirectory(DirectoryInfo Directory, SFCodeProjectNode? ParentNode)
+            }
+            SFCodeProjectNode processDirectory(DirectoryInfo Directory, SFCodeProjectNode ParentNode)
             {
-                SFCodeProjectNode? newNode = new SFCodeProjectNode(SFCodeProjectNodeTypes.Directory, Directory.FullName);
+                SFCodeProjectNode newNode = new SFCodeProjectNode(SFCodeProjectNodeTypes.Directory, Directory.FullName);
                 var mDirName = Directory.FullName.Substring(WorkspaceDirectory.FullName.Length).TrimStart('\\');
-                if (!string.IsNullOrWhiteSpace(mDirName)) 
+                if (!string.IsNullOrWhiteSpace(mDirName))
                     DirectoryNodes.Add(mDirName, newNode);
                 if (ParentNode != null)
                     newNode = ParentNode.AddDirectory(Directory); // make a new node that represents this folder in the parent node
@@ -154,7 +154,7 @@ namespace Starfox.Editor
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public SFOptimizerNode? GetOptimizerByTypeOrDefault(SFOptimizerTypeSpecifiers type)=> Optimizers.FirstOrDefault(x =>
+        public SFOptimizerNode GetOptimizerByTypeOrDefault(SFOptimizerTypeSpecifiers type)=> Optimizers.FirstOrDefault(x =>
                 x?.OptimizerData?.TypeSpecifier == type);
 
         /// <summary>
@@ -165,13 +165,21 @@ namespace Starfox.Editor
         public bool EnsureOptimizers(out SFOptimizerTypeSpecifiers[] TypesMissing)
         {
             var list = new List<SFOptimizerTypeSpecifiers>();
-            foreach(var type in Enum.GetValues<SFOptimizerTypeSpecifiers>())
-            {
-                if (GetOptimizerByTypeOrDefault(type) == default)
-                    list.Add(type);
-            }
-            TypesMissing = list.ToArray();
+#if NETFRAMEWORK || NETSTANDARD
+			foreach (var type in GetValues<SFOptimizerTypeSpecifiers>()) {
+#else
+            foreach (var type in Enum.GetValues<SFOptimizerTypeSpecifiers>()) {
+#endif
+				if (GetOptimizerByTypeOrDefault(type) == default)
+					list.Add(type);
+			}
+			TypesMissing = list.ToArray();
             return !list.Any();
+        }
+
+		public static T[] GetValues<T>() where T: struct
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>().ToArray();
         }
     }
 }

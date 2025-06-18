@@ -35,16 +35,24 @@ namespace StarFoxMapVisualizer.Controls2
             ANDROSS,
             BETA_SLIPPY
         }
-        public static Characters MapSpeakerToCharacter(string Speaker) => Speaker switch
+        public static Characters MapSpeakerToCharacter(string Speaker)
         {
-            "fox" or "fox3" => Characters.FOX,
-            "falcon" or "falcon3" => Characters.FALCON,
-            "rabbit" or "rabbit3" => Characters.RABBIT,
-            "frog" or "frog3" => Characters.FROG,
-            "andross" or "andross3" => Characters.ANDROSS,
-            "pepper" or "pepper3" => Characters.PEPPER,
-            _ => Characters.BETA_SLIPPY,
-        };
+            if (Speaker == "fox" || Speaker == "fox3") {
+                return Characters.FOX;
+            } else if (Speaker == "falcon" || Speaker == "falcon3") {
+                return Characters.FALCON;
+            } else if (Speaker == "rabbit" || Speaker == "rabbit3") {
+                return Characters.RABBIT;
+            } else if (Speaker == "frog" || Speaker == "frog3") {
+                return Characters.FROG;
+            } else if (Speaker == "andross" || Speaker == "andross3") {
+                return Characters.ANDROSS;
+            } else if (Speaker == "pepper" || Speaker == "pepper3") {
+                return Characters.PEPPER;
+            } else {
+                return Characters.BETA_SLIPPY;
+            }
+        }
 
         public CommunicationMessageControl()
         {
@@ -52,14 +60,14 @@ namespace StarFoxMapVisualizer.Controls2
             SetCompatibleFonts();
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void DrawMugshot(Characters Character, int Frame = 0)
         {
             int baseX = 0;
             int baseY = 0;
             int charWidth = 31;
-            int charHeight = 39;// FOX FRAME 1            
+            int charHeight = 39;// FOX FRAME 1
             switch (Character)
             {
                 case Characters.FOX: break;
@@ -74,7 +82,7 @@ namespace StarFoxMapVisualizer.Controls2
             MugshotVisibility = Visibility.Visible;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MugshotVisibility)));
 
-            ImageRect = new Rect(baseX + Frame * (charWidth + 1),baseY,charWidth,charHeight); 
+            ImageRect = new Rect(baseX + Frame * (charWidth + 1),baseY,charWidth,charHeight);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageRect)));
         }
 

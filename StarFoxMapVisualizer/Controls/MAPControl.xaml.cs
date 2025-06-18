@@ -1,27 +1,25 @@
-﻿using StarFox.Interop.MAP;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+#if NET46
+using Newtonsoft.Json;
+#else
+using System.Text.Json;
+#endif
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using StarFox.Interop;
+using StarFox.Interop.MAP;
 using StarFox.Interop.MAP.CONTEXT;
 using StarFox.Interop.MAP.EVT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Misc;
-using StarFoxMapVisualizer.Screens;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WpfPanAndZoom.CustomControls;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace StarFoxMapVisualizer.Controls
 {
@@ -41,11 +39,11 @@ namespace StarFoxMapVisualizer.Controls
         public MAPControl()
         {
             InitializeComponent();
-            MAPTabViewer.Items.Clear();            
+            MAPTabViewer.Items.Clear();
         }
 
-        private Dictionary<MAPScript, MAP_FINST> tabMap = new();
-        private MAP_FINST? CurrentState {
+        private Dictionary<MAPScript, MAP_FINST> tabMap = new Dictionary<MAPScript, MAP_FINST>();
+        private MAP_FINST CurrentState {
             get
             {
                 if (selectedScript == null) return null;
@@ -53,11 +51,11 @@ namespace StarFoxMapVisualizer.Controls
                 return val;
             }
         }
-        private MAPScript? selectedScript => ((TabItem)MAPTabViewer.SelectedItem).Tag as MAPScript;
-        private MAPContextDefinition? selectedContext;
+        private MAPScript selectedScript => ((TabItem)MAPTabViewer.SelectedItem).Tag as MAPScript;
+        private MAPContextDefinition selectedContext;
 
         //3D VIEWER VARS
-        private MAP3DControl? MapWindow;
+        private MAP3DControl MapWindow;
         private bool MapWindowOpened => MapWindow != default;
         //---
 
@@ -80,12 +78,21 @@ namespace StarFoxMapVisualizer.Controls
         {
             if (selectedScript == null) return;
             var fileName = System.IO.Path.Combine(Environment.CurrentDirectory,
-                "export","maps",$"{selectedScript.Header.LevelMacroName}.sfmap");  
+                "export","maps",$"{selectedScript.Header.LevelMacroName}.sfmap");
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(fileName));
             using (var file = File.Create(fileName))
             {
-                using (Utf8JsonWriter writer = new(file))
+#if NET46
+                using (var wrtStream = new StreamWriter(file)) {
+                    using (var wrtJson = new JsonTextWriter(wrtStream)) {
+                        selectedScript.LevelData.Serialize(wrtJson);
+                    }
+                }
+#else
+                using (var writer = new Utf8JsonWriter(file)) {
                     selectedScript.LevelData.Serialize(writer);
+                }
+#endif
             }
             if (MessageBox.Show($"The map was successfully exported to:\n" +
                 $"{fileName}\n" +
@@ -107,7 +114,7 @@ namespace StarFoxMapVisualizer.Controls
             //update the 3D editor view
             await SwitchEditorBackground();
             View3DButton.Visibility = Visibility.Collapsed;
-        }        
+        }
 
         private void SetupPlayFieldHorizontal(Panel PanCanvas, int Layer, int Time, Brush Foreground, double LevelEnd = 100000000,
             string StartText = "DELAY", string EndText = "FINISH", bool ShowTimes = true, int YOffset = 0)
@@ -141,7 +148,7 @@ namespace StarFoxMapVisualizer.Controls
                 Fill = Foreground,
             };
             double TextYPosition = YPosition + 25;
-            
+
             PanCanvas.Children.Add(delayLine);
             PanCanvas.Children.Add(AddFieldText(StartText, Time + 50, TextYPosition-50));
 
@@ -169,14 +176,14 @@ namespace StarFoxMapVisualizer.Controls
 
         private void MapContextButton_Click(object sender, RoutedEventArgs e)
         {
-            LevelContextViewer? viewer = default;
+            LevelContextViewer viewer;
             if (!selectedScript.ReferencedContexts.Any())
             {
                 viewer = new LevelContextViewer(FILEStandard.MAPImport.LoadedContextDefinitions)
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Owner = Application.Current.MainWindow
-                };                
+                };
             }
             else
             {
@@ -186,7 +193,7 @@ namespace StarFoxMapVisualizer.Controls
                     Owner = Application.Current.MainWindow
                 };
             }
-            viewer.EditorPreviewSelectionChanged += async (object? sender, MAPContextDefinition definition) =>
+            viewer.EditorPreviewSelectionChanged += async (object sender2, MAPContextDefinition definition) =>
             {
                 await SwitchEditorBackground(definition);
             };
@@ -198,14 +205,14 @@ namespace StarFoxMapVisualizer.Controls
         int treeLayer = 0, lastTime = 0;
         double lastX = 0, lastY;
 
-        private void EnumerateEvents(MAPScript File, Panel EventCanvas, ref int currentTime, bool autoDereference = true, int Layer = 0)            
+        private void EnumerateEvents(MAPScript File, Panel EventCanvas, ref int currentTime, bool autoDereference = true, int Layer = 0)
         {
             double LayerShift = (Layer * 100);
 
             if (Layer == 0) MapNodeLineBrush = Brushes.Yellow;
             else MapNodeLineBrush = Brushes.DeepSkyBlue;
-                        
-            double YOffset() => treeLayer * 75;            
+
+            double YOffset() => treeLayer * 75;
             lastY = LayerShift;
             lastX = currentTime;
 
@@ -217,11 +224,11 @@ namespace StarFoxMapVisualizer.Controls
                 evt.LevelDelay = currentTime;
 
                 var control = new MapEventNodeControl(evt);
-                EventCanvas.Children.Add(control);               
+                EventCanvas.Children.Add(control);
 
-                control.Measure(new Size(5000, 5000));                                                
+                control.Measure(new Size(5000, 5000));
 
-                double middleX = currentTime;                
+                double middleX = currentTime;
                 double rightEdge = middleX + (control.DesiredSize.Width / 2);
                 double leftEdge = middleX - (control.DesiredSize.Width / 2);
 
@@ -267,8 +274,8 @@ namespace StarFoxMapVisualizer.Controls
 
                 if (evt is MAPJSREvent mapjsr && autoDereference) // SUBSECTION FOUND!!
                 { // WERE ALLOWED TO INCLUDE IT
-                    MAPFile? sub_map = default;
-                    MAPScript? sub_script = default;
+                    MAPFile sub_map = default;
+                    MAPScript sub_script = default;
 
                     try
                     {
@@ -307,7 +314,7 @@ namespace StarFoxMapVisualizer.Controls
                         }
                     }
                     if (sub_script == default) continue; // Could not load the file at all, move on
-                                                         
+
                     CurrentState.StateObject.Subsections.Add(sub_script);
                     int section_StartTime = currentTime;
                     EnumerateEvents(sub_script, EventCanvas, ref currentTime, autoDereference, Layer + 1);
@@ -324,12 +331,12 @@ namespace StarFoxMapVisualizer.Controls
         {
             if (File == null) return;
 
-            foreach(var script in File.Scripts.Values)            
-                if (tabMap.ContainsKey(script)) return;            
+            foreach(var script in File.Scripts.Values)
+                if (tabMap.ContainsKey(script)) return;
 
             //ASYNC DISABLE
             IsEnabled = false;
-            
+
             if (File.Scripts.Count == 0) return;
             if (File.Scripts.Count == 1) await OpenScript(File.Scripts.Values.First());
             else
@@ -348,7 +355,7 @@ namespace StarFoxMapVisualizer.Controls
             IsEnabled = true;
         }
 
-        private async Task OpenScript(MAPScript? Script)
+        private async Task OpenScript(MAPScript Script)
         {
             if (Script == default) return;
 
@@ -408,7 +415,7 @@ namespace StarFoxMapVisualizer.Controls
         }
 
         private async void ChangeFile(object sender, SelectionChangedEventArgs e)
-        {            
+        {
             var file = (MAPTabViewer.SelectedItem as TabItem).Tag as MAPScript;
             await OpenScript(file);
         }
@@ -426,7 +433,7 @@ namespace StarFoxMapVisualizer.Controls
 
             await SwitchEditorBackground(File.LevelContext);
             return Time;
-        }        
+        }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -443,7 +450,7 @@ namespace StarFoxMapVisualizer.Controls
         /// </summary>
         /// <param name="Definition"></param>
         /// <returns></returns>
-        private async Task SwitchEditorBackground(MAPContextDefinition? Definition)
+        private async Task SwitchEditorBackground(MAPContextDefinition Definition)
         {
             selectedContext = Definition;
             //Update the context of the background viewer
@@ -468,9 +475,10 @@ namespace StarFoxMapVisualizer.Controls
         /// <param name="MapEvent"></param>
         /// <param name="ComponentSelected">Must be of type <see cref="IMAPEventComponent"/></param>
         /// <returns></returns>
-        internal async Task<bool> MapNodeSelected(MAPEvent MapEvent, Type? ComponentSelected)
+        internal async Task<bool> MapNodeSelected(MAPEvent MapEvent, Type ComponentSelected)
         {
-            if (!ComponentSelected.IsAssignableTo(typeof(IMAPEventComponent)))
+            var typImec = typeof(IMAPEventComponent);
+			if (!ComponentSelected.FindInterfaces(Module.FilterTypeName, typImec.Name).Contains(typImec))
                 throw new ArgumentException("Selected Component Type is not a IMAPEventComponent");
             //SWITCH BACKGROUND TO THIS
             if (MapEvent is IMAPBGEvent BGEvent && ComponentSelected == typeof(IMAPBGEvent))
@@ -487,7 +495,7 @@ namespace StarFoxMapVisualizer.Controls
                     return false;
                 }
                 else return true;
-            
+
             //CHECK 3D VIEWER OPENED
             if (MapWindowOpened)
             { // 3D CONTEXT
@@ -507,7 +515,7 @@ namespace StarFoxMapVisualizer.Controls
             control.LocationChanged += CanvasMoved;
         }
 
-        private void CanvasMoved(object? sender, Point e)
+        private void CanvasMoved(object sender, Point e)
         {
             var control = ((PanAndZoomCanvas)sender);
             ChronologySlider.Scroll -= ChronologySlider_Scroll;

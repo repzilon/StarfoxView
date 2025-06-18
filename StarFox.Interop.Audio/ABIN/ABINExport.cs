@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StarFox.Interop.Audio.ABIN
 {
@@ -22,12 +25,12 @@ namespace StarFox.Interop.Audio.ABIN
             /// Dictionary for Song filenames on the host file system
             /// <para>SPCAddress, SongLabel</para>
             /// </summary>
-            public Dictionary<ushort, string> BinSongFileNames = new();
+            public Dictionary<ushort, string> BinSongFileNames = new Dictionary<ushort, string>();
             /// <summary>
             /// Dictionary for Sample filenames on the host file system
             /// <para>Index, Name</para>
             /// </summary>
-            public Dictionary<int, string> BrrSmplFileNames = new();
+            public Dictionary<int, string> BrrSmplFileNames = new Dictionary<int, string>();
             /// <summary>
             /// Since certain ABIN files can have lots of samples, this would be cumbersome separating all of them.
             /// Instead, all samples are dumped to this BIN file.
@@ -37,7 +40,7 @@ namespace StarFox.Interop.Audio.ABIN
             /// <summary>
             /// Dictionary for Song names in the ASM file generated
             /// </summary>
-            public Dictionary<ushort, string> SongLabels = new();
+            public Dictionary<ushort, string> SongLabels = new Dictionary<ushort, string>();
         }
         /// <summary>
         /// Makes a new path to an *.ASM file in the chosen directory
@@ -45,7 +48,7 @@ namespace StarFox.Interop.Audio.ABIN
         /// <param name="DirectoryPath"></param>
         /// <param name="BINFileName"></param>
         /// <returns></returns>
-        public static string MakeASMPathFromDirectory(string DirectoryPath, string BINFileName) => 
+        public static string MakeASMPathFromDirectory(string DirectoryPath, string BINFileName) =>
             Path.Combine(DirectoryPath, $"{BINFileName}.ASM");
         /// <summary>
         /// Exports a given <see cref="AudioBINFile"/> to a directory.
@@ -53,20 +56,20 @@ namespace StarFox.Interop.Audio.ABIN
         /// <param name="DirectoryPath">The directory. It has to be existing before calling this method.</param>
         /// <param name="File"></param>
         /// <returns></returns>
-        public static async Task<ABINExportDescriptor> ExportToDirectory(string DirectoryPath, AudioBINFile File)
+        public static async Task<ABINExportDescriptor> ExportToDirectory(string DirectoryPath, AudioBINFile file)
         {
             //Create file names / paths
-            string asmFilePath = MakeASMPathFromDirectory(DirectoryPath, ((IImporterObject)File).FileName);
+            string asmFilePath = MakeASMPathFromDirectory(DirectoryPath, file.FileName());
             //Next, Export the BIN file containing the raw song data
-            ABINExportDescriptor Descriptor = new()
+            var Descriptor = new ABINExportDescriptor()
             {
                 ASMFilePath = asmFilePath,
                 DirectoryPath= DirectoryPath,
             };
             //Export Song and Sample Binaries
-            await baseCreateBinaries(File, Descriptor);                 
+            await baseCreateBinaries(file, Descriptor);
             //Export Assembly File first and foremost
-            await baseExportASM(asmFilePath, Descriptor, File);            
+            await baseExportASM(asmFilePath, Descriptor, file);
             return Descriptor;
         }
         private static async Task baseCreateBinaries(AudioBINFile File, ABINExportDescriptor Descriptor)
@@ -75,7 +78,7 @@ namespace StarFox.Interop.Audio.ABIN
             foreach (AudioBINSongData song in File.Songs)
             {
 
-                string binFileName = $"SONG_DATA_{((IImporterObject)File).FileName}_{song.SPCAddress.ToString("X4")}.BIN";
+                string binFileName = $"SONG_DATA_{((IImporterObject)File).FileName()}_{song.SPCAddress.ToString("X4")}.BIN";
                 string binFilePath = Path.Combine(Descriptor.DirectoryPath, binFileName);
                 await baseExportSongDataBin(binFilePath, song);
                 Descriptor.BinSongFileNames.Add(song.SPCAddress, binFilePath);
@@ -83,10 +86,10 @@ namespace StarFox.Interop.Audio.ABIN
             using (FileStream sourceDataStream = System.IO.File.OpenRead(File.OriginalFilePath))
             {
                 //SAMPLE BINARY
-                AudioBINChunk? sampleChunk = File.Chunks.FirstOrDefault(x => x.ChunkType == AudioBINChunk.ChunkTypes.SampleData);
+                AudioBINChunk sampleChunk = File.Chunks.FirstOrDefault(x => x.ChunkType == AudioBINChunk.ChunkTypes.SampleData);
                 if (sampleChunk != default)
                 {
-                    string smplBinFileName = $"SMPL_DATA_{((IImporterObject)File).FileName}_{sampleChunk.SPCAddress.ToString("X4")}.BIN";
+                    string smplBinFileName = $"SMPL_DATA_{((IImporterObject)File).FileName()}_{sampleChunk.SPCAddress.ToString("X4")}.BIN";
                     smplBinFileName = Path.Combine(Descriptor.DirectoryPath, smplBinFileName);
                     Descriptor.SampleBINFilePath= smplBinFileName;
                     await baseExportSampleDataBin(smplBinFileName, sampleChunk, sourceDataStream);
@@ -105,17 +108,39 @@ namespace StarFox.Interop.Audio.ABIN
                 }
             }
         }
-        private static Task baseExportSongDataBin(string binFilePath, AudioBINSongData Song) =>
-            System.IO.File.WriteAllBytesAsync(binFilePath, Song.SongData);
+
+        private static Task baseExportSongDataBin(string binFilePath, AudioBINSongData Song)
+        {
+#if NETFRAMEWORK || NETSTANDARD
+			File.WriteAllBytes(binFilePath, Song.SongData);
+            return Task.CompletedTask;
+#else
+            return File.WriteAllBytesAsync(binFilePath, Song.SongData);
+#endif
+		}
+
         private static async Task baseExportSampleDataBin(string binFilePath, AudioBINChunk SampleChunk, Stream SourceData) {
             var data = new byte[SampleChunk.Length];
             SourceData.Seek(SampleChunk.FilePosition, SeekOrigin.Begin);
             await SourceData.ReadAsync(data, 0, SampleChunk.Length);
+#if NETFRAMEWORK || NETSTANDARD
+			File.WriteAllBytes(binFilePath, data);
+#else
             await System.IO.File.WriteAllBytesAsync(binFilePath, data);
-        }
-        private static Task baseExportSampleDataBRR(string brrFilePath, AudioBINSampleData Sample) =>
-            System.IO.File.WriteAllBytesAsync(brrFilePath, Sample.Data);
-        private static void baseWriteSongData(AudioBINFile File, StreamWriter StreamWriter, ABINExportDescriptor Descriptor)
+#endif
+		}
+
+		private static Task baseExportSampleDataBRR(string brrFilePath, AudioBINSampleData Sample)
+		{
+#if NETFRAMEWORK || NETSTANDARD
+			File.WriteAllBytes(brrFilePath, Sample.Data);
+			return Task.CompletedTask;
+#else
+            return File.WriteAllBytesAsync(brrFilePath, Sample.Data);
+#endif
+		}
+
+		private static void baseWriteSongData(AudioBINFile File, StreamWriter StreamWriter, ABINExportDescriptor Descriptor)
         {
             var sw = StreamWriter;
             if (File.Songs.Any()) // are there even any songs in here?
@@ -153,7 +178,7 @@ namespace StarFox.Interop.Audio.ABIN
                 fileStream.Close();
                 sw.Write(GetDecimalDWString((ushort)songsTotalLength)); sw.WriteLine(GetCommentString("Sample(s) Length (in Bytes)"));
                 ushort firstAddress = File.Samples.Select(x => x.SPCAddress).Min();
-                sw.Write(GetHexDWString(firstAddress)); sw.WriteLine(GetCommentString("Sample(s) base SPC Dest Address"));                
+                sw.Write(GetHexDWString(firstAddress)); sw.WriteLine(GetCommentString("Sample(s) base SPC Dest Address"));
                 binFileName = Path.GetFileName(binFileName);
                 string commentSongLabel = "<- All Sample(s) Data BIN Here";
                 sw.WriteLine();
@@ -199,7 +224,7 @@ namespace StarFox.Interop.Audio.ABIN
                         if (Descriptor.SongLabels.TryGetValue(e.SPCAddress, out string songLabel))
                             text = GetLabelDWString(songLabel);
                     }
-                    else if (songEntry is AudioBINSongTableRangeEntry r) // Ranges (Samples)                             
+                    else if (songEntry is AudioBINSongTableRangeEntry r) // Ranges (Samples)
                     {
                         text = GetHexDWsString(def_Pad, r.SPCAddress, r.SPCAddressEnd);
                         comment = $"Sample {subIndex}: Start, Loop Addresses";
@@ -220,15 +245,16 @@ namespace StarFox.Interop.Audio.ABIN
         }
         const int def_Pad = 50;
         static string GetHexDWString(ushort word, int Pad = def_Pad) => $"dw ${word:X4}".PadRight(Pad, ' ');
-        static string GetHexDWsString(int Pad = def_Pad, params ushort[] defs) => 
-                $"dw {string.Join(',',defs.Select(x => '$'+x.ToString("X4")))}".PadRight(Pad, ' ');
+        static string GetHexDWsString(int Pad = def_Pad, params ushort[] defs) =>
+                $"dw {string.Join(",",defs.Select(x => '$'+x.ToString("X4")))}".PadRight(Pad, ' ');
         static string GetDecimalDWString(ushort word, int Pad = def_Pad) => $"dw {word}".PadRight(Pad, ' ');
         static string GetLabelDWString(string label, int Pad = def_Pad) => $"dw {label}".PadRight(Pad, ' ');
         static string GetLabelString(string label, int Pad = def_Pad) => $"{label}:".PadRight(Pad, ' ');
         static string GetIncBinString(string fileName) => $"  incbin {fileName}";
         static string GetCommentString(string comment) => $"//{comment}";
+
         private static async Task baseExportASM(string asmFilePath, ABINExportDescriptor Descriptor, AudioBINFile File)
-        {                                    
+        {
             //ASM data
             using (FileStream fs = new FileStream(asmFilePath, FileMode.Create, FileAccess.ReadWrite))
             {

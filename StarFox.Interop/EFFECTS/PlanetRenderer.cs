@@ -34,14 +34,14 @@ namespace StarFox.Interop.EFFECTS
         /// <summary>
         /// The X position of the Spotlight on the planet
         /// <para/>This is measured in relative units -- 0 to 1 where 0 is far left and 1 is far right.
-        /// <para/>Note: The spotlight is rendered in full resolution, as in the render width and height of the 
+        /// <para/>Note: The spotlight is rendered in full resolution, as in the render width and height of the
         /// <see cref="PlanetRenderer"/> is used -- not the actual Planet's rendered resolution.
         /// </summary>
         double SpotlightPositionX { get; set; }
         /// <summary>
         /// The Y position of the Spotlight on the planet
         /// <para/>This is measured in relative units -- 0 to 1 where 0 is north and 1 is south.
-        /// <para/>Note: The spotlight is rendered in full resolution, as in the render width and height of the 
+        /// <para/>Note: The spotlight is rendered in full resolution, as in the render width and height of the
         /// <see cref="PlanetRenderer"/> is used -- not the actual Planet's rendered resolution.
         /// </summary>
         double SpotlightPositionY { get; set; }
@@ -50,7 +50,7 @@ namespace StarFox.Interop.EFFECTS
         /// </summary>
         double SpotlightMaxLumination { get; set; }
         /// <summary>
-        /// The minimum brightness of the whole planet, this can also be interpreted as the 
+        /// The minimum brightness of the whole planet, this can also be interpreted as the
         /// Ambient light intensity
         /// </summary>
         double SpotlightMinLumination { get; set; }
@@ -89,19 +89,19 @@ namespace StarFox.Interop.EFFECTS
             public double SpotlightDistance { get; set; } = 1;
         }
 
-        private Color[,]? cacheImage;
+        private Color[,] cacheImage;
         private Bitmap planetTexture;
         private double planetRotationalSpeedX => Options.RotationalSpeedX;
         private double planetRotationalSpeedY => Options.RotationalSpeedY;
         private double XScroll, YScroll;
-        private int PlanetTextureW; 
+        private int PlanetTextureW;
         private int PlanetTextureH;
 
         /// <summary>
         /// The custom settings applied to this object
         /// <para/>It is safe to change these options while animating
         /// </summary>
-        public PlanetRendererOptions Options { get; set; } = new();
+        public PlanetRendererOptions Options { get; set; } = new PlanetRendererOptions();
 
         /// <summary>
         /// Creates a new <see cref="PlanetRenderer"/> with no texture set.
@@ -113,12 +113,12 @@ namespace StarFox.Interop.EFFECTS
             AnimatorStatus = AnimatorStatus.NOT_INIT;
         }
 
-        public PlanetRenderer(Bitmap PlanetTexture, PlanetRendererOptions? Options = null) : this()
+        public PlanetRenderer(Bitmap PlanetTexture, PlanetRendererOptions Options = null) : this()
         {
             LoadTexture(PlanetTexture, Options);
         }
 
-        public void LoadTexture(Bitmap PlanetTexture, PlanetRendererOptions? Options = null)
+        public void LoadTexture(Bitmap PlanetTexture, PlanetRendererOptions Options = null)
         {
             if (Options != null)
                 this.Options = Options;
@@ -130,7 +130,6 @@ namespace StarFox.Interop.EFFECTS
 
         private double Distance(Point A, Point B) => Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         public override Bitmap RenderOnce(TimeSpan DeltaTime)
         {
             if (IsDisposed) throw new ObjectDisposedException($"{GetType().Name} instance has been disposed, yet is now trying to be used.");
@@ -181,11 +180,11 @@ namespace StarFox.Interop.EFFECTS
 
                     //calculate spotlight lighting
                     Point textureSourcePos = new Point((int)(fX / SCALE_FACTOR), sourceY);
-                    double lightStrength = Math.Max(Options.SpotlightMinLumination, Math.Min(Options.SpotlightMaxLumination, Options.SpotlightMaxLumination - Distance(textureSourcePos, LightSource) / 
+                    double lightStrength = Math.Max(Options.SpotlightMinLumination, Math.Min(Options.SpotlightMaxLumination, Options.SpotlightMaxLumination - Distance(textureSourcePos, LightSource) /
                         (Math.Abs((LightSource.Y < SCALED_REN_H()/2 ? SCALED_REN_H() : 0) - LightSource.Y)*Options.SpotlightDistance + Options.SpotlightIntensity)));
 
                     Color color = cacheImage[sourceX, sourceY];
-                    color = Color.FromArgb(255, (int)Math.Min(255,color.R * lightStrength), 
+                    color = Color.FromArgb(255, (int)Math.Min(255,color.R * lightStrength),
                         (int)Math.Min(255,color.G * lightStrength), (int)Math.Min(255, color.B * lightStrength));
                     SetPixel(ticket, fX, destY, color);
                 }

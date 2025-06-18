@@ -1,22 +1,22 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+#endif
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
 
 namespace StarFox.Interop.BSP.SHAPE
 {
-    public class BSPShapeHeader
+	public class BSPShapeHeader
     {
         /// <summary>
         /// The line this has been parsed from
         /// </summary>
         [JsonIgnore]
-        public ASMLine? Base { get; set; }
+        public ASMLine Base { get; set; }
         /// <summary>
         /// The macro function used to create this shape header
         /// </summary>
@@ -80,7 +80,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// </summary>
         public int Size { get; set; }
         /// <summary>
-        /// Pointer to color palette used for this shape. 
+        /// Pointer to color palette used for this shape.
         /// <para>For our purposes we're storing just the name.</para>
         /// </summary>
         public string ColorPalettePtr { get; set; }
@@ -101,14 +101,14 @@ namespace StarFox.Interop.BSP.SHAPE
         /// </summary>
         public string Simple3 { get; set; }
         /// <summary>
-        /// Name of this shape as it appears in the Shape Header. 
+        /// Name of this shape as it appears in the Shape Header.
         /// <para/>The last parameter in the ShapeHdr macro
         /// </summary>
         public string Name { get; set; }
         /// <summary>
         /// If an inline label appears on the same line as this definition, the label's text is copied here.
         /// </summary>
-        public string? InlineLabelName { get; set; }
+        public string InlineLabelName { get; set; }
         /// <summary>
         /// A name that has been given by the importer, unique to any other shape in the file.
         /// <para/>Generally follows the formula: <c><see cref="Name"/>_NumberOfDuplicates</c>
@@ -119,7 +119,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// pointed to here.
         /// <para/>This is the name of the shape that has this data.
         /// </summary>
-        public string? DataPointer { get; set; }
+        public string DataPointer { get; set; }
         public bool HasDataPointer => DataPointer != null;
 
         internal static string[] CompatibleMacroNames =
@@ -132,7 +132,7 @@ namespace StarFox.Interop.BSP.SHAPE
 
         }
 
-        public BSPShapeHeader(string pointPtr, int bank, string facePtr, 
+        public BSPShapeHeader(string pointPtr, int bank, string facePtr,
             int type, int zSort, int height, int view, int shift, float radius, int xMax, int yMax, int zMax,
             int size, string colorPalettePtr, int shadow, string simple1, string simple2, string simple3, string name)
         {
@@ -166,7 +166,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <param name="Structure"></param>
         /// <param name="header"></param>
         /// <returns></returns>
-        public static bool TryParse(ASMLine Line, out BSPShapeHeader? header, params ASMFile[] Includes)
+        public static bool TryParse(ASMLine Line, out BSPShapeHeader header, params ASMFile[] Includes)
         {
             header = default;
             if (Line == default) return false; // stop.
@@ -200,7 +200,7 @@ namespace StarFox.Interop.BSP.SHAPE
             var name = Structure.TryGetParameter(0x12)?.ParameterContent ?? ""; // name of the object
             //---- END
             ASMExtensions.EndConstantsContext();
-            header = new(pptr, bank, fptr, type, zsort, height, view, shift, 
+            header = new BSPShapeHeader(pptr, bank, fptr, type, zsort, height, view, shift,
                 radius, xmax, ymax, zmax, size, cptr, shadow, simple1, simple2, simple3, name)
             {
                 MacroName = Structure.MacroReference.Name,

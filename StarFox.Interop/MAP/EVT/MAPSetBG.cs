@@ -1,10 +1,10 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
 
 namespace StarFox.Interop.MAP.EVT
 {
@@ -24,8 +24,8 @@ namespace StarFox.Interop.MAP.EVT
         /// The background to change to, this value is exactly as it appears in code and NOT
         /// translated using <see cref="TranslateNameToMAPContext(in string, string)"/>
         /// </summary>
-        public string? Background { get; set; }
-        public string? TimingParameter { get; set; }
+        public string Background { get; set; }
+        public string TimingParameter { get; set; }
         public int TimingParameter1 { get; set; }
         string IMAPNamedEvent.Name => Background ?? "";
 
@@ -41,13 +41,13 @@ namespace StarFox.Interop.MAP.EVT
         }
 
         protected override void Parse(ASMLine Line)
-        { 
+        {
             Callsite = Line;
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
             Background = structure.TryGetParameter(0)?.ParameterContent;
-            
+
             //BEGIN 65c816 -> C#
             var NARG = structure.Parameters.Length;
             var TIMEARGS = new Dictionary<string, int>()
@@ -73,7 +73,7 @@ namespace StarFox.Interop.MAP.EVT
                 }
             }
             else
-                CtrlOptCode = MAPCtrlVars.ctrlsetbg;    
+                CtrlOptCode = MAPCtrlVars.ctrlsetbg;
             //END
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace StarFox.Interop.SPC
+﻿using System;
+
+namespace StarFox.Interop.SPC
 {
     public partial class SPCFile : IImporterObject
     {

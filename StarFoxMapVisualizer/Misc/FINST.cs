@@ -18,7 +18,7 @@ namespace StarFoxMapVisualizer.Misc
     public class FINST<File, State, Tag> where File : IImporterObject
     {
         internal FileInfo OpenFile;
-        internal File? FileImportData;
+        internal File FileImportData;
 
         internal Tag Tab;
         internal State StateObject;
@@ -29,8 +29,8 @@ namespace StarFoxMapVisualizer.Misc
     /// </summary>
     public class ASM_FINST : FINST<ASMFile, ASMCodeEditor, TabItem>
     {
-        internal Dictionary<ASMChunk, Run>? symbolMap;
-        internal Dictionary<long, Inline> NewLineMap { get; } = new();
+        internal Dictionary<ASMChunk, Run> symbolMap;
+        internal Dictionary<long, Inline> NewLineMap { get; } = new  Dictionary<long, Inline>();
         internal ASMCodeEditor EditorScreen => StateObject;
     }
     public class MAP_FINST : FINST<MAPFile, MAP_FINST.MAPEditorState, TabItem>
@@ -38,11 +38,11 @@ namespace StarFoxMapVisualizer.Misc
         public class MAPEditorState
         {
             public bool Loaded => ContentControl != default;
-            public Panel? ContentControl { get; set; } = default;
-            
+            public Panel ContentControl { get; set; } = default;
+
             public double LevelWidth = 0;
 
-            public List<MAPScript> Subsections { get; } = new();
+            public List<MAPScript> Subsections { get; } = new List<MAPScript>();
         }
 
         public MAP_FINST()

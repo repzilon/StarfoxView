@@ -58,12 +58,12 @@ namespace StarFoxMapVisualizer.Screens
             {
                 if (fileLoc == default)
                 { // SHOW FILE BROWSER
-                    CommonOpenFileDialog dialog = new()
+                    var dialog = new CommonOpenFileDialog()
                     {
                         IsFolderPicker = true,
                         InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                     };
-                    if (dialog.ShowDialog() is not CommonFileDialogResult.Ok)
+                    if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
                     {
                         GetStartedButton.IsEnabled = true;
                         return; // USER CANCELLED
@@ -83,7 +83,11 @@ namespace StarFoxMapVisualizer.Screens
             if (!result) return;
 
             //SET NEW RECENT FILE
+#if NETFRAMEWORK
+            File.WriteAllText(RecentTXTFileName, fileLoc);
+#else
             await File.WriteAllTextAsync(RecentTXTFileName, fileLoc);
+#endif
 
             EditScreen screen = new EditScreen();
             //InstrumentPackerControl screen = new();

@@ -29,7 +29,7 @@ namespace StarFoxMapVisualizer.Controls
     /// </summary>
     public partial class GFXControl : UserControl
     {
-        private Dictionary<string, GFXEditorState> stateMap = new();
+        private Dictionary<string, GFXEditorState> stateMap = new Dictionary<string, GFXEditorState>();
         private class GFXEditorState
         {
             public string SelectedObjectPath;
@@ -40,14 +40,14 @@ namespace StarFoxMapVisualizer.Controls
             /// <summary>
             /// Specifies the file path to use for finding the CGX tiles that make up this screen
             /// </summary>
-            public string? ManualSCRCGXFilePath;
+            public string ManualSCRCGXFilePath;
             public int ScreenQuadrant = -1;
         }
         /// <summary>
         /// The currently open CGX file
         /// </summary>
         public string SelectedGraphic { get; private set; }
-        private FXCGXFile? sGraphic {
+        private FXCGXFile sGraphic {
             get {
                 if (SelectedGraphic == null) return null;
                 AppResources.OpenFiles.TryGetValue(SelectedGraphic, out var sgfx);
@@ -58,7 +58,7 @@ namespace StarFoxMapVisualizer.Controls
         /// The currently open CGX file
         /// </summary>
         public string SelectedScreen { get; private set; }
-        private FXSCRFile? sScreen
+        private FXSCRFile sScreen
         {
             get
             {
@@ -71,13 +71,13 @@ namespace StarFoxMapVisualizer.Controls
         /// <summary>
         /// The currently selected Palette
         /// </summary>
-        public COL? SelectedPalette => PaletteSelection.SelectedPalette?.Palette;       
+        public COL SelectedPalette => PaletteSelection.SelectedPalette?.Palette;
         private CopyableImage DragImage;
-        private GFXEditorState? CurrentState => ((TabItem)FileSelectorTabViewer.SelectedItem)?.Tag as GFXEditorState;
-        private string? CurrentCGXFromState => CurrentState?.SelectedObjectPath;
-        private string? CurrentSCRFromState => CurrentState?.SelectedObjectPath;
+        private GFXEditorState CurrentState => ((TabItem)FileSelectorTabViewer.SelectedItem)?.Tag as GFXEditorState;
+        private string CurrentCGXFromState => CurrentState?.SelectedObjectPath;
+        private string CurrentSCRFromState => CurrentState?.SelectedObjectPath;
         private bool ScreenRendered = false;
-        private CanvasSizeDefinition CurrentCanvasSizeFromState => 
+        private CanvasSizeDefinition CurrentCanvasSizeFromState =>
             CurrentState?.CGXGraphicsCanvas as CanvasSizeDefinition
             ?? FXConvertConstraints.GetDefinition(FXConvertConstraints.FXCanvasTemplates.CGX);
 
@@ -97,9 +97,9 @@ namespace StarFoxMapVisualizer.Controls
         }
 
         public async void RefreshFiles()
-        {            
+        {
             TabItem GetTab(IImporterObject Object, Brush Background = default)
-            {                
+            {
                 if (!stateMap.TryGetValue(Object.OriginalFilePath, out var state))
                 {
                     state = new GFXEditorState()
@@ -112,7 +112,7 @@ namespace StarFoxMapVisualizer.Controls
                 {
                     Header = System.IO.Path.GetFileName(Object.OriginalFilePath),
                     Tag = state,
-                };                
+                };
                 if (Background != default) item.Background = Background;
                 item.MouseDoubleClick += delegate
                 {
@@ -185,7 +185,7 @@ namespace StarFoxMapVisualizer.Controls
         }
 
         private async Task RenderOne()
-        {                        
+        {
             //PALETTE RENDER
             DrawPalette();
             //GFX RENDER
@@ -222,7 +222,7 @@ namespace StarFoxMapVisualizer.Controls
             }
         }
 
-        private bool FindCGXForSCR(out string? SelectedFile)
+        private bool FindCGXForSCR(out string SelectedFile)
         {
             SelectedFile = default;
             if (CurrentState== null) return false; // INTERNAL ERROR
@@ -231,7 +231,7 @@ namespace StarFoxMapVisualizer.Controls
                 var fileName = System.IO.Path.GetFileNameWithoutExtension(SelectedScreen);
                 var results = AppResources.ImportedProject.SearchFile(fileName + ".CGX");
                 if (!results.Any() || results.Count() > 1 || !AppResources.OpenFiles.ContainsKey(results.First().FilePath))
-                    return false; // AMBIGUOUS  
+                    return false; // AMBIGUOUS
                 SelectedFile = results.First().FilePath;
                 return true;
             }
@@ -243,7 +243,7 @@ namespace StarFoxMapVisualizer.Controls
         {
             if (SelectedPalette == null) return;
             using (var palette = SelectedPalette.RenderPalette())
-                PaletteViewImage.Source = palette.Convert();            
+                PaletteViewImage.Source = palette.Convert();
         }
 
         private async void CanvasSizeButton_Click(object sender, RoutedEventArgs e)

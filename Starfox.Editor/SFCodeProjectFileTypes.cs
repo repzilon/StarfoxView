@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,8 +9,8 @@ namespace Starfox.Editor
 {
     public enum SFCodeProjectFileTypes
     {
-        Unknown, 
-        Include, 
+        Unknown,
+        Include,
         Palette,
         Assembly,
         BINFile,
@@ -25,7 +26,7 @@ namespace Starfox.Editor
         /// </summary>
         SF_EDIT_OPTIM
     }
-    
+
     public static class SFCodeProjectFileExtensions
     {
         /// <summary>

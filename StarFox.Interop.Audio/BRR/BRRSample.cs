@@ -1,4 +1,7 @@
-﻿namespace StarFox.Interop.BRR
+﻿using System;
+using System.Collections.Generic;
+
+namespace StarFox.Interop.BRR
 {
     public class BRRSample
     {
@@ -29,7 +32,7 @@
         /// The RAW samples contained in this file.
         /// <para>Due to the nature of BRR sound effects, the Frequency at which to play this is not stored here.</para>
         /// </summary>
-        public List<short> SampleData { get; } = new();
-        public string ParentFilePath { get; set; } 
+        public List<short> SampleData { get; } = new List<short>();
+        public string ParentFilePath { get; set; }
     }
 }

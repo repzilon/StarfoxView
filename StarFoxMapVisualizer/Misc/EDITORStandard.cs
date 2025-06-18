@@ -1,17 +1,17 @@
-﻿using Starfox.Editor;
-using StarFox.Interop.ASM;
-using StarFox.Interop.GFX.DAT.MSPRITES;
-using StarFox.Interop.MAP.EVT;
-using StarFoxMapVisualizer.Controls;
-using StarFoxMapVisualizer.Dialogs;
-using StarFoxMapVisualizer.Screens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Starfox.Editor;
+using StarFox.Interop;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP.EVT;
+using StarFoxMapVisualizer.Controls;
+using StarFoxMapVisualizer.Dialogs;
+using StarFoxMapVisualizer.Screens;
 
 namespace StarFoxMapVisualizer.Misc
 {
@@ -23,8 +23,8 @@ namespace StarFoxMapVisualizer.Misc
         /// <summary>
         /// There should only ever be one instance of the Edit screen at any given time
         /// </summary>
-        internal static EditScreen? CurrentEditorScreen { get; set; }
-        private static LoadingWindow? _loadingWindow;
+        internal static EditScreen CurrentEditorScreen { get; set; }
+        private static LoadingWindow _loadingWindow;
         private static bool WelcomeWagonShownOnce = false;
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <summary>
         /// Changes the interface to be on the Editor passed as an argument
         /// </summary>
-        public static async Task SwitchEditorView(EditScreen.ViewMode View) => 
+        public static async Task SwitchEditorView(EditScreen.ViewMode View) =>
             await CurrentEditorScreen.SwitchView(View);
         /// <summary>
         /// See: <see cref="SHAPEControl.ShowShape(string, int)"/>
@@ -95,7 +95,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="MapEvent"></param>
         /// <param name="ComponentSelected"></param>
         /// <returns></returns>
-        public static Task<bool> MapEditor_MapNodeSelected(MAPEvent MapEvent, Type? Component) => 
+        public static Task<bool> MapEditor_MapNodeSelected(MAPEvent MapEvent, Type Component) =>
             CurrentEditorScreen.MAPViewer.MapNodeSelected(MapEvent, Component);
         /// <summary>
         /// Opens the ASMViewer in the editor to the passed <see cref="ASMChunk"/>
@@ -105,16 +105,16 @@ namespace StarFoxMapVisualizer.Misc
         public static async Task AsmEditor_OpenSymbol(ASMChunk Symbol)
         {
             await SwitchEditorView(EditScreen.ViewMode.ASM);
-            await CurrentEditorScreen.ASMViewer.OpenSymbol(Symbol);            
+            await CurrentEditorScreen.ASMViewer.OpenSymbol(Symbol);
         }
 
-        private static async Task<SFOptimizerDataStruct?> Editor_BaseDoRefreshMap(SFOptimizerTypeSpecifiers Type, 
-            Func<FileInfo,Dictionary<string,string>, Task<bool>> ProcessFunction, string? InitialDirectory = default, string? KeyFile = default)
+        private static async Task<SFOptimizerDataStruct> Editor_BaseDoRefreshMap(SFOptimizerTypeSpecifiers Type,
+            Func<FileInfo,Dictionary<string,string>, Task<bool>> ProcessFunction, string InitialDirectory = default, string KeyFile = default)
         {
             retry:
             var FilesSelected = FILEStandard.ShowGenericFileBrowser($"Select ALL of your {Type.ToString().ToUpper()} Files", false, InitialDirectory, true);
             if (FilesSelected == default) return default; // User Cancelled
-            StringBuilder errorBuilder = new(); // ERRORS
+            var errorBuilder = new StringBuilder();       // ERRORS
             if (!FilesSelected.Any()) return default;
             var dirInfo = System.IO.Path.GetDirectoryName(FilesSelected.First());
             if (dirInfo == null || !Directory.Exists(dirInfo)) return default;
@@ -132,11 +132,11 @@ namespace StarFoxMapVisualizer.Misc
             }
             //GET IMPORTS SET
             FILEStandard.ReadyImporters();
-            Dictionary<string, string> shapesMap = new();
+            var shapesMap = new Dictionary<string, string>();
             foreach (var file in FilesSelected.Select(x => new FileInfo(x))) // ITERATE OVER DIR FILES
             {
                 try
-                {                   
+                {
                     bool result = await ProcessFunction(file, shapesMap);
                     if (!result) break;
                 }
@@ -173,9 +173,9 @@ namespace StarFoxMapVisualizer.Misc
             if (!FilesSelected.Any()) return;
 
             EDITORStandard.ShowLoadingWindow();
-            StringBuilder errorBuilder = new(); // ERRORS
-            StringBuilder exportedBSPs = new(); // BSPS
-            StringBuilder exportedFiles = new(); // ALL FILES
+            var errorBuilder  = new StringBuilder(); // ERRORS
+            var exportedBSPs  = new StringBuilder(); // BSPS
+            var exportedFiles = new StringBuilder(); // ALL FILES
             //GET IMPORTS SET
             FILEStandard.ReadyImporters();
             foreach (var file in FilesSelected.Select(x => new FileInfo(x))) // ITERATE OVER DIR FILES
@@ -217,7 +217,7 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="Type"></param>
         /// <returns></returns>
-        internal static async Task<SFOptimizerNode?> Editor_RefreshMap(SFOptimizerTypeSpecifiers Type, string? InitialDirectory = null)
+        internal static async Task<SFOptimizerNode> Editor_RefreshMap(SFOptimizerTypeSpecifiers Type, string InitialDirectory = null)
         {
             async Task<bool> GetShapeMap(FileInfo File, Dictionary<string, string> Map)
             {
@@ -261,15 +261,15 @@ namespace StarFoxMapVisualizer.Misc
                 // IMPORT THE DEFSPR
                 foreach (var bank in defSpr.Banks)
                 {
-                    foreach(var sprite in bank.Value.Sprites)                    
-                        Map.Add(sprite.Key, File.Name);                    
+                    foreach(var sprite in bank.Value.Sprites)
+                        Map.Add(sprite.Key, File.Name);
                 }
                 return true;
             }
 
             if (AppResources.ImportedProject == null) return default;
 
-            SFOptimizerDataStruct? dataStruct = default;
+            SFOptimizerDataStruct dataStruct = default;
             try
             {
                 switch (Type)
@@ -319,7 +319,7 @@ namespace StarFoxMapVisualizer.Misc
                 case SFOptimizerTypeSpecifiers.Maps:
                 default:
                     throw new NotImplementedException("There is no way to handle that item yet.");
-            }            
+            }
         }
 
         /// <summary>

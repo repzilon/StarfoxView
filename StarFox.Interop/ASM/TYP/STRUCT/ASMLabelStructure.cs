@@ -1,4 +1,6 @@
-﻿using StarFox.Interop.MISC;
+﻿using System;
+using StarFox.Interop;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP.STRUCT
 {
@@ -25,7 +27,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         public static bool TryParse(string input, out ASMLabelStructure result)
         {
             var originalText = input;
-            input = input.NormalizeFormatting();            
+            input = input.NormalizeFormatting();
             result = default;
             if (!input.Contains(':')) return false;
             var name = input.Substring(0, input.IndexOf(':'));

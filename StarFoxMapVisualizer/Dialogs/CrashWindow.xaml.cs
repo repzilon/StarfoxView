@@ -19,7 +19,7 @@ namespace StarFoxMapVisualizer.Dialogs
     /// </summary>
     public partial class CrashWindow : Window
     {
-        static string[] Messages =
+        private static readonly string[] Messages =
         {
             "sorry about this",
             "again? really?",
@@ -33,8 +33,10 @@ namespace StarFoxMapVisualizer.Dialogs
             "sample text"
         };
 
+        private static readonly Random _rng = new Random();
+
         public CrashWindow(Exception exception, bool Fatal = true, string Tip = "Looks like StarfoxView crashed.")
-        {            
+        {
             InitializeComponent();
 
             //setup dialog
@@ -53,7 +55,7 @@ namespace StarFoxMapVisualizer.Dialogs
 
         void RandomTitle()
         {
-            var titleIndex = Random.Shared.Next(0, Messages.Length - 1);
+            var titleIndex = _rng.Next(0, Messages.Length - 1);
             Title = Messages[titleIndex].ToUpper();
         }
 

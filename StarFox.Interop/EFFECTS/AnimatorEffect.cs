@@ -1,17 +1,21 @@
 ﻿#define IMAGING_AUTODISCARDBUFFER
 
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace StarFox.Interop.EFFECTS
 {
-    /// <summary>
-    /// Statuses for a <see cref="AnimatorEffect{T}"/>
-    /// </summary>
-    public enum AnimatorStatus
+	/// <summary>
+	/// Statuses for a <see cref="AnimatorEffect{T}"/>
+	/// </summary>
+	public enum AnimatorStatus
     {
         /// <summary>
         /// Not initialized yet
@@ -42,7 +46,7 @@ namespace StarFox.Interop.EFFECTS
         /// </summary>
         FAULTED,
     }
-    
+
     /// <summary>
     /// An abstract class that facilitates shared functionality for creating basic animations
     /// using a <see cref="Timer"/>
@@ -53,7 +57,7 @@ namespace StarFox.Interop.EFFECTS
     public abstract class AnimatorEffect<T> : IDisposable where T : class
     {
         protected TimeSpan animationTime = TimeSpan.Zero;
-        protected Timer? animationTimer;
+        protected System.Threading.Timer animationTimer;
         protected TimeSpan animationInterval = TimeSpan.Zero;
         /// <summary>
         /// The current status of this <see cref="AnimatorEffect{T}"/>
@@ -63,7 +67,7 @@ namespace StarFox.Interop.EFFECTS
         /// <summary>
         /// Information about how the <see cref="AnimatorEffect{T}"/> is doing
         /// in terms of resources and performance
-        /// <para/>Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}.AnimatorEffect(bool)"/> <see langword="constructor"/>
+        /// <para/>Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}"/> <see langword="constructor"/>
         /// </summary>
         public class DiagnosticInfo
         {
@@ -81,11 +85,11 @@ namespace StarFox.Interop.EFFECTS
         /// <summary>
         /// Information about how the <see cref="AnimatorEffect{T}"/> is doing
         /// in terms of resources and performance
-        /// <para/>Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}.AnimatorEffect(bool)"/> <see langword="constructor"/>
+        /// <para/>Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}"/> <see langword="constructor"/>
         /// </summary>
-        public DiagnosticInfo? DiagnosticInformation { get; }
+        public DiagnosticInfo DiagnosticInformation { get; }
         /// <summary>
-        /// Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}.AnimatorEffect(bool)"/> <see langword="constructor"/>
+        /// Note: DiagnosticEnabled must be true in the <see cref="AnimatorEffect{T}"/> <see langword="constructor"/>
         /// </summary>
         public bool DiagnosticsEnabled => DiagnosticInformation != null;
 
@@ -110,7 +114,7 @@ namespace StarFox.Interop.EFFECTS
         /// </summary>
         public bool IsDisposed => AnimatorStatus == AnimatorStatus.DISPOSED;
         /// <summary>
-        /// True when the <see cref="Dispose"/> method is currently running 
+        /// True when the <see cref="Dispose"/> method is currently running
         /// </summary>
         public bool Disposing => AnimatorStatus == AnimatorStatus.DISPOSING;
 
@@ -137,10 +141,10 @@ namespace StarFox.Interop.EFFECTS
 
         /// <summary>
         /// Starts the effect. Use <see cref="Pause"/> to pause the effect.
-        /// To stop the effect, dispose of this object.           
+        /// To stop the effect, dispose of this object.
         /// </summary>
         /// <param name="DueTime">The amount of time to wait until rendering the second frame. Default is 2 seconds. </param>
-        /// <param name="Interval">The amount of time to wait in between rendering frames. 
+        /// <param name="Interval">The amount of time to wait in between rendering frames.
         /// Default is <see cref="DefaultFrameRate"/>. See: <see cref="GetFPSTimeSpan(double)"/></param>
         /// <param name="Ready">Use the <paramref name="Ready"/> callback to receive the new render output.
         /// This <see cref="Bitmap"/> will automatically be disposed after successful invokation of the callback according to
@@ -164,7 +168,7 @@ namespace StarFox.Interop.EFFECTS
 
             Stopwatch renderTime = new Stopwatch();
 
-            animationTimer = new Timer(delegate {
+            animationTimer = new System.Threading.Timer(delegate {
                 if (IsPaused) return; // Paused
                 if (Disposing) return; // currently disposing
 
@@ -184,7 +188,7 @@ namespace StarFox.Interop.EFFECTS
         /// and sets the reference to it to be null
         /// </summary>
         /// <param name="Disposable"></param>
-        protected void SafeDisposeObject(ref T? Disposable)
+        protected void SafeDisposeObject(ref T Disposable)
         {
             if (Disposable == null) return;
             if (Disposable is IDisposable disposable)
@@ -228,7 +232,7 @@ namespace StarFox.Interop.EFFECTS
         //**HELPER FUNCTIONS
 
         //**BUFFER
-        ConcurrentDictionary<long, Color[,]> buffers = new();        
+        ConcurrentDictionary<long, Color[,]> buffers = new ConcurrentDictionary<long, Color[,]>();
         /// <summary>
         /// Use this to see if your <paramref name="Ticket"/> is valid for subsequent calls to <see cref="SetPixel(long, int, int, Color)"/>
         /// or <see cref="GetPixel(long, int, int)"/>
@@ -249,7 +253,7 @@ namespace StarFox.Interop.EFFECTS
             return ticket;
         }
         /// <summary>
-        /// Renders the <see cref="CreateBuffer(int, int)"/> out to 
+        /// Renders the <see cref="CreateBuffer(int, int)"/> out to
         /// a <see cref="Bitmap"/> then discards the buffer.
         /// </summary>
         /// <returns></returns>
@@ -266,7 +270,15 @@ namespace StarFox.Interop.EFFECTS
         /// <summary>
         /// Discards the current buffer. See: <see cref="CreateBuffer(int, int)"/>
         /// </summary>
-        protected bool DiscardBuffer(long Ticket) => buffers.Remove(Ticket, out _);
+        protected bool DiscardBuffer(long Ticket)
+        {
+#if NETFRAMEWORK || NETSTANDARD
+            return buffers.TryRemove(Ticket, out _);
+#else
+            return buffers.Remove(Ticket, out _);
+#endif
+		}
+
         /// <summary>
         /// Gets a Pixel color at a specified position on the buffer indicated by <paramref name="Ticket"/>
         /// </summary>
@@ -300,7 +312,6 @@ namespace StarFox.Interop.EFFECTS
         /// Loads a <see cref="Bitmap"/> into a <c><see cref="Color"/>[,]</c>
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         protected Color[,] CopyPixels(Bitmap Image, Rectangle? SourceRect = null)
         {
             SourceRect = SourceRect ?? new Rectangle(0, 0, Image.Width, Image.Height);
@@ -326,7 +337,7 @@ namespace StarFox.Interop.EFFECTS
             int x = 0, y = 0;
 
             for(int i = 0; i < rgbValues.Length; i+=bpp)
-            {                                
+            {
                 void SetPixel(Color pixel)
                 {
                     imageData[x, y] = pixel;
@@ -352,7 +363,7 @@ namespace StarFox.Interop.EFFECTS
                     byte upperBits = (byte)(colorByte >> 4);
                     SetPixel(Image.Palette.Entries[upperBits]);
                     SetPixel(Image.Palette.Entries[lowerBits]);
-                }                
+                }
             }
 
             Image.UnlockBits(handle);
@@ -363,7 +374,6 @@ namespace StarFox.Interop.EFFECTS
         /// Creates a new <see cref="Bitmap"/> from a <c><see cref="Color"/>[,]</c>
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Target platform is Windows only.")]
         protected Bitmap PutPixels(Color[,] ImageData, int Width = -1, int Height = -1, Rectangle? SourceRect = null)
         {
             if (Width == -1) Width = ImageData.GetUpperBound(0);

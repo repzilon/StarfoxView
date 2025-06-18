@@ -1,10 +1,7 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.GFX;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace StarFox.Interop.Audio.ABIN
@@ -24,10 +21,10 @@ namespace StarFox.Interop.Audio.ABIN
         {
             AudioBINFile doWork()
             {
-                AudioBINFile binFile = new(FilePath);
+                var binFile = new AudioBINFile(FilePath);
                 using (FileStream fs = File.OpenRead(FilePath))
                 {
-                    List<AudioBINChunk> Chunks = default;
+                    List<AudioBINChunk> Chunks = null;
                     using (BinaryReader br = new BinaryReader(fs))
                     {
                         //Read all chunks
@@ -47,7 +44,7 @@ namespace StarFox.Interop.Audio.ABIN
                 throw new Exception($"Oh no! It would appear that a {chunk.ChunkType} was attempted to be imported as a Song Table!");
             chunk.SeekStart(Reader.BaseStream);
             bool samples = chunk.ChunkType == AudioBINChunk.ChunkTypes.SampleTable; // samples are formatted differently as ranges
-            AudioBINTable table = new()
+            var table = new AudioBINTable()
             {
                 TableType = chunk.ChunkType,
                 SPCAddress = chunk.SPCAddress
@@ -73,8 +70,8 @@ namespace StarFox.Interop.Audio.ABIN
         }
         private void baseAddSampleData(ref AudioBINFile File, AudioBINChunk chunk, BinaryReader Reader)
         {
-            //Set Sample Data by splitting up the chunks            
-            List<AudioBINSongTableRangeEntry> distinctRanges = new();
+            //Set Sample Data by splitting up the chunks
+            var distinctRanges = new List<AudioBINSongTableRangeEntry>();
             //Set the file stream to where the raw data begins
             int RawDataOffset = chunk.FilePosition + (2 * sizeof(ushort));
             Reader.BaseStream.Seek(RawDataOffset, SeekOrigin.Begin);
@@ -99,7 +96,7 @@ namespace StarFox.Interop.Audio.ABIN
                 { // FAILSAFE! In the event there isn't a song table here, dump the whole SongData to defaultSong0
                     byte[] songData = new byte[length];
                     _ = ms.Read(songData, 0, length);
-                    AudioBINSampleData sampleDataItem = new(new AudioBINSongTableRangeEntry(chunk.SPCAddress, length), songData)
+                    var sampleDataItem = new AudioBINSampleData(new AudioBINSongTableRangeEntry(chunk.SPCAddress, length), songData)
                     {
                         IsDefaultItem0 = true,
                         FilePosition = filePos + RawDataOffset,
@@ -114,18 +111,18 @@ namespace StarFox.Interop.Audio.ABIN
                     //read the song data from here to the length calculated above
                     byte[] sampledata = new byte[length];
                     _ = ms.Read(sampledata, 0, length);
-                    AudioBINSampleData sampleDataItem = new(currentAddress, sampledata)
+                    var sampleDataItem = new AudioBINSampleData(currentAddress, sampledata)
                     {
                         FilePosition = filePos + RawDataOffset,
                     };
                     File.Samples.Add(sampleDataItem);
-                    //mark this as completed                    
+                    //mark this as completed
                 }
             }
         }
         private void baseAddSongData(ref AudioBINFile File, AudioBINChunk chunk, BinaryReader Reader)
         {
-            //Set Song Data by splitting up the chunks            
+            //Set Song Data by splitting up the chunks
             //Keep track of duplicates
             List<ushort> distinctAddresses = new List<ushort>();
             //Set the file stream to where the raw data begins
@@ -141,11 +138,11 @@ namespace StarFox.Interop.Audio.ABIN
                 //Filter duplicates
                 foreach (var address in songEntries)
                 {
-                    if (address.SPCAddress == 0x00) continue; // ignore 0x00      
+                    if (address.SPCAddress == 0x00) continue; // ignore 0x00
                     if (distinctAddresses.Contains(address.SPCAddress)) continue;
                     distinctAddresses.Add(address.SPCAddress);
                 }
-            }            
+            }
             //Begin reading song data
             using (MemoryStream ms = new MemoryStream(rawData))
             {
@@ -156,7 +153,7 @@ namespace StarFox.Interop.Audio.ABIN
                 { // FAILSAFE! In the event there isn't a song table here, dump the whole SongData to defaultSong0
                     byte[] songData = new byte[length];
                     _ = ms.Read(songData, 0, length);
-                    AudioBINSongData songDataItem = new(new AudioBINSongTableRangeEntry(chunk.SPCAddress, length), songData)
+                    var songDataItem = new AudioBINSongData(new AudioBINSongTableRangeEntry(chunk.SPCAddress, length), songData)
                     {
                         IsDefaultSong0 = true,
                         FilePosition = filePos + RawDataOffset,
@@ -168,7 +165,7 @@ namespace StarFox.Interop.Audio.ABIN
                     //the current address we're on
                     ushort currentAddress = distinctAddresses[e];
                     length = (int)(rawData.Length - ms.Position);
-                    if (currentAddress == 0x00) continue; // ignore 0x00                                     
+                    if (currentAddress == 0x00) continue; // ignore 0x00
                     //are there any addresses after this one?
                     if (e < distinctAddresses.Count() - 1)
                     { // yes.
@@ -178,12 +175,12 @@ namespace StarFox.Interop.Audio.ABIN
                     //read the song data from here to the length calculated above
                     byte[] songData = new byte[length];
                     _ = ms.Read(songData, 0, length);
-                    AudioBINSongData songDataItem = new(new AudioBINSongTableRangeEntry(currentAddress, length), songData)
+                    var songDataItem = new AudioBINSongData(new AudioBINSongTableRangeEntry(currentAddress, length), songData)
                     {
                         FilePosition = filePos + RawDataOffset,
                     };
                     File.Songs.Add(songDataItem);
-                    //mark this as completed                    
+                    //mark this as completed
                 }
             }
         }
@@ -191,7 +188,7 @@ namespace StarFox.Interop.Audio.ABIN
         {
             if (Chunks.Count < 1) return;
             //PASS 1: Determine the chunk type for every chunk in the file
-            foreach (AudioBINChunk chunk in Chunks)            
+            foreach (AudioBINChunk chunk in Chunks)
                 _ = chunk.GetChunkType(Reader.BaseStream); // This sets ChunkType property on the chunk
             //PASS 2: Solve ambiguity and interpret the data
             foreach (AudioBINChunk chunk in Chunks)
@@ -216,12 +213,12 @@ namespace StarFox.Interop.Audio.ABIN
                         ; // TODO: InstPrms here
                         break;
                 }
-            }                        
+            }
         }
         private List<AudioBINChunk> ReadChunks(BinaryReader Reader)
         {
             var br = Reader;
-            List<AudioBINChunk> Chunks = new();
+            var Chunks = new List<AudioBINChunk>();
             while (true)
             {
                 //get header size and SPC address

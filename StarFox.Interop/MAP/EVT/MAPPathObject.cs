@@ -1,9 +1,9 @@
-﻿using StarFox.Interop.ASM.TYP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM.TYP;
 
 namespace StarFox.Interop.MAP.EVT
 {
@@ -26,7 +26,7 @@ namespace StarFox.Interop.MAP.EVT
         protected override string[] CompatibleMacros { get; } =
         {
             "pathobj", "pathspecial", "pathcspecial"
-        };        
+        };
 
         public MAPPathObjectEvent() : base()
         {
@@ -39,7 +39,7 @@ namespace StarFox.Interop.MAP.EVT
 
         protected override void Parse(ASMLine Line)
         {
-            int tryParseOrDefault(string? content)
+            int tryParseOrDefault(string content)
             {
                 if (string.IsNullOrEmpty(content)) return 0;
                 if (int.TryParse(content, out int result)) { return result; }

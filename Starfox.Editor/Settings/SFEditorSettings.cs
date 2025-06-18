@@ -14,21 +14,21 @@ namespace Starfox.Editor.Settings
         public abstract SFCodeProjectSettingsTypes SettingsType { get; }
 
         /// <summary>
-        /// This is called for all Settings subscribers when a setting is changed this is fired      
+        /// This is called for all Settings subscribers when a setting is changed this is fired
         /// </summary>
         /// <param name="SettingsTypeChanged"></param>
         /// <param name="ChangedObject"></param>
         public delegate void OnSettingsUpdatedHandler(SFCodeProjectSettingsTypes SettingsTypeChanged, SFEditorSettings ChangedObject);
         /// <summary>
-        /// This is called for all Settings subscribers when a setting is changed this is fired      
+        /// This is called for all Settings subscribers when a setting is changed this is fired
         /// </summary>
         /// <param name="SettingsTypeChanged"></param>
         /// <param name="ChangedObject"></param>
-        public event OnSettingsUpdatedHandler? SettingsChanged = default;
+        public event OnSettingsUpdatedHandler SettingsChanged = default;
         /// <summary>
         /// Fires the <see cref="SettingsChanged"/> event for all subscribers to update their settings
         /// </summary>
-        public void ApplyChanges() => SettingsChanged?.Invoke(SettingsType, this);        
+        public void ApplyChanges() => SettingsChanged?.Invoke(SettingsType, this);
     }
 
     /// <summary>

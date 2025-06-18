@@ -6,11 +6,11 @@ namespace StarFox.Interop.GFX.COLTAB
     /// The context attached to a <see cref="COLTABImporter"/> instance
     /// </summary>
     public class COLTABImporterContext : ImporterContext<ASMFile>
-    {        
+    {
         /// <summary>
         /// The currently importing group
         /// </summary>
-        internal COLGroup? CurrentGroup { get; set; }
+        internal COLGroup CurrentGroup { get; set; }
         /// <summary>
         /// Gets <see cref="ImporterContext{T}.CurrentFile"/> <see langword="as"/> <see cref="COLTABFile"/>
         /// <para>This being null means there is undefined behavior in the importer as the CurrentFile should always be of this type.</para>
@@ -24,7 +24,7 @@ namespace StarFox.Interop.GFX.COLTAB
         internal void StartNewGroup(string Name)
         {
             CurrentGroup = new COLGroup(Name);
-            while (GetCurrentFile().Groups.ContainsKey(Name)) // UHHH guess that one already exists? 
+            while (GetCurrentFile().Groups.ContainsKey(Name)) // UHHH guess that one already exists?
                 Name += '_'; // add an underscore as a placeholder
             GetCurrentFile().Groups.Add(Name,CurrentGroup); // add this group to the register
         }

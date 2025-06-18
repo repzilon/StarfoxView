@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using Starfox.Editor;
 using static StarFox.Interop.SFFileType;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -30,7 +31,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         private void showOptions()
         {
             TypeMenu.Items.Clear();
-            foreach(var type in Enum.GetValues<SFFileType.ASMFileTypes>())
+            foreach(var type in SFCodeProject.GetValues<SFFileType.ASMFileTypes>())
             {
                 var item = new MenuItem()
                 {

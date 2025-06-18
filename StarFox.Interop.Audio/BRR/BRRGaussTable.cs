@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StarFox.Interop.BRR
+﻿namespace StarFox.Interop.BRR
 {
     internal static class BRRGaussInterpolation
     {

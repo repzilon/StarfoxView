@@ -1,4 +1,7 @@
-﻿using StarFox.Interop.ASM;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using StarFox.Interop.ASM;
 
 namespace StarFox.Interop.GFX.COLTAB
 {
@@ -10,7 +13,7 @@ namespace StarFox.Interop.GFX.COLTAB
         /// <summary>
         /// The groups added to this file, sorted by name
         /// </summary>
-        public Dictionary<string, COLGroup> Groups { get; } = new();        
+        public Dictionary<string, COLGroup> Groups { get; } = new Dictionary<string, COLGroup>();
         /// <summary>
         /// Creates a new <see cref="COLTABFile"/> instance with no groups.
         /// </summary>
@@ -34,14 +37,14 @@ namespace StarFox.Interop.GFX.COLTAB
         /// </summary>
         /// <param name="Name">The name of the group</param>
         /// <returns></returns>
-        public COLGroup? GetGroup(string Name) => Groups.FirstOrDefault(x => x.Key.ToUpper() == Name.ToUpper()).Value;
+        public COLGroup GetGroup(string Name) => Groups.FirstOrDefault(x => String.Equals(x.Key, Name, StringComparison.CurrentCultureIgnoreCase)).Value;
         /// <summary>
         /// See: <see cref="GetGroup(string)"/>
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="group"></param>
         /// <returns></returns>
-        public bool TryGetGroup(string Name, out COLGroup? group)
+        public bool TryGetGroup(string Name, out COLGroup group)
         {
             group = GetGroup(Name);
             return group != null;

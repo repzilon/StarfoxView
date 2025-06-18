@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.IO;
 using System.Windows.Controls;
-using static StarFox.Interop.GFX.CAD;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
 {
@@ -9,7 +8,20 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
     /// </summary>
     public partial class PaletteListView : ListView
     {
-        public (string Name, COL Palette)? SelectedPalette => SelectedItem != null ? (ValueTuple<string, COL>)(SelectedItem as ListViewItem)?.Tag : default;
+        public PaletteTuple? SelectedPalette
+        {
+            get
+            {
+                var lviSelected = SelectedItem as ListViewItem;
+                if (lviSelected != null) {
+                    var objTag = lviSelected.Tag;
+                    if (objTag is PaletteTuple) {
+                        return (PaletteTuple)objTag;
+                    }
+                }
+                return null;
+            }
+        }
 
         public PaletteListView()
         {
@@ -25,8 +37,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             {
                 var item = new ListViewItem()
                 {
-                    Content = System.IO.Path.GetFileNameWithoutExtension(col.Key),
-                    Tag = (col.Key, col.Value)
+                    Content = Path.GetFileNameWithoutExtension(col.Key),
+                    Tag = new PaletteTuple(col.Key, col.Value)
                 };
                 Items.Add(item);
                 if (col.Value == SelectedPalette?.Palette)

@@ -1,13 +1,14 @@
-﻿using StarFox.Interop.ASM;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFox.Interop.MAP.CONTEXT;
 using StarFox.Interop.MAP.EVT;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StarFox.Interop.MAP
 {
@@ -21,12 +22,12 @@ namespace StarFox.Interop.MAP
             "VARS.INC", // contains various variables
             "STRATEQU.INC" // contains constraints like the level XMax, YMax, etc.
         };
-        private MAPContextFile? mapContextDefinitions;
+        private MAPContextFile mapContextDefinitions;
         /// <summary>
         /// Using <see cref="ProcessLevelContexts"/> functions will populate this value.
         /// <para>You should use this property to explore the loaded contexts, but not edit them.</para>
         /// </summary>
-        public MAPContextFile? LoadedContextDefinitions => mapContextDefinitions;
+        public MAPContextFile LoadedContextDefinitions => mapContextDefinitions;
         /// <summary>
         /// Dictates whether or not this <see cref="MAPImporter"/> has contexts set.
         /// <para>See: <see cref="ProcessLevelContexts(string, ASMFile)"/></para>
@@ -59,7 +60,7 @@ namespace StarFox.Interop.MAP
         /// <summary>
         /// Optionally, this importer can attach <see cref="CONTEXT.MAPContextDefinition"/> info
         /// to this MAP import by getting data from <c>BGS.ASM</c> data.
-        /// <para>This will use <see cref="SetImports(ASMFile[])"/> to find the <c>BGMACS.INC</c> file. 
+        /// <para>This will use <see cref="SetImports(ASMFile[])"/> to find the <c>BGMACS.INC</c> file.
         /// If it is not imported, this method will throw an exception.</para>
         /// </summary>
         /// <param name="BGSASM">The full path to the <c>BGS.ASM</c> file.</param>
@@ -77,7 +78,7 @@ namespace StarFox.Interop.MAP
         /// Optionally, this importer can attach <see cref="CONTEXT.MAPContextDefinition"/> info
         /// to this MAP import by getting data from <c>BGS.ASM</c> data.
         /// <para>This will use <see cref="SetImports(ASMFile[])"/> to find the <c>BGMACS.INC</c> file
-        /// and <c>BGS.ASM</c>. If they are not imported, this method will throw an exception.</para>       
+        /// and <c>BGS.ASM</c>. If they are not imported, this method will throw an exception.</para>
         /// </summary>
         public Task<MAPContextFile> ProcessLevelContexts()
         {
@@ -91,14 +92,14 @@ namespace StarFox.Interop.MAP
         /// to this MAP import by getting data from <c>BGS.ASM</c> data.
         /// </summary>
         public void ProcessLevelContexts(MAPContextFile MapContextFile) =>
-            mapContextDefinitions = MapContextFile;       
+            mapContextDefinitions = MapContextFile;
         /// <summary>
-        /// Finds the specified <see cref="MAPContextDefinition"/> by name (as it appears in code, not 
+        /// Finds the specified <see cref="MAPContextDefinition"/> by name (as it appears in code, not
         /// <see cref="MAPSetBG.TranslateNameToMAPContext(in string, string)"/>)
         /// </summary>
         /// <param name="Name"></param>
         /// <returns></returns>
-        public MAPContextDefinition? FindContext(string Name)
+        public MAPContextDefinition FindContext(string Name)
         {
             var bgname = MAPSetBG.TranslateNameToMAPContext(Name);
             return mapContextDefinitions?.Definitions?.FirstOrDefault(
@@ -114,10 +115,10 @@ namespace StarFox.Interop.MAP
             ErrorOut.Clear();
             var baseImport = await baseImporter.ImportAsync(FilePath);
             if (baseImport == default) throw new InvalidOperationException("That file could not be parsed.");
-            var file = ImportedObject = new MAPFile(baseImport); // from ASM file                                                
-            
+            var file = ImportedObject = new MAPFile(baseImport); // from ASM file
+
             int runningDelay = 0;
-            MAPScript? currentScript = null;
+            MAPScript currentScript = null;
 
             void SetUpNewMapScript()
             {
@@ -135,7 +136,7 @@ namespace StarFox.Interop.MAP
                 {
                     ErrorOut.AppendLine($"Can't add a context: {BackgroundName} because it wasn't found.\n" +
                         $"Attempted to translate it to be: {MAPSetBG.TranslateNameToMAPContext(BackgroundName)}, no luck.");
-                    return false;                 
+                    return false;
                 }
                 currentScript.AttachContext(context, runningDelay);
                 return true;
@@ -145,7 +146,7 @@ namespace StarFox.Interop.MAP
             uint ASMChunkIndex = 0;
             var chunksArray = file.Chunks.OfType<ASMLine>();
             //For MapLoop
-            MAPLoopEvent? CurrentLoop = default;
+            MAPLoopEvent CurrentLoop = default;
             int loopedAmount = 0;
 
             //Set up the first script
@@ -153,19 +154,20 @@ namespace StarFox.Interop.MAP
 
             for(ASMChunkIndex = 0; ASMChunkIndex < chunksArray.Count(); ASMChunkIndex++)
             { // go through chunks looking for Map objects
-                ASMLine? line = chunksArray.ElementAt((int)ASMChunkIndex);
+                ASMLine line = chunksArray.ElementAt((int)ASMChunkIndex);
                 //Find occurances of sections to map loops
                 if (line.HasInlineLabel && !string.IsNullOrWhiteSpace(line.InlineLabel))
                 {
                     currentScript.LevelData.SectionMarkers.TryAdd(line.InlineLabel.ToLowerInvariant(),
                         new MAPData.MAPRegionContext(line.InlineLabel, ASMChunkIndex, runningDelay));
-                    if (currentScript.LevelData.SectionMarkers.Count == 1)
+
+					if (currentScript.LevelData.SectionMarkers.Count == 1)
                         currentScript.Header.LevelMacroName = line.InlineLabel;
                     continue;
                 }
                 if (!line.HasStructureApplied) continue;
-                if (line.Structure is not ASMMacroInvokeLineStructure) continue; // we can't do much with these right now
-                // ** begin macro invoke line                
+                if (! (line.Structure is ASMMacroInvokeLineStructure)) continue; // we can't do much with these right now
+                // ** begin macro invoke line
                 if (MAPEvent.TryParse<MAPObjectEvent>(line, out var mapobj))
                     currentScript.LevelData.Events.Add(mapobj); // Spawn Event Object call
                 else if (MAPEvent.TryParse<MAPJSREvent>(line, out var mapjsr))
@@ -191,9 +193,9 @@ namespace StarFox.Interop.MAP
                 { // Map Loop
                     //Find the section pointer in the file
                     if (!currentScript.LevelData.SectionMarkers.TryGetValue(maploop.LoopMacroName.ToLowerInvariant(), out var loopContext))
-                        throw new InvalidOperationException($"MapLoop requested {maploop.LoopMacroName} which wasn't found in the file.");                        
+                        throw new InvalidOperationException($"MapLoop requested {maploop.LoopMacroName} which wasn't found in the file.");
                     //are we already looping
-                    if (CurrentLoop == null || 
+                    if (CurrentLoop == null ||
                         //In the below situation, we somehow traversed from one maploop to a completely different one.
                         //how? no idea. should never happen
                         CurrentLoop.LoopMacroName != maploop.LoopMacroName)
@@ -213,7 +215,7 @@ namespace StarFox.Interop.MAP
                     else
                     {
                         //goto the line that has the label
-                        ASMChunkIndex = loopContext.ASMChunkIndex;                        
+                        ASMChunkIndex = loopContext.ASMChunkIndex;
                         continue;
                     }
                 }
@@ -224,16 +226,17 @@ namespace StarFox.Interop.MAP
                 }
                 else currentScript.LevelData.Events.Add(new MAPUnknownEvent(line)); // default add unknown map event
 
-                currentScript.LevelData.EventsByDelay.Add(currentScript.LevelData.Events.Count - 1, runningDelay);                
+                currentScript.LevelData.EventsByDelay.Add(currentScript.LevelData.Events.Count - 1, runningDelay);
                 var latestNode = currentScript.LevelData.Events.Last();
                 if (latestNode is IMAPDelayEvent delay)
                     runningDelay += delay.Delay;
-                latestNode.LevelDelay = runningDelay;                
+                latestNode.LevelDelay = runningDelay;
             }
-            if (currentScript.LevelData.Events.Count > 1)
+            if (currentScript.LevelData.Events.Count > 1) {
                 file.Scripts.TryAdd(currentScript.Header.LevelMacroName, currentScript);
-            
+            }
+
             return ImportedObject;
-        }        
+        }
     }
 }

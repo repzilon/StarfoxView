@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json;
-using System.Threading.Tasks;
+#endif
 
 namespace Starfox.Editor
 {
@@ -44,7 +47,7 @@ namespace Starfox.Editor
         /// <summary>
         /// The map of objects this optimizer links
         /// </summary>
-        public Dictionary<string, string> ObjectMap { get; set; } = new();
+        public Dictionary<string, string> ObjectMap { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// The path to the files included in this <see cref="SFOptimizerDataStruct"/>
         /// </summary>
@@ -52,7 +55,7 @@ namespace Starfox.Editor
         /// <summary>
         /// Importer errors can be added here to communicate with the User
         /// </summary>
-        public StringBuilder ErrorOut { get; set; } = new();
+        public StringBuilder ErrorOut { get; set; } = new StringBuilder();
         public bool HasErrors => ErrorOut?.Length > 0;
     }
     /// <summary>
@@ -68,7 +71,7 @@ namespace Starfox.Editor
         /// <summary>
         /// The data stored within this optimizer file
         /// </summary>
-        public SFOptimizerDataStruct? OptimizerData { get; private set; }
+        public SFOptimizerDataStruct OptimizerData { get; private set; }
         /// <summary>
         /// Loads the optimizer from the file path
         /// </summary>
@@ -88,15 +91,34 @@ namespace Starfox.Editor
         public static SFOptimizerNode Create(string BaseDirectory, string Name, SFOptimizerDataStruct DataStruct)
         {
             var path = Path.Combine(BaseDirectory, $"{Name}.{SF_OPTIM_Extension}");
-            var json = JsonSerializer.Serialize(DataStruct);
+#if NET46
+            string json;
+            using (var wrtString = new StringWriter()) {
+                using (var wrtJson = new JsonTextWriter(wrtString)) {
+                    JsonSerializer.Create().Serialize(wrtJson, DataStruct);
+                    wrtJson.Flush();
+                    json = wrtString.ToString();
+                }
+            }
+#else
+			var json = JsonSerializer.Serialize(DataStruct);
+#endif
             File.WriteAllText(path, json);
             return new SFOptimizerNode(path);
         }
 
         private void GetOptimizerFileData()
         {
+#if NET46
+            using (var rdrStream = new StreamReader(FilePath)) {
+                using (var rdrJson = new JsonTextReader(rdrStream)) {
+					OptimizerData = JsonSerializer.Create().Deserialize<SFOptimizerDataStruct>(rdrJson);
+				}
+            }
+#else
             var text = File.ReadAllText(FilePath);
             OptimizerData = JsonSerializer.Deserialize<SFOptimizerDataStruct>(text);
-        }
+#endif
+		}
     }
 }

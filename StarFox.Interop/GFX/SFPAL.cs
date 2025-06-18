@@ -1,16 +1,16 @@
-﻿using Microsoft.VisualBasic;
-using StarFox.Interop.GFX.COLTAB;
-using StarFox.Interop.GFX.COLTAB.DEF;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json;
+#endif
 using System.Threading.Tasks;
+using StarFox.Interop.GFX.COLTAB;
+using StarFox.Interop.GFX.COLTAB.DEF;
 using static StarFox.Interop.GFX.CAD;
 
 namespace StarFox.Interop.GFX
@@ -34,23 +34,23 @@ namespace StarFox.Interop.GFX
         /// <summary>
         /// A filtered list of just collites (light colors)
         /// </summary>
-        public Dictionary<int, Color> Collites { get; } = new();
+        public Dictionary<int, Color> Collites { get; } = new Dictionary<int, Color>();
         /// <summary>
         /// A filtered list of just coldepths (light colors)
         /// </summary>
-        public Dictionary<int, Color> Coldepths { get; } = new();
+        public Dictionary<int, Color> Coldepths { get; } = new Dictionary<int, Color>();
         /// <summary>
         /// A filtered list of just colnorms (colors based on normal of face ... in relation to a supposed source)
         /// </summary>
-        public Dictionary<int, Color> Colnorms { get; } = new();
+        public Dictionary<int, Color> Colnorms { get; } = new Dictionary<int, Color>();
         /// <summary>
         /// External palettes (such as animations) are listed here to include in Editors
         /// </summary>
-        public HashSet<string> ReferencedPaletteNames { get; } = new();
+        public HashSet<string> ReferencedPaletteNames { get; } = new HashSet<string>();
         /// <summary>
         /// External textures (such as <see cref="MSprites"/>) are listed here to include in Editors
         /// </summary>
-        public HashSet<string> ReferencedTextureNames { get; } = new();
+        public HashSet<string> ReferencedTextureNames { get; } = new HashSet<string>();
 
         private bool IsOdd = false;
         private int colorPaletteStartIndex = -1;
@@ -104,8 +104,14 @@ namespace StarFox.Interop.GFX
         /// </summary>
         public async Task SerializeColors(Stream Destination)
         {
+#if NET46
+            using (var writer = new StreamWriter(Destination)) {
+				JsonSerializer.Create().Serialize(writer, Colors.Select(x => BSPColor.FromDrawing(x)));
+			}
+#else
             await JsonSerializer.SerializeAsync(Destination, Colors.Select(x => BSPColor.FromDrawing(x)));
-        }
+#endif
+		}
         /// <summary>
         /// Gets the palette, this is only compatible with 8BPP mode
         /// </summary>
@@ -125,14 +131,18 @@ namespace StarFox.Interop.GFX
             {
                 i++;
                 actualPosition++;
-                var color = definition.CallType switch
-                {
-                    COLDefinition.CallTypes.Collite => HandleCollite(definition as COLLite),
-                    COLDefinition.CallTypes.Coldepth => HandleColdepth(definition as COLDepth),
-                    COLDefinition.CallTypes.Colnorm => HandleColnorm(definition as COLNorm),
-                    //COLDefinition.CallTypes.Colsmooth => HandleColsmooth(definition as COLSmooth),                    
-                    _ => default
-                };
+                //COLDefinition.CallTypes.Colsmooth => HandleColsmooth(definition as COLSmooth),
+                Color? color;
+                if (definition.CallType == COLDefinition.CallTypes.Collite) {
+                    color = this.HandleCollite(definition as COLLite);
+                } else if (definition.CallType == COLDefinition.CallTypes.Coldepth) {
+                    color = this.HandleColdepth(definition as COLDepth);
+                } else if (definition.CallType == COLDefinition.CallTypes.Colnorm) {
+                    color = this.HandleColnorm(definition as COLNorm);
+                } else {
+                    color = null;
+                }
+
                 if (definition is COLAnimationReference anim)
                     ReferencedPaletteNames.Add(anim.TableName);
                 if (definition is COLTexture texture)
@@ -143,7 +153,7 @@ namespace StarFox.Interop.GFX
                     continue;
                 }
                 Array.Resize(ref colors, i + 1);
-                colors[i] = color.Value;               
+                colors[i] = color.Value;
             }
             return Colors = colors;
         }
@@ -203,7 +213,9 @@ namespace StarFox.Interop.GFX
         {
             var color = HandleDepthColorByte(DepthColor.ColorByte);
             if (!color.HasValue) return null;
+
             Coldepths.TryAdd(DepthColor.ColorByte, color.Value);
+
             return color;
         }
         private Color? HandleDepthColorByte(int ColorByte)
@@ -222,7 +234,7 @@ namespace StarFox.Interop.GFX
             }
             if (ColorByte == 0x12)
             {
-                IsOdd = false;                
+                IsOdd = false;
             }
             bool isInbetween = IsOdd; // simple alternator
             if (isInbetween)
@@ -241,36 +253,34 @@ namespace StarFox.Interop.GFX
             if (Collites.TryGetValue(ColorByte, out var color))
                 return color;
 
-            var collite = ColorByte switch
-            {
-                0 => LerpColor(GetColorByIndex(10), GetColorByIndex(11)), // dark grey - grey
-                1 => LerpColor(GetColorByIndex(9), GetColorByIndex(10)), // dark blue - dark grey
-                2 => LerpColor(GetColorByIndex(9), GetColorByIndex(2)), // dark blue - dark red
-                3 => LerpColor(GetColorByIndex(9), GetColorByIndex(5)), // dark blue - blue
-                4 => LerpColor(GetColorByIndex(9), GetColorByIndex(3)), // dark blue - coral
-                5 => LerpColor(GetColorByIndex(9), GetColorByIndex(6)), // dark blue - light blue
-                6 => LerpColor(GetColorByIndex(2), GetColorByIndex(9)), // dark red - dark blue
-                7 => LerpColor(GetColorByIndex(5), GetColorByIndex(9)), // blue - dark blue
-                8 => LerpColor(GetColorByIndex(2), GetColorByIndex(5)), // dark red - dark blue
-                9 => LerpColor(GetColorByIndex(0xF), GetColorByIndex(0x9))
-            };
-            if (false)
-            {
+            Color collite;
+            var karFirstIndexes  = new byte[10] { 10, 9, 9, 9, 9, 9, 2, 5, 2, 0xF };
+            var karSecondIndexes = new byte[10] { 11, 10, 2, 5, 3, 6, 9, 9, 5, 0x9 };
+            if ((ColorByte >= 0) && (ColorByte <= 9)) {
+                collite = LerpColor(this.GetColorByIndex(karFirstIndexes[ColorByte]), this.GetColorByIndex(karSecondIndexes[ColorByte]));
+            } else {
+                collite = ColorTranslator.FromHtml("#FFFFFF");
+            }
+
+            if (false) {
                 // Falling back on CoolK definitions until parser is complete
-                collite = ColorTranslator.FromHtml(ColorByte switch
-                {
-                    0 => "#E7E7E7", //Solid Dark Grey
-                    1 => "#AAAAAA", // = Solid Darker Grey
-                    2 => "#BA392A", //= Shaded Bright Red/Dark Red
-                    3 => "#5144D4", //= Shaded Blue/Bright Blue
-                    4 => "#D8A950", // = Shaded Bright Orange/Black
-                    5 => "#190646", //= Shaded Turquoise/Black
-                    6 => "#801009", //= Solid Dark Red
-                    7 => "#2411A3", //= Solid Blue
-                    8 => "#7C11A3", //= Shaded Red/blue (Purple)
-                    9 => "#2F9E28", //= Shaded Green/Dark Green
-                    _ => "#FFFFFF" // = Error -- color not found
-                });
+                var karFallback = new string[] {
+                    "#E7E7E7", //=Solid Dark Grey
+                    "#AAAAAA", //= Solid Darker Grey
+                    "#BA392A", //= Shaded Bright Red/Dark Red
+                    "#5144D4", //= Shaded Blue/Bright Blue
+                    "#D8A950", //= Shaded Bright Orange/Black
+                    "#190646", //= Shaded Turquoise/Black
+                    "#801009", //= Solid Dark Red
+                    "#2411A3", //= Solid Blue
+                    "#7C11A3", //= Shaded Red/blue (Purple)
+                    "#2F9E28", //= Shaded Green/Dark Green
+                };
+                if ((ColorByte >= 0) && (ColorByte <= 9)) {
+                    collite = ColorTranslator.FromHtml(karFallback[ColorByte]);
+                } else {
+                    collite = ColorTranslator.FromHtml("#FFFFFF");
+                }
             }
             Collites.Add(ColorByte, collite);
             return collite;

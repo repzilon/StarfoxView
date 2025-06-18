@@ -25,8 +25,8 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
-        internal static async Task<string?> ExtractCCR(FileInfo File) {
-            BPPDepthMenu menu = new()
+        internal static async Task<string> ExtractCCR(FileInfo File) {
+            var menu = new BPPDepthMenu()
             {
                 Owner = Application.Current.MainWindow
             };
@@ -54,27 +54,36 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="PaletteFullPath"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        internal static COL? MAPContext_GetPaletteByName(string? MAPContextColorPaletteName, out string? PaletteFullPath)
+        internal static COL MAPContext_GetPaletteByName(string MAPContextColorPaletteName, out string PaletteFullPath)
         {
             var ColorPaletteName = MAPContextColorPaletteName;
             if (ColorPaletteName == default)
                 throw new ArgumentNullException(nameof(ColorPaletteName) + " was not set on this context." +
                     " Can't render this without a palette.");
-            ColorPaletteName = ColorPaletteName.ToLower() switch
-            {
-                "2a" => "BG2-A",
-                "2b" => "BG2-B",
-                "2c" => "BG2-C",
-                "2d" => "BG2-D",
-                "2e" => "BG2-E",
-                "2f" => "BG2-F",
-                "2g" => "BG2-G",
-                "tm" => "T-M",
-                "tm2" => "T-M-2",
-                "tm3" => "T-M-3",
-                "tm4" => "T-M-4",
-                _ => ColorPaletteName
-            };
+            if (ColorPaletteName.ToLower() == "2a") {
+                ColorPaletteName = "BG2-A";
+            } else if (ColorPaletteName.ToLower() == "2b") {
+                ColorPaletteName = "BG2-B";
+            } else if (ColorPaletteName.ToLower() == "2c") {
+                ColorPaletteName = "BG2-C";
+            } else if (ColorPaletteName.ToLower() == "2d") {
+                ColorPaletteName = "BG2-D";
+            } else if (ColorPaletteName.ToLower() == "2e") {
+                ColorPaletteName = "BG2-E";
+            } else if (ColorPaletteName.ToLower() == "2f") {
+                ColorPaletteName = "BG2-F";
+            } else if (ColorPaletteName.ToLower() == "2g") {
+                ColorPaletteName = "BG2-G";
+            } else if (ColorPaletteName.ToLower() == "tm") {
+                ColorPaletteName = "T-M";
+            } else if (ColorPaletteName.ToLower() == "tm2") {
+                ColorPaletteName = "T-M-2";
+            } else if (ColorPaletteName.ToLower() == "tm3") {
+                ColorPaletteName = "T-M-3";
+            } else if (ColorPaletteName.ToLower() == "tm4") {
+                ColorPaletteName = "T-M-4";
+            }
+
             PaletteFullPath = default;
             //CHECK IF THE PALETTE IS INCLUDED FIRST
             var results = AppResources.ImportedProject.Palettes.FirstOrDefault(
@@ -99,7 +108,7 @@ namespace StarFoxMapVisualizer.Misc
             {
                 if (ForceExtractCCR && CGXFileInfo != default)
                     AppResources.ImportedProject.CloseFile(CGXFileInfo.FullName);
-                if (!FILEStandard.SearchProjectForFile($"{CHRName}.CCR", out var CCRFileInfo, true)) // CCR File Search                    
+                if (!FILEStandard.SearchProjectForFile($"{CHRName}.CCR", out var CCRFileInfo, true)) // CCR File Search
                     throw new FileNotFoundException($"The CGX file(s) (or CCR files) requested were not found.\n" +
                         $"{CHRName}");
                 //EXTRACT CCR
@@ -151,9 +160,9 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="CHRName">The name of the CGX file (not a file path). If default will just use the SCR name.</param>
         /// <param name="Screen">Optionally can specify which quadrant of the SCR file to draw</param>
         /// <returns></returns>
-        internal static async Task<Bitmap> RenderSCR(string ColorPaletteName, string SCRName, string? CHRName = default, 
-            int Screen = -1, bool ForceExtractCCR = false, bool ForceExtractPCR = false)            
-        {          
+        internal static async Task<Bitmap> RenderSCR(string ColorPaletteName, string SCRName, string CHRName = default,
+            int Screen = -1, bool ForceExtractCCR = false, bool ForceExtractPCR = false)
+        {
             var palette = MAPContext_GetPaletteByName(ColorPaletteName, out _);
             if (palette == default) throw new FileNotFoundException($"{ColorPaletteName} was not found as" +
                 $" an included Palette in this project."); // NOPE IT WASN'T
@@ -187,14 +196,14 @@ namespace StarFoxMapVisualizer.Misc
             return fxSCR.Render(fxCGX, Palette, false, Screen);
         }
         /// <summary>
-        /// Includes a *.CGX file into the project. 
+        /// Includes a *.CGX file into the project.
         /// <para>This function will NOT extract a *.CGR file.</para>
         /// <para>This function spawns dialog modals.</para>
         /// </summary>
         /// <param name="File"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        internal static async Task<FXCGXFile?> OpenCGX(FileInfo File)
+        internal static async Task<FXCGXFile> OpenCGX(FileInfo File)
         {
             if (!AppResources.OpenFiles.ContainsKey(File.FullName))
             {
@@ -202,7 +211,7 @@ namespace StarFoxMapVisualizer.Misc
                 var fxGFX = SFGFXInterface.OpenCGX(File.FullName);
                 if (fxGFX == null)
                 { // NOPE CAN'T DO THAT
-                    BPPDepthMenu menu = new()
+                    var menu = new BPPDepthMenu()
                     {
                         Owner = Application.Current.MainWindow
                     };
@@ -219,7 +228,7 @@ namespace StarFoxMapVisualizer.Misc
         }
 
         /// <summary>
-        /// Includes a *.SCR file into the project. 
+        /// Includes a *.SCR file into the project.
         /// <para>This function will NOT extract a *.PCR file.</para>
         /// </summary>
         /// <param name="File"></param>

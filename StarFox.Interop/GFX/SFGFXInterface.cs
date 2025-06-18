@@ -1,13 +1,14 @@
-﻿using StarFox.Interop.GFX.CONVERT;
-using StarFox.Interop.GFX.DAT;
-using StarFox.Interop.GFX.DAT.MSPRITES;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using StarFox.Interop.GFX.CONVERT;
+using StarFox.Interop.GFX.DAT;
+using StarFox.Interop.GFX.DAT.MSPRITES;
 
 namespace StarFox.Interop.GFX
 {
@@ -24,7 +25,7 @@ namespace StarFox.Interop.GFX
         static async Task<byte[]> ExtractDecrunch(string fullName)
         {
             using (var fs = File.OpenRead(fullName))
-            {                
+            {
                 byte[] fileArray = new byte[fs.Length];
                 await fs.ReadAsync(fileArray, 0, fileArray.Length);
                 return Decrunch.Decompress(fullName, fileArray);
@@ -44,7 +45,11 @@ namespace StarFox.Interop.GFX
             using (var ms = new MemoryStream(file))
             {
                 var bytes = CAD.CGX.GetRAWCGXDataArray(ms, BitDepth);
+#if NETFRAMEWORK || NETSTANDARD
+                File.WriteAllBytes(name, bytes);
+#else
                 await File.WriteAllBytesAsync(name, bytes);
+#endif
                 return name;
             }
         }
@@ -64,7 +69,11 @@ namespace StarFox.Interop.GFX
             using (var ms = new MemoryStream(file))
             {
                 var bytes = CAD.SCR.GetRAWSCRDataArray(ms, 0);
+#if NETFRAMEWORK || NETSTANDARD
+                File.WriteAllBytes(name, bytes);
+#else
                 await File.WriteAllBytesAsync(name, bytes);
+#endif
                 return name;
             }
         }
@@ -73,7 +82,7 @@ namespace StarFox.Interop.GFX
         /// </summary>
         /// <param name="FileName">The path to get to the file</param>
         /// <returns></returns>
-        public static async Task<FXCGXFile?> ImportCGX(string FileName, CAD.BitDepthFormats BitDepth = CAD.BitDepthFormats.BPP_4)
+        public static async Task<FXCGXFile> ImportCGX(string FileName, CAD.BitDepthFormats BitDepth = CAD.BitDepthFormats.BPP_4)
         {
             using (var fs = File.OpenRead(FileName))
             {
@@ -87,7 +96,7 @@ namespace StarFox.Interop.GFX
         /// </summary>
         /// <param name="FileName">The path to get to the file</param>
         /// <returns></returns>
-        public static FXCGXFile? OpenCGX(string FileName)
+        public static FXCGXFile OpenCGX(string FileName)
         {
             using (var fs = File.OpenRead(FileName))
             {
@@ -101,7 +110,7 @@ namespace StarFox.Interop.GFX
         /// </summary>
         /// <param name="FileName">The path to get to the file</param>
         /// <returns></returns>
-        public static FXSCRFile? OpenSCR(string FileName)
+        public static FXSCRFile OpenSCR(string FileName)
         {
             using (var fs = File.OpenRead(FileName))
             {
@@ -115,7 +124,7 @@ namespace StarFox.Interop.GFX
         /// </summary>
         /// <param name="FileName">The path to get to the file</param>
         /// <returns></returns>
-        public static FXSCRFile? ImportSCR(string FileName)
+        public static FXSCRFile ImportSCR(string FileName)
         {
             using (var fs = File.OpenRead(FileName))
             {
@@ -135,7 +144,7 @@ namespace StarFox.Interop.GFX
             if (SaveMSXBanks)
                 await hiLowBanks.Save(FilePath);
             var datFile = new FXDatFile(hiLowBanks, FilePath);
-            await datFile.Save();           
+            await datFile.Save();
         }
         /// <summary>
         /// Renders an <see cref="MSprite"/> when supplied with all MSprite graphics banks
@@ -149,7 +158,7 @@ namespace StarFox.Interop.GFX
             Bitmap Clip(Bitmap Src, Rectangle ViewRect)
             {
                 Bitmap newBmp = new Bitmap(ViewRect.Width, ViewRect.Height);
-                /*                
+                /*
                 for(int x = ViewRect.X; x < Math.Min(ViewRect.Width + ViewRect.X, Src.Width); x++)
                 {
                     for (int y = ViewRect.Y; y < Math.Min(ViewRect.Height + ViewRect.Y, Src.Height); y++)
@@ -160,17 +169,17 @@ namespace StarFox.Interop.GFX
                 }*/
                 using (Graphics grD = Graphics.FromImage(newBmp))
                 {
-                    grD.DrawImage(Src, new Rectangle(0, 0, ViewRect.Width, ViewRect.Height), ViewRect, GraphicsUnit.Pixel);                    
+                    grD.DrawImage(Src, new Rectangle(0, 0, ViewRect.Width, ViewRect.Height), ViewRect, GraphicsUnit.Pixel);
                 }
                 newBmp.MakeTransparent(Color.Transparent);
                 return newBmp;
             }
             if (CGXBanks.Length % 2 != 0) throw new ArgumentOutOfRangeException("CGX banks provided should be High AND Low banks.");
             int bank = Sprite.Parent.BankIndex * 2 + (Sprite.HighBank ? 1 : 0);
-            if (CGXBanks.Length < bank) throw new ArgumentOutOfRangeException("CGX banks provided is not enough for the supplied sprite.");            
+            if (CGXBanks.Length < bank) throw new ArgumentOutOfRangeException("CGX banks provided is not enough for the supplied sprite.");
             FXCGXFile source = CGXBanks[bank];
             using (var bmp = source.Render(P_Col, -1, 256, 128))
-            {                
+            {
                 return Clip(bmp, new Rectangle(Sprite.X, Sprite.Y, Sprite.Width, Sprite.Height));
             }
         }

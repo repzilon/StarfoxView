@@ -1,9 +1,6 @@
-﻿using StarFox.Interop.MISC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP
 {
@@ -16,15 +13,15 @@ namespace StarFox.Interop.ASM.TYP
         /// The content of this comment
         /// </summary>
         public string CommentText { get; private set; }
-        public ASMComment(string FileName, long Position) 
+        public ASMComment(string FileName, long Position)
         {
-            OriginalFileName= FileName; 
+            OriginalFileName= FileName;
             this.Position = Position;
             this.Length = 0;
         }
         public override ASMChunks ChunkType => ASMChunks.Comment;
         /// <summary>
-        /// Parses 
+        /// Parses
         /// </summary>
         /// <param name="FileStream"></param>
         /// <returns></returns>

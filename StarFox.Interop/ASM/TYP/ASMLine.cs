@@ -1,10 +1,10 @@
-﻿using StarFox.Interop.ASM.TYP.STRUCT;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StarFox.Interop;
+using StarFox.Interop.ASM.TYP.STRUCT;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP
 {
@@ -21,18 +21,18 @@ namespace StarFox.Interop.ASM.TYP
         /// </summary>
         public bool IsUnknownType { get; set; }
         public string Text { get; private set; } = "";
-        public override ASMChunks ChunkType => ASMChunks.Line;        
+        public override ASMChunks ChunkType => ASMChunks.Line;
 
         /// <summary>
         /// If the structure of this line is recognized and well formatted, this will be populated, otherwise null.
         /// </summary>
-        public IASMLineStructure? Structure { get; private set; }
+        public IASMLineStructure Structure { get; private set; }
         public bool HasStructureApplied => Structure != null;
         public ASMMacroInvokeLineStructure StructureAsMacroInvokeStructure => Structure as ASMMacroInvokeLineStructure;
         public ASMDefineLineStructure StructureAsDefineStructure => Structure as ASMDefineLineStructure;
         public ASMLabelStructure StructureAsLabelStructure => Structure as ASMLabelStructure;
 
-        public string? InlineLabel { get; private set; } = null;
+        public string InlineLabel { get; private set; } = null;
         public bool HasInlineLabel => !string.IsNullOrWhiteSpace(InlineLabel);
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace StarFox.Interop.ASM.TYP
                 }
                 return;
             }
-            //END COMPAT            
+            //END COMPAT
         }
 
         private void Risky_ParseOutLabels(ref string parseLine, IEnumerable<ASMFile> imports)

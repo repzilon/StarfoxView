@@ -1,9 +1,8 @@
-﻿using StarFox.Interop.MISC;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StarFox.Interop;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP
 {
@@ -22,7 +21,7 @@ namespace StarFox.Interop.ASM.TYP
         public string[] Parameters { get; private set; } = new string[0];
         public ASMChunk[] Lines { get; private set; } = { };
 
-        internal ASMMacro(long Position, ASMImporterContext Context) 
+        internal ASMMacro(long Position, ASMImporterContext Context)
         {
             OriginalFileName = Context.CurrentFilePath;
             this.Position = Position;
@@ -42,15 +41,15 @@ namespace StarFox.Interop.ASM.TYP
             while (headerLine.Contains("  ")) // recursive remove unnecessary spaces
                 headerLine = headerLine.Replace("  ", " ");
             var blocks = headerLine.Split(' ');
-            if (blocks.Length < 2) // not valid formatting            
-                return false;            
+            if (blocks.Length < 2) // not valid formatting
+                return false;
             if (blocks[1].ToLower() != "macro") // not a macro
                 return false;
             return true;
         }
 
         /// <summary>
-        /// Parses 
+        /// Parses
         /// </summary>
         /// <param name="FileStream"></param>
         /// <returns></returns>
@@ -61,8 +60,8 @@ namespace StarFox.Interop.ASM.TYP
             {
                 IsValid= false;
             }
-            InitStream(FileStream); // move stream position            
-            var headerLine = FileStream.ReadLine(); // read the line            
+            InitStream(FileStream); // move stream position
+            var headerLine = FileStream.ReadLine(); // read the line
             long newPosition = FileStream.GetActualPosition();
             long runningLength = newPosition - Position; // start tracking the length of this block
             headerLine = headerLine.RemoveEscapes().TrimStart().TrimEnd();
@@ -84,7 +83,7 @@ namespace StarFox.Interop.ASM.TYP
             {
                 var paramStart = headerLine.ToLower().IndexOf("macro "); // find where parameters start
                 var parameterText = headerLine.Substring(paramStart + 6); // take all text past macro
-                var parameters = parameterText.Split(","); // split by commas
+                var parameters = parameterText.Split(','); // split by commas
                 Parameters = parameters.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray(); // take all non-empty parameter names
             }
             var lines = new ASMChunk[0];

@@ -1,6 +1,16 @@
-﻿using StarFox.Interop.MAP.EVT;
-using StarFox.Interop.MISC;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+#if NET46
+using Newtonsoft.Json;
+#else
 using System.Text.Json;
+#endif
+using System.Threading.Tasks;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP.EVT;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.MAP
 {
@@ -9,15 +19,26 @@ namespace StarFox.Interop.MAP
     /// </summary>
     public class MAPData
     {
-        /// <param name="LabelName"> The name of the inline label for this region </param>
-        /// <param name="ASMChunkIndex"> The index of chunk the Inline Label appears at </param>
-        /// <param name="EstimatedTimeStart"> The estimated LevelTime (Delay) this might appear at. This is useful
-        /// for a visual editor showing where this loop might be.</param>
-        [Serializable] public record MAPRegionContext(string LabelName, uint ASMChunkIndex, int EstimatedTimeStart)
+        [Serializable] public class MAPRegionContext
         {
+            /// <param name="labelName"> The name of the inline label for this region </param>
+            /// <param name="asmChunkIndex"> The index of chunk the Inline Label appears at </param>
+            /// <param name="estimatedTimeStart"> The estimated LevelTime (Delay) this might appear at. This is useful
+            /// for a visual editor showing where this loop might be.</param>
+            public MAPRegionContext(string labelName, uint asmChunkIndex, int estimatedTimeStart)
+            {
+                this.LabelName          = labelName;
+                this.ASMChunkIndex      = asmChunkIndex;
+                this.EstimatedTimeStart = estimatedTimeStart;
+            }
+
+            public string LabelName { get; private set; }
+            public uint ASMChunkIndex { get; private set; }
+            public int EstimatedTimeStart { get; private set; }
+
             /// <summary>
             /// The estimated LevelTime (Delay) this might end at. This is useful
-            /// for a visual editor showing where this loop might be.</param>
+            /// for a visual editor showing where this loop might be
             /// </summary>
             public int EstimatedTimeEnd { get; set; }
             /// <summary>
@@ -26,17 +47,17 @@ namespace StarFox.Interop.MAP
             public bool IsLooped => ReferencedLoops.Any();
             /// <summary>
             /// Any <see cref="MAPLoopEvent"/> that references this section/region
-            /// <para/> For all intents and purposes this should only ever have one item or none at all. 
+            /// <para/> For all intents and purposes this should only ever have one item or none at all.
             /// Not sure if multiple <c>maploop</c>s using the same spot is even feasible
             /// </summary>
-            public HashSet<MAPLoopEvent> ReferencedLoops { get; set; } = new();
+            public HashSet<MAPLoopEvent> ReferencedLoops { get; set; } = new HashSet<MAPLoopEvent>();
         }
 
         /// <summary>
         /// The events that make up this level script
         /// <para>This is also sometimes referred to as a ZDepth Table</para>
         /// </summary>
-        public HashSet<MAPEvent> Events { get; set; } = new();
+        public HashSet<MAPEvent> Events { get; set; } = new HashSet<MAPEvent>();
         /// <summary>
         /// Get only events that have attached shape data
         /// </summary>
@@ -45,13 +66,13 @@ namespace StarFox.Interop.MAP
         /// All of the events of this MAPScript, in order, with accompanying DELAY calculated based on the previous events.
         /// <para>KEY is the index of the event in the <see cref="Events"/> property.</para>
         /// </summary>
-        public Dictionary<int, int> EventsByDelay { get; set; } = new();        
+        public Dictionary<int, int> EventsByDelay { get; set; } = new Dictionary<int, int>();
         /// <summary>
         /// Maps have labels that can be used in loops to create repeated sections of levels without
         /// copy/pasting, for example.
         /// <para/>This details where those occur in the base <see cref="ASMFile"/> this map was imported from
         /// </summary>
-        public Dictionary<string, MAPRegionContext> SectionMarkers { get; } = new();
+        public Dictionary<string, MAPRegionContext> SectionMarkers { get; } = new Dictionary<string, MAPRegionContext>();
 
         /// <summary>
         /// Merges all the events into one *new* MAPData instance, keeps context data from Parent map
@@ -92,36 +113,51 @@ namespace StarFox.Interop.MAP
         private class Intermediary
         {
             public string Title { get; set; }
-            public Dictionary<int, int> EventsByDelay { get; set; } = new();
+            public Dictionary<int, int> EventsByDelay { get; set; } = new Dictionary<int, int>();
             public byte[] SerializedData { get; set; }
         }
 
-        /// <summary>
-        /// Serializes this object to the given stream
-        /// </summary>
-        /// <param name="Destination"></param>
+		/// <summary>
+		/// Serializes this object to the given stream
+		/// </summary>
+		/// <param name="Destination"></param>
+#if NET46
+		public void Serialize(JsonWriter Destination)
+#else
         public void Serialize(Utf8JsonWriter Destination)
-        {
-            using (MemoryStream mem = new MemoryStream())
-            {
+#endif
+		{
+			using (MemoryStream mem = new MemoryStream()) {
                 StrongTypeSerialization.SerializeObjects(mem, Events);
-                Intermediary inter = new()
-                {
+                var inter = new Intermediary() {
                     EventsByDelay = EventsByDelay,
                     SerializedData = mem.ToArray()
                 };
-                using (var doc = JsonSerializer.SerializeToDocument(inter, new JsonSerializerOptions()
-                {
+#if NET46
+                JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, inter);
+#else
+                using (var doc = JsonSerializer.SerializeToDocument(inter, new JsonSerializerOptions() {
                     WriteIndented = true,
-                }))
+                })) {
                     doc.WriteTo(Destination);
-            }            
+                }
+#endif
+            }
         }
         public static async Task<MAPData> Deserialize(Stream Json)
         {
-            Intermediary? inter = await JsonSerializer.DeserializeAsync<Intermediary>(Json);
-            if (inter == null) throw new Exception("Couldn't create the intermediary!");
-            MAPData data = new()
+#if NET46
+            Intermediary inter = null;
+            using (TextReader rdrStream = new StreamReader(Json)) {
+                using (JsonReader rdrJson = new JsonTextReader(rdrStream)) {
+                    inter = JsonSerializer.Create().Deserialize<Intermediary>(rdrJson);
+                }
+            }
+#else
+            Intermediary inter = await JsonSerializer.DeserializeAsync<Intermediary>(Json);
+#endif
+			if (inter == null) throw new Exception("Couldn't create the intermediary!");
+            var data = new MAPData()
             {
                 EventsByDelay = inter.EventsByDelay,
             };

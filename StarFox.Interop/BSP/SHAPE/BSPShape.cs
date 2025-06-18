@@ -1,4 +1,12 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+#if NET46
+using Newtonsoft.Json;
+#else
+using System.Text.Json;
+#endif
+using StarFox.Interop.GFX;
 
 namespace StarFox.Interop.BSP.SHAPE
 {
@@ -104,7 +112,7 @@ namespace StarFox.Interop.BSP.SHAPE
             return $"BSPFace - Color: {Color}, Index: {Index}, Normal: {Normal}, Indices: {string.Join<BSPPointRef>(",", PointIndices)}";
         }
     }
-    
+
     /// <summary>
     /// Represents a frame of animation in a Starfox Shape.
     /// </summary>
@@ -117,7 +125,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// The set of points added to this frame. 
+        /// The set of points added to this frame.
         /// <para>Pay close attention to the Index field of the BSPPoint to find where it belongs.</para>
         /// </summary>
         public BSPPoint[] Points { get; set; } = { };
@@ -165,25 +173,25 @@ namespace StarFox.Interop.BSP.SHAPE
             Points[Points.Length - 1] = Point;
         }
     }
-    
+
     /// <summary>
     /// Represents a 3D Shape in Starfox
     /// </summary>
-    [Serializable] 
+    [Serializable]
     public class BSPShape
     {
         /// <summary>
         /// The header data attached to this Shape
         /// </summary>
         public BSPShapeHeader Header { get; set; }
-        public BSPFrame GlobalFrame { get; set; } = new()
+        public BSPFrame GlobalFrame { get; set; } = new BSPFrame()
         {
             Name = "default_0"
         };
         /// <summary>
         /// The suggested scale factor for the X Axis
         /// </summary>
-        public double XScaleFactor => Header.XMax > 0 ? 
+        public double XScaleFactor => Header.XMax > 0 ?
             Header.XMax / Math.Max(1.0, LargestXPoint) : 1;
         public int LargestXPoint { get; set; }
         /// <summary>
@@ -210,36 +218,36 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <summary>
         /// In BSP-Enabled geometry, this is the BSP table.
         /// </summary>
-        public Dictionary<int, BSPEntry> BSPEntries { get; set; } = new();
+        public Dictionary<int, BSPEntry> BSPEntries { get; set; } = new Dictionary<int, BSPEntry>();
         /// <summary>
         /// The set of points associated with this shape
         /// <para>Points are handled based on FRAME, this collection should be accessed using: <see cref=""/></para>
         /// </summary>
-        public Dictionary<string, BSPFrame> FrameData { get; set; } = new();
+        public Dictionary<string, BSPFrame> FrameData { get; set; } = new Dictionary<string, BSPFrame>();
         /// <summary>
         /// The keyframes associated with this model, in chronological order
         /// </summary>
-        public Dictionary<int, string> Frames { get; set; } = new();
+        public Dictionary<int, string> Frames { get; set; } = new Dictionary<int, string>();
         /// <summary>
         /// A set of faces that reference points with this shape.
         /// </summary>
-        public HashSet<BSPFace> Faces { get; set; } = new();
+        public HashSet<BSPFace> Faces { get; set; } = new HashSet<BSPFace>();
         /// <summary>
         /// A list of all Colgroups used on this shape.
         /// See <see cref="SFPalette.ReferencedPaletteNames"/> for a list of all possible col groups
         /// </summary>
-        public HashSet<string> UsingColGroups { get; } = new();
+        public HashSet<string> UsingColGroups { get; } = new HashSet<string>();
         /// <summary>
         /// A list of all Textures used on this shape.
         /// See <see cref="SFPalette.ReferencedTextures"/> for a list of all possible textures
         /// </summary>
-        public HashSet<string> UsingTextures { get; } = new();
+        public HashSet<string> UsingTextures { get; } = new HashSet<string>();
 
         /// <summary>
         /// Creates a blank shape
         /// </summary>
-        private BSPShape() { 
-            
+        private BSPShape() {
+
         }
 
         /// <summary>
@@ -281,7 +289,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <param name="Index"></param>
         /// <param name="Frame"></param>
         /// <returns></returns>
-        public BSPPoint? GetPointOrDefault(int Index, int Frame = 0, bool nested = false)
+        public BSPPoint GetPointOrDefault(int Index, int Frame = 0, bool nested = false)
         {
             if (Frame == -1 && Frames.Count > 0) Frame++;
             if (Index < 0)
@@ -291,8 +299,8 @@ namespace StarFox.Interop.BSP.SHAPE
             if (Frame < Frames.Count && Frame > -1)
             {
                 if (GetFrame(Frame).Points.Any(x => x.Index == Index))
-                    return GetFrame(Frame).Points.First(x => x.Index == Index);             
-            }                              
+                    return GetFrame(Frame).Points.First(x => x.Index == Index);
+            }
             return default;
         }
         /// <summary>
@@ -303,7 +311,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <returns></returns>
         public BSPPoint GetPoint(int Index, int Frame = 0, bool nested = false)
         {
-            if (Index < 0) 
+            if (Index < 0)
                 throw new Exception("Index is less than one.");
             var foundPoint = GetPointOrDefault(Index, Frame);
             if (foundPoint == default)
@@ -312,7 +320,7 @@ namespace StarFox.Interop.BSP.SHAPE
         }
         public BSPPoint FindPoint(int PointIndex)
         {
-            BSPPoint? Search(int Frame)
+            BSPPoint Search(int Frame)
             {
                 return GetPointOrDefault(PointIndex, Frame);
             }
@@ -344,18 +352,28 @@ namespace StarFox.Interop.BSP.SHAPE
             return true;
         }
 
-        /// <summary>
-        /// Serializes this object to the given stream
-        /// </summary>
-        /// <param name="Destination"></param>
+		/// <summary>
+		/// Serializes this object to the given stream
+		/// </summary>
+		/// <param name="Destination"></param>
+#if NET46
+		public void Serialize(JsonWriter Destination)
+#else
         public void Serialize(Utf8JsonWriter Destination)
-        {
+#endif
+		{
+#if NET46
+            JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, this);
+#else
+            
             using (var doc = JsonSerializer.SerializeToDocument(this, new JsonSerializerOptions()
             {
                 WriteIndented = true,
-            }))
+            })) {
                 doc.WriteTo(Destination);
-        }
+            }
+#endif
+		}
 
         public override string ToString()
         {

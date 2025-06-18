@@ -1,13 +1,13 @@
-﻿using StarFox.Interop.ASM;
-using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
-using StarFox.Interop.GFX.COLTAB.DEF;
-using StarFox.Interop.MISC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarFox.Interop.ASM;
+using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
+using StarFox.Interop.GFX.COLTAB.DEF;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.GFX.COLTAB
 {
@@ -28,7 +28,7 @@ namespace StarFox.Interop.GFX.COLTAB
         public COLTABImporter()
         {
             baseImporter = new ASMImporter();
-            context = new()
+            context = new COLTABImporterContext()
             {
                 CurrentLine = -1,
                 Includes = baseImporter.Context.Includes
@@ -41,7 +41,7 @@ namespace StarFox.Interop.GFX.COLTAB
         /// </summary>
         /// <param name="FilePath"></param>
         /// <returns></returns>
-        public override async Task<COLTABFile?> ImportAsync(string FilePath)
+        public override async Task<COLTABFile> ImportAsync(string FilePath)
         {
             var file = await baseImporter.ImportAsync(FilePath); // import base assembly
             if (file == null) return default;
@@ -69,7 +69,7 @@ namespace StarFox.Interop.GFX.COLTAB
                             var definition = COLDefinition.Parse(macroInvoke); // make it into a definition
                             if (definition == null) continue; // oops, that wasn't supposed to happen.
                             context.CurrentGroup.Definitions.Add(definition);
-                            continue;                        
+                            continue;
                     }
                 }
                 else
@@ -91,7 +91,7 @@ namespace StarFox.Interop.GFX.COLTAB
             context.Includes = baseImporter.Context.Includes;
         }
 
-        public override ImporterContext<IncludeType>? GetCurrentContext<IncludeType>()
+        public override ImporterContext<IncludeType> GetCurrentContext<IncludeType>()
         {
             return context as ImporterContext<IncludeType>;
         }

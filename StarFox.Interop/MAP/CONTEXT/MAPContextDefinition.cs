@@ -1,4 +1,7 @@
-﻿namespace StarFox.Interop.MAP.CONTEXT
+﻿using System;
+using System.Linq;
+
+namespace StarFox.Interop.MAP.CONTEXT
 {
     /// <summary>
     /// Contains information on the context of a given level.
@@ -12,16 +15,16 @@
         public class MAPBGDefinition
         {
             /// <summary>
-            /// The name of the <c>bgXchr</c> property of the map context. 
+            /// The name of the <c>bgXchr</c> property of the map context.
             /// <para>Maps to the macro: <c>bg[2,3]chr</c></para>
             /// </summary>
-            public string? BGChrFile { get; set; }
+            public string BGChrFile { get; set; }
             /// <summary>
-            /// The name of the <c>bgXscr</c> property of the map context. 
+            /// The name of the <c>bgXscr</c> property of the map context.
             /// <para>This is the *.SCR reference for this level as background 2.</para>
             /// <para>Maps to the macro: <c>bg[2,3]scr</c></para>
             /// </summary>
-            public string? BGScrFile { get; set; }
+            public string BGScrFile { get; set; }
             public double ScaleX { get; set; } = 1.0;
             public double ScaleY { get; set; } = 1.0;
             public int VerticalOffset { get; set; } = 0;
@@ -63,56 +66,56 @@
         /// Creates a new level context definition with the provided name
         /// </summary>
         /// <param name="mapInitName"></param>
-        public MAPContextDefinition(string? mapInitName)
+        public MAPContextDefinition(string mapInitName)
         {
             MapInitName = mapInitName;
         }
         /// <summary>
         /// The name of this context definition, as it appears in the code
         /// </summary>
-        public string? MapInitName { get; }
+        public string MapInitName { get; }
         /// <summary>
         /// Contains all information provided for BG2
         /// </summary>
-        public MAPBGDefinition BG2 { get; set; } = new();
+        public MAPBGDefinition BG2 { get; set; } = new MAPBGDefinition();
         /// <summary>
         /// Contains all information provided for BG3
         /// </summary>
-        public MAPBGDefinition BG3 { get; set; } = new();
+        public MAPBGDefinition BG3 { get; set; } = new MAPBGDefinition();
         /// <summary>
-        /// The name of the bg2chr property of the map context. 
+        /// The name of the bg2chr property of the map context.
         /// <para>Maps to the macro: <c>bg2chr</c></para>
         /// </summary>
-        public string? BG2ChrFile => BG2?.BGChrFile;
+        public string BG2ChrFile => BG2?.BGChrFile;
         /// <summary>
-        /// The name of the bg2scr property of the map context. 
+        /// The name of the bg2scr property of the map context.
         /// <para>This is the *.SCR reference for this level as background 2.</para>
         /// <para>Maps to the macro: <c>bg2scr</c></para>
         /// </summary>
-        public string? BG2ScrFile => BG2?.BGScrFile;
+        public string BG2ScrFile => BG2?.BGScrFile;
         /// <summary>
-        /// The name of the bg3chr property of the map context. 
+        /// The name of the bg3chr property of the map context.
         /// <para>Maps to the macro: <c>bg3chr</c></para>
         /// </summary>
-        public string? BG3ChrFile => BG3?.BGChrFile;
+        public string BG3ChrFile => BG3?.BGChrFile;
         /// <summary>
-        /// The name of the bg3scr property of the map context. 
+        /// The name of the bg3scr property of the map context.
         /// <para>This is the *.SCR reference for this level as background 3.</para>
         /// <para>Maps to the macro: <c>bg3scr</c></para>
         /// </summary>
-        public string? BG3ScrFile => BG3?.BGScrFile;
+        public string BG3ScrFile => BG3?.BGScrFile;
         /// <summary>
-        /// The name of the palette property of the map context. 
+        /// The name of the palette property of the map context.
         /// <para>This is the *.COL reference for the *.SCR file this level uses as a background.</para>
         /// <para>Maps to the macro: <c>palette</c></para>
         /// </summary>
-        public string? BackgroundPalette { get; set; }
+        public string BackgroundPalette { get; set; }
         /// <summary>
-        /// The name of the gamepal property of the map context. 
+        /// The name of the gamepal property of the map context.
         /// <para>This is the *.COL reference for the *.CGX file this level uses as sprites.</para>
         /// <para>Maps to the macro: <c>gamepal</c></para>
         /// </summary>
-        public string? GamePalette { get; set; }
+        public string GamePalette { get; set; }
         /// <summary>
         /// This describes how the level should appear, through particle effects, etc.
         /// <para>Map info flags specified through the macro: info</para>
@@ -122,15 +125,15 @@
         /// <summary>
         /// The background music reference property for this map context
         /// </summary>
-        public string? BackgroundMusic { get; set; }
+        public string BackgroundMusic { get; set; }
         /// <summary>
         /// The palette used to render the shapes on this map
         /// </summary>
-        public string? ShapePalette { get; set; }
+        public string ShapePalette { get; set; }
         /// <summary>
         /// Appearance preset defines how the level should appear and behave.
         /// <para>Generally, in normal unmodified Starfox, this is the following macros:</para>
-        /// <code>planet,space,nucleus,undergnd,tunnel,space,final,water</code>   
+        /// <code>planet,space,nucleus,undergnd,tunnel,space,final,water</code>
         /// <list type="table">
         ///     <listheader>
         ///         <term>Starfox Appearance Types</term>
@@ -165,7 +168,7 @@
         ///     </item>
         /// </list>
         /// </summary>
-        public string? AppearancePreset { get; set; }
+        public string AppearancePreset { get; set; }
 
         /// <summary>
         /// Generally, the offset of the camera from the player's position <para/>
@@ -216,7 +219,7 @@
         }
 
         /// <summary>
-        /// Takes all submitted parameters in standard form, reflects them into flags in the 
+        /// Takes all submitted parameters in standard form, reflects them into flags in the
         /// </summary>
         /// <param name="paramsStr"></param>
         /// <exception cref="NotImplementedException"></exception>

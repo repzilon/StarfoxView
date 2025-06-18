@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace StarFox.Interop.Audio.ABIN
 {
@@ -8,14 +10,14 @@ namespace StarFox.Interop.Audio.ABIN
         /// <summary>
         /// The address where this table entry is found in SPC Audio Memory
         /// </summary>
-        public ushort SPCAddress { get; }
+        ushort SPCAddress { get; }
     }
     /// <summary>
     /// An <see cref="ISongTableEntry"/> that has an address in SPC memory
     /// </summary>
     public struct AudioBINSongTableEntry : ISongTableEntry
     {
-        public override bool Equals([NotNullWhen(true)] object? obj)
+        public override bool Equals(object obj)
         {
             if (obj is ISongTableEntry e)
                 return SPCAddress == e.SPCAddress;
@@ -33,7 +35,7 @@ namespace StarFox.Interop.Audio.ABIN
     public struct AudioBINSongTableRangeEntry : ISongTableEntry
     {
         private ushort _end;
-        public override bool Equals([NotNullWhen(true)] object? obj)
+        public override bool Equals(object obj)
         {
             if (obj is AudioBINSongTableRangeEntry e)
                 return SPCAddress == e.SPCAddress && e.Length == Length;
@@ -102,7 +104,7 @@ namespace StarFox.Interop.Audio.ABIN
             get => _type;
             set
             {
-                if (value is AudioBINChunk.ChunkTypes.SampleTable or AudioBINChunk.ChunkTypes.SongTable)
+                if ((value == AudioBINChunk.ChunkTypes.SampleTable) || (value == AudioBINChunk.ChunkTypes.SongTable))
                     _type = value;
                 else throw new InvalidDataException($"Invalid type: {value}");
             }

@@ -22,7 +22,7 @@ namespace StarFoxMapVisualizer.Renderers
         /// <summary>
         /// Describes which animation to use on this rendered background
         /// </summary>
-        public WavyBackgroundRenderer.WavyEffectStrategies AnimationMode { get; }
+        WavyBackgroundRenderer.WavyEffectStrategies AnimationMode { get; }
         /// <summary>
         /// Updates the <see cref="AnimationMode"/> property to the new value and, if currently
         /// rendering a dynamic background, will start using the new effect immediately.
@@ -34,7 +34,7 @@ namespace StarFoxMapVisualizer.Renderers
         /// The current <see cref="MAPContextDefinition"/> this control is displaying
         /// <para/>Make sure to use the <see cref="SetContext(MAPContextDefinition?, bool, bool)"/> function
         /// </summary>
-        public MAPContextDefinition? LevelContext { get; set; }
+        MAPContextDefinition LevelContext { get; set; }
         /// <summary>
         /// References to any files on the disk are kept here for clarity to the end user
         /// <para/>FILE PATH -> FILE TYPE
@@ -48,8 +48,8 @@ namespace StarFoxMapVisualizer.Renderers
         /// <param name="ExtractCCR"></param>
         /// <param name="ExtractPCR"></param>
         /// <returns></returns>
-        Task SetContext(MAPContextDefinition? SelectedContext, WavyBackgroundRenderer.WavyEffectStrategies Animation,
-            bool ExtractCCR = false, bool ExtractPCR = false);        
+        Task SetContext(MAPContextDefinition SelectedContext, WavyBackgroundRenderer.WavyEffectStrategies Animation,
+            bool ExtractCCR = false, bool ExtractPCR = false);
     }
 
     /// <summary>
@@ -57,16 +57,16 @@ namespace StarFoxMapVisualizer.Renderers
     /// </summary>
     public abstract class SCRRendererControlBase : ContentControl, ISCRRendererBase
     {
-        protected WavyBackgroundRenderer? bgRenderer;
+        protected WavyBackgroundRenderer bgRenderer;
 
         /// <summary>
         /// The current context being displayed by the control, if applicable
         /// </summary>
-        public MAPContextDefinition? LevelContext { get; set; }
+        public MAPContextDefinition LevelContext { get; set; }
         /// <summary>
         /// The files referenced by the <see cref="LevelContext"/> for clarity for the User of the program
         /// </summary>
-        public Dictionary<string, string> ReferencedFiles { get; } = new();
+        public Dictionary<string, string> ReferencedFiles { get; } = new Dictionary<string, string>();
         public WavyBackgroundRenderer.WavyEffectStrategies AnimationMode { get; protected set; }
         /// <summary>
         /// The target framerate to animate at. Default is <c><see cref="AnimatorEffect{T}"/>.GetFPSTimeSpan(60)</c> which is 60 FPS.
@@ -159,21 +159,27 @@ namespace StarFoxMapVisualizer.Renderers
             if (bgRenderer == null)
                 throw new NullReferenceException("The background renderer has not been created.");
             TargetFrameRate = FrameRate ?? TargetFrameRate;
-            bgRenderer.StartAsync((Bitmap Image) => Dispatcher.BeginInvoke(() =>
-            {
-                BG2Invalidate(Image.Convert());
-                Image.Dispose(); // AutoDispose is off for this reason
+            bgRenderer.StartAsync((Bitmap Image) => {
+                Dispatcher.BeginInvoke(new Action(delegate { DuringBackgroundAnimation(Image); }));
+            }, false, TargetFrameRate);
+        }
 
-                if (bgRenderer.DiagnosticsEnabled) // checks to make sure diag info is available
-                    DebugInfoUpdated(bgRenderer.DiagnosticInformation);
-            }), false, TargetFrameRate);
+        private void DuringBackgroundAnimation(Bitmap image)
+        {
+            BG2Invalidate(image.Convert());
+            image.Dispose(); // AutoDispose is off for this reason
+
+            // ReSharper disable once PossibleNullReferenceException
+            // Null check for bgRenderer done by caller
+            if (bgRenderer.DiagnosticsEnabled) // checks to make sure diag info is available
+                DebugInfoUpdated(bgRenderer.DiagnosticInformation);
         }
 
         public virtual void ChangeAnimationMode(WavyBackgroundRenderer.WavyEffectStrategies NewMode)
         {
             var oldMode = AnimationMode;
             AnimationMode = NewMode;
-            if (oldMode == AnimationMode) return; // no change, no need to update            
+            if (oldMode == AnimationMode) return; // no change, no need to update
             if (NewMode == WavyBackgroundRenderer.WavyEffectStrategies.None ||
                 bgRenderer == null) // turn off animation --  or turn on animation with no bgRenderer
             {
@@ -184,7 +190,7 @@ namespace StarFoxMapVisualizer.Renderers
             //bgRenderer exists
             bgRenderer.Strategy = NewMode;
             if (oldMode != WavyBackgroundRenderer.WavyEffectStrategies.None)
-                // hot swap change animation requires no additional code                           
+                // hot swap change animation requires no additional code
                 return;
             //turning on animation requires this being called
             StartAnimatedBackground(null); // uses targetframerate property here
@@ -201,7 +207,7 @@ namespace StarFoxMapVisualizer.Renderers
         /// <param name="NewImage"></param>
         public abstract void BG3Invalidate(ImageSource NewImage);
         public virtual void DebugInfoUpdated(WavyBackgroundRenderer.DiagnosticInfo DiagnosticInformation) { }
-        public abstract Task SetContext(MAPContextDefinition? SelectedContext, 
+        public abstract Task SetContext(MAPContextDefinition SelectedContext,
             WavyBackgroundRenderer.WavyEffectStrategies Animation, bool ExtractCCR = false, bool ExtractPCR = false);
     }
 }

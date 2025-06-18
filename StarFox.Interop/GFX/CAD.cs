@@ -2,15 +2,11 @@
 #define RENDER
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+#if RENDER
 using System.Drawing;
+#endif
+using System.IO;
 using StarFox.Interop.MISC;
-using System.Runtime.Intrinsics.X86;
-using static StarFox.Interop.GFX.CAD;
 
 // ********************************
 // THANK YOU LUIGIBLOOD!
@@ -47,13 +43,13 @@ namespace StarFox.Interop.GFX
         }
 
         /// <summary>
-        /// Has variables that can be tweaked to make the library handle more specialized 
+        /// Has variables that can be tweaked to make the library handle more specialized
         /// functionality than general usage
         /// </summary>
         public class CGXContext
         {
             /// <summary>
-            /// When true, all calls to RenderTile will set the 0 index color in the palette to be 
+            /// When true, all calls to RenderTile will set the 0 index color in the palette to be
             /// <see cref="Color.Transparent"/>
             /// </summary>
             public bool HandlePaletteIndex0AsTransparent { get; set; } = false;
@@ -76,7 +72,7 @@ namespace StarFox.Interop.GFX
             /// <summary>
             /// The context that this library is being used in to facilitate the individualized needs of the project
             /// </summary>
-            public static CGXContext GlobalContext { get; set; } = new();
+            public static CGXContext GlobalContext { get; set; } = new CGXContext();
             /// <summary>
             /// <see cref="CGXContext.HandlePaletteIndex0AsTransparent"/> on <see cref="GlobalContext"/>
             /// </summary>
@@ -162,7 +158,7 @@ namespace StarFox.Interop.GFX
                 int row = 0;
                 int fmt = GetFormat();
                 for (int i = 0; i < (256 * 4); i++)
-                {                    
+                {
                     int x = ((i % 16) * 8);
                     int y = ((i / 16) * 8);
                     if (!CompatRenderMode)
@@ -204,7 +200,7 @@ namespace StarFox.Interop.GFX
                         g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                         g.DrawImage(tile, x, y, s, s);
                     }
-                }                
+                }
                 return output;
             }
 
@@ -271,7 +267,7 @@ namespace StarFox.Interop.GFX
                 return dat;
             }
 
-            internal static byte[]? GetROMCGXDataArray(Stream file)
+            internal static byte[] GetROMCGXDataArray(Stream file)
             {
                 //CGX
                 file.Seek(0, SeekOrigin.Begin);
@@ -291,7 +287,7 @@ namespace StarFox.Interop.GFX
                 }
 
                 //Load File
-                byte[] cgx_t = new byte[file.Length];                
+                byte[] cgx_t = new byte[file.Length];
                 file.Read(cgx_t, 0, (int)file.Length);
 
                 //Check Footer Info
@@ -369,9 +365,9 @@ namespace StarFox.Interop.GFX
             /// <returns></returns>
             public static COL TransmutateByRow(COL SourcePalette, int SourceRow, int DestinationRow)
             {
-                const int ROW_LEN = 16;
-                Color[] paletteSwap = SourcePalette.GetPalette();
-                Color[] rowData = paletteSwap[(SourceRow * 16)..((SourceRow + 1) * 16)];
+                const int ROW_LEN     = 16;
+                Color[]   paletteSwap = SourcePalette.GetPalette();
+                Color[]   rowData     = paletteSwap.Slice((SourceRow * 16), ((SourceRow + 1) * 16));
                 rowData.CopyTo(paletteSwap, (DestinationRow * ROW_LEN));
                 return new COL(SourcePalette, paletteSwap);
             }
@@ -382,9 +378,9 @@ namespace StarFox.Interop.GFX
             /// <param name="DestinationRow"></param>
             public void TransmutateByRow(int SourceRow, int DestinationRow)
             {
-                const int ROW_LEN = 16;
-                Color[] paletteSwap = GetPalette();
-                Color[] rowData = paletteSwap[(SourceRow * 16)..((SourceRow + 1) * 16)];
+                const int ROW_LEN     = 16;
+                Color[]   paletteSwap = GetPalette();
+                Color[]   rowData     = paletteSwap.Slice((SourceRow * 16), ((SourceRow + 1) * 16));
                 rowData.CopyTo(paletteSwap, (DestinationRow * ROW_LEN));
                 col = rowData;
             }
@@ -490,11 +486,11 @@ namespace StarFox.Interop.GFX
                 //Tile Size
                 int t = 8 * (scr_mode + 1);
 
-                bool renderAllScreens = Screen < 0 || Screen > 3;                
+                bool renderAllScreens = Screen < 0 || Screen > 3;
 
                 Bitmap output = default;
-                if (renderAllScreens)                
-                    output = new Bitmap(512 * (t / 8), 512 * (t / 8));      
+                if (renderAllScreens)
+                    output = new Bitmap(512 * (t / 8), 512 * (t / 8));
                 else
                     output = new Bitmap(512 * (t / 8)/2, 512 * (t / 8)/2);
                 void RenderScreen(int s)
@@ -553,7 +549,7 @@ namespace StarFox.Interop.GFX
                         RenderScreen(s);
                     }
                 }
-                else RenderScreen(Screen);               
+                else RenderScreen(Screen);
                 return output;
             }
 #endif
@@ -577,7 +573,7 @@ namespace StarFox.Interop.GFX
             }
 
             public static SCR Load(Stream file)
-            {                
+            {
                 return new SCR(GetROMSCRDataArray(file));
             }
 
@@ -598,7 +594,7 @@ namespace StarFox.Interop.GFX
             }
 
             public static SCR Import(Stream file, byte scr_mode = 0)
-            {               
+            {
                 return new SCR(GetRAWSCRDataArray(file, scr_mode));
             }
         }
