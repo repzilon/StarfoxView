@@ -151,7 +151,7 @@ namespace StarFox.Interop.BSP
         /// <param name="divisor">Divide components by this divisor</param>
         public BSPPoint MakePoint(int x, int y, int z, float divisor = 1)
         {
-            var point = new BSPPoint(pointIndex, (int)(x / divisor), -(int)(y / divisor), (int)(z / divisor)); // make point
+            var point = new BSPPoint(pointIndex, -(int)(x / divisor), -(int)(y / divisor), (int)(z / divisor)); // make point
             //pointIndex += PointsDataWidth;
             pointIndex++;
             return point;

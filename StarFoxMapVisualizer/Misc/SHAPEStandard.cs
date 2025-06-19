@@ -574,7 +574,7 @@ namespace StarFoxMapVisualizer.Misc
             BSPExporter.BSPExportOptions options = BSPExporter.BSPExportOptions.Default;
             try
             { // try invoking the BSP exporter
-                return BSPExporter.ExportShapeFBX(saveDialog.FileName, currentShape, Group, Palette, Frame, 
+                return BSPExporter.ExportShape(saveDialog.FileName, currentShape, Group, Palette, Frame, 
                     ProjectColorTable, GetPaltByFileName("BLUE.COL"), options);
             }
             catch (Exception ex)

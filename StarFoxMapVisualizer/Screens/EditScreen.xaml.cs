@@ -823,7 +823,7 @@ namespace StarFoxMapVisualizer.Screens
                 {
                     Header = Enum.GetName(map.OptimizerData.TypeSpecifier),
                 };                
-                foreach(var mapItem in map.OptimizerData.ObjectMap)
+                foreach(var mapItem in map.OptimizerData.ObjectMap.OrderBy(x => x.Key))
                 {
                     var subItem = new MenuItem()
                     {
