@@ -51,7 +51,14 @@ namespace StarFoxMapVisualizer.Controls
                 return val;
             }
         }
-        private MAPScript selectedScript => ((TabItem)MAPTabViewer.SelectedItem).Tag as MAPScript;
+
+        private MAPScript selectedScript
+        {
+	        get {
+		        return (MAPTabViewer.SelectedItem as TabItem)?.Tag as MAPScript;
+	        }
+        }
+       
         private MAPContextDefinition selectedContext;
 
         //3D VIEWER VARS
@@ -177,7 +184,7 @@ namespace StarFoxMapVisualizer.Controls
         private void MapContextButton_Click(object sender, RoutedEventArgs e)
         {
             LevelContextViewer viewer;
-            if (!selectedScript.ReferencedContexts.Any())
+            if ((selectedScript == null) || (!selectedScript.ReferencedContexts.Any()))
             {
                 viewer = new LevelContextViewer(FILEStandard.MAPImport.LoadedContextDefinitions)
                 {

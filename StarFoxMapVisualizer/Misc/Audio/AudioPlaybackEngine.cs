@@ -1,11 +1,9 @@
-﻿using NAudio.Wave.SampleProviders;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.IO;
+using System.Windows;
+using NAudio;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace StarFoxMapVisualizer.Misc.Audio
 {
@@ -19,8 +17,12 @@ namespace StarFoxMapVisualizer.Misc.Audio
             outputDevice = new WaveOutEvent();
             mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
             mixer.ReadFully = true;
-            outputDevice.Init(mixer);
-            outputDevice.Play();
+            try {
+				outputDevice.Init(mixer); 
+				outputDevice.Play();
+            } catch (MmException) {
+	            MessageBox.Show("Failed to initialize audio. You may need to plug your headphone jack and or start the Windows Audio service (especially on Windows Server).");
+            }
         }
 
         public void PlaySound(string fileName)
