@@ -558,7 +558,7 @@ namespace StarFoxMapVisualizer.Misc
             };
         }
 
-        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette, int Frame = 0)
+        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette, out string? FilePath, int Frame = 0)
         {
             SaveFileDialog saveDialog = new()
             {
@@ -569,8 +569,10 @@ namespace StarFoxMapVisualizer.Misc
                 FileName = currentShape.Header.Name,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
             };
+            FilePath = null;
             if (!saveDialog.ShowDialog() ?? true)
                 return BSPExporter.BSPIOWriteResult.Cancelled;
+            FilePath = saveDialog.FileName;
             BSPExporter.BSPExportOptions options = BSPExporter.BSPExportOptions.Default;
             try
             { // try invoking the BSP exporter

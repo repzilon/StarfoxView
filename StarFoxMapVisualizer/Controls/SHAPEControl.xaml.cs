@@ -9,6 +9,7 @@ using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Misc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -798,10 +799,13 @@ namespace StarFoxMapVisualizer.Controls
             window.Show();
         }
 
-        private void ExportMeshButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportMeshButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette, SelectedFrame);
-            MessageBox.Show($"{result.Message}::{result.Successful}", result.Descriptor);
+            var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette, out string FilePath, SelectedFrame);
+            await EDITORStandard.ShowNotification($" {(!result.Successful ? "MODEL WAS NOT EXPORTED! " : "MODEL EXPORTED SUCCESSFULLY! ") + result.Message}",  
+                delegate {
+                    using var proc = Process.Start("explorer", FilePath);
+                }, TimeSpan.FromSeconds(5));
         }
     }
 }
