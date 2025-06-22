@@ -2,7 +2,7 @@
 
 namespace Starfox.Editor
 {
-    [System.Serializable]
+    [Serializable]
     public class SFCodeException : Exception
     {
         public SFCodeException() { }

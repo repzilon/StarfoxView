@@ -24,7 +24,7 @@ namespace StarFox.Interop.ASM.TYP
         {
             OriginalFileName = Context.CurrentFilePath;
             this.Position = Position;
-            this.Length = 0;
+            Length = 0;
             context = Context;
         }
         public override ASMChunks ChunkType => ASMChunks.Macro;

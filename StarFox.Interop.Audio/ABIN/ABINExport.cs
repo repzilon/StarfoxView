@@ -126,7 +126,7 @@ namespace StarFox.Interop.Audio.ABIN
 #if NETFRAMEWORK || NETSTANDARD
 			File.WriteAllBytes(binFilePath, data);
 #else
-            await System.IO.File.WriteAllBytesAsync(binFilePath, data);
+            await File.WriteAllBytesAsync(binFilePath, data);
 #endif
 		}
 

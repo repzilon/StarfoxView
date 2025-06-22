@@ -223,14 +223,14 @@ namespace StarFox.Interop.GFX
                             switch (GetFormat())
                             {
                                 case 0:
-                                    g.DrawImage(StarFox.Interop.GFX.Render.SNES.Tile2BPP(Utility.Subarray(chr, tilecalc * 16, 16), pal, xflip, yflip), x * 8, y * 8, 8, 8);
+                                    g.DrawImage(GFX.Render.SNES.Tile2BPP(Utility.Subarray(chr, tilecalc * 16, 16), pal, xflip, yflip), x * 8, y * 8, 8, 8);
                                     break;
                                 case 1:
-                                    g.DrawImage(StarFox.Interop.GFX.Render.SNES.Tile4BPP(Utility.Subarray(chr, tilecalc * 32, 32), pal, xflip, yflip), x * 8, y * 8, 8, 8);
+                                    g.DrawImage(GFX.Render.SNES.Tile4BPP(Utility.Subarray(chr, tilecalc * 32, 32), pal, xflip, yflip), x * 8, y * 8, 8, 8);
                                     break;
                                 default:
                                 case 2:
-                                    g.DrawImage(StarFox.Interop.GFX.Render.SNES.Tile8BPP(Utility.Subarray(chr, tilecalc * 64, 64), pal, xflip, yflip), x * 8, y * 8, 8, 8);
+                                    g.DrawImage(GFX.Render.SNES.Tile8BPP(Utility.Subarray(chr, tilecalc * 64, 64), pal, xflip, yflip), x * 8, y * 8, 8, 8);
                                     break;
                             }
                         }

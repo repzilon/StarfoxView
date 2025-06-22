@@ -134,11 +134,11 @@ namespace StarFox.Interop.GFX
                 //COLDefinition.CallTypes.Colsmooth => HandleColsmooth(definition as COLSmooth),
                 Color? color;
                 if (definition.CallType == COLDefinition.CallTypes.Collite) {
-                    color = this.HandleCollite(definition as COLLite);
+                    color = HandleCollite(definition as COLLite);
                 } else if (definition.CallType == COLDefinition.CallTypes.Coldepth) {
-                    color = this.HandleColdepth(definition as COLDepth);
+                    color = HandleColdepth(definition as COLDepth);
                 } else if (definition.CallType == COLDefinition.CallTypes.Colnorm) {
-                    color = this.HandleColnorm(definition as COLNorm);
+                    color = HandleColnorm(definition as COLNorm);
                 } else {
                     color = null;
                 }
@@ -257,7 +257,7 @@ namespace StarFox.Interop.GFX
             var karFirstIndexes  = new byte[10] { 10, 9, 9, 9, 9, 9, 2, 5, 2, 0xF };
             var karSecondIndexes = new byte[10] { 11, 10, 2, 5, 3, 6, 9, 9, 5, 0x9 };
             if ((ColorByte >= 0) && (ColorByte <= 9)) {
-                collite = LerpColor(this.GetColorByIndex(karFirstIndexes[ColorByte]), this.GetColorByIndex(karSecondIndexes[ColorByte]));
+                collite = LerpColor(GetColorByIndex(karFirstIndexes[ColorByte]), GetColorByIndex(karSecondIndexes[ColorByte]));
             } else {
                 collite = ColorTranslator.FromHtml("#FFFFFF");
             }

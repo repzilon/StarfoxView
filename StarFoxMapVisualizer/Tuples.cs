@@ -13,8 +13,8 @@ namespace StarFoxMapVisualizer
 
 		public PaletteTuple(string name, CAD.COL palette)
 		{
-			this.Name    = name;
-			this.Palette = palette;
+			Name    = name;
+			Palette = palette;
 		}
 	}
 
@@ -25,8 +25,8 @@ namespace StarFoxMapVisualizer
 
 		public SpriteTuple(T image, MSprite sprite)
 		{
-			this.Image  = image;
-			this.Sprite = sprite;
+			Image  = image;
+			Sprite = sprite;
 		}
 	}
 
@@ -37,8 +37,8 @@ namespace StarFoxMapVisualizer
 
 		public ScrollEventArgs(bool horizontal, double scrollValue)
 		{
-			this.Horizontal  = horizontal;
-			this.ScrollValue = scrollValue;
+			Horizontal  = horizontal;
+			ScrollValue = scrollValue;
 		}
 	}
 
@@ -51,9 +51,9 @@ namespace StarFoxMapVisualizer
 		public SpriteRenderTuple(MSpritesDefinitionFile definition, CAD.COL palette,
 		IEnumerable<FXCGXFile> cgxCollection)
 		{
-			this.SpriteDef = definition;
-			this.Palette   = palette;
-			this.CGXs      = cgxCollection;
+			SpriteDef = definition;
+			Palette   = palette;
+			CGXs      = cgxCollection;
 		}
 	}
 }

@@ -27,9 +27,9 @@ namespace StarFox.Interop.MAP
             /// for a visual editor showing where this loop might be.</param>
             public MAPRegionContext(string labelName, uint asmChunkIndex, int estimatedTimeStart)
             {
-                this.LabelName          = labelName;
-                this.ASMChunkIndex      = asmChunkIndex;
-                this.EstimatedTimeStart = estimatedTimeStart;
+                LabelName          = labelName;
+                ASMChunkIndex      = asmChunkIndex;
+                EstimatedTimeStart = estimatedTimeStart;
             }
 
             public string LabelName { get; private set; }

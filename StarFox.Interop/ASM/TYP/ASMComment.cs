@@ -17,7 +17,7 @@ namespace StarFox.Interop.ASM.TYP
         {
             OriginalFileName= FileName;
             this.Position = Position;
-            this.Length = 0;
+            Length = 0;
         }
         public override ASMChunks ChunkType => ASMChunks.Comment;
         /// <summary>

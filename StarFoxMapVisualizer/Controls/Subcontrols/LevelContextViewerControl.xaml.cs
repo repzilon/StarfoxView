@@ -53,8 +53,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
             ApplyButton.IsEnabled = false;
             ContextDataGrid.ItemsSource = new[] { levelContext };
-            await ImageContent.SetContext(LevelContext, StarFox.Interop.EFFECTS.
-                WavyBackgroundRenderer.WavyEffectStrategies.None, ExtractCCR, ExtractPCR);
+            await ImageContent.SetContext(LevelContext, WavyBackgroundRenderer.WavyEffectStrategies.None, ExtractCCR, ExtractPCR);
             ScrWidth = ScrHeight = ImageContent.Width = ImageContent.ActualHeight;
 
             DynamicBackgroundAnimationSelector.SelectionChanged -= DynamicBackgroundAnimationSelector_SelectionChanged;

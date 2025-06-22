@@ -18,12 +18,12 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
         /// <param name="highBank">True if in High bank, otherwise low bank is inferred</param>
         public MSprite(string name, int x, int y, int width, int height, bool highBank)
         {
-            this.Name     = name;
-            this.X        = x;
-            this.Y        = y;
-            this.Width    = width;
-            this.Height   = height;
-            this.HighBank = highBank;
+            Name     = name;
+            X        = x;
+            Y        = y;
+            Width    = width;
+            Height   = height;
+            HighBank = highBank;
         }
 
         public string Name { get; private set; }

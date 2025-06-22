@@ -38,9 +38,9 @@ namespace StarFoxMapVisualizer.Renderers
 
         void UpdateViewport()
         {
-            BackgroundBrush.Viewbox = new System.Windows.Rect(
+            BackgroundBrush.Viewbox = new Rect(
                 0, 0, ViewportWidth, ViewportHeight);
-            BackgroundBrush.Viewport = new System.Windows.Rect(
+            BackgroundBrush.Viewport = new Rect(
                 BackgroundX, -BackgroundY, SCR_W, SCR_H);
         }
 

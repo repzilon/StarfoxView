@@ -188,7 +188,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _mapBG = value;
-                this.DispatchInvalidateGraphics();
+                DispatchInvalidateGraphics();
             }
         }
 
@@ -198,7 +198,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _mapPal = value;
-                this.DispatchInvalidateGraphics();
+                DispatchInvalidateGraphics();
             }
         }
 
@@ -208,7 +208,7 @@ namespace StarFoxMapVisualizer.Controls2
             set
             {
                 _gfxPal = value;
-                this.DispatchInvalidateGraphics();
+                DispatchInvalidateGraphics();
             }
         }
 
@@ -239,7 +239,7 @@ namespace StarFoxMapVisualizer.Controls2
             _mapBG = MapTexture;
             _mapPal = MapPalette;
             _gfxPal = GraphicsPalette;
-            this.DispatchInvalidateGraphics();
+            DispatchInvalidateGraphics();
         }
         /// <summary>
         /// Causes the background and planets to be invalidated and ultimately their textures
@@ -256,7 +256,7 @@ namespace StarFoxMapVisualizer.Controls2
             {
                 //RENDER SCR
                 using (var mapScreen =
-                       await GFXStandard.RenderSCR(this.MapPalette, this.MapBackgroundName, null, 0)) {
+                       await GFXStandard.RenderSCR(MapPalette, MapBackgroundName, null, 0)) {
                     source = mapScreen.Convert();
                 }
 

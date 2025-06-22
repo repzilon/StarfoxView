@@ -42,8 +42,8 @@ namespace StarFox.Interop.ASM
         /// <param name="From"></param>
         internal ASMFile(ASMFile From)
         {
-            this.Chunks = From.Chunks;
-            this.Constants = From.Constants;
+            Chunks = From.Chunks;
+            Constants = From.Constants;
             OriginalFilePath = From.OriginalFilePath;
         }
         /// <summary>

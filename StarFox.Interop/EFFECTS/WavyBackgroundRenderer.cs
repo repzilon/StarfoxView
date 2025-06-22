@@ -56,12 +56,12 @@ namespace StarFox.Interop.EFFECTS
                 throw new InvalidDataException("You didn't specify a strategy to use, Strategy is None.");
 
             Func<Bitmap> BackgroundFunction;
-            if (this.Strategy == WavyEffectStrategies.Simple) {
-                BackgroundFunction = this.SetWavyBackground_Strategy1;
-            } else if (this.Strategy == WavyEffectStrategies.SineFullscreen) {
-                BackgroundFunction = this.SetWavyBackground_Strategy2;
-            } else if (this.Strategy == WavyEffectStrategies.SineMirrored) {
-                BackgroundFunction = this.SetWavyBackground_Strategy3;
+            if (Strategy == WavyEffectStrategies.Simple) {
+                BackgroundFunction = SetWavyBackground_Strategy1;
+            } else if (Strategy == WavyEffectStrategies.SineFullscreen) {
+                BackgroundFunction = SetWavyBackground_Strategy2;
+            } else if (Strategy == WavyEffectStrategies.SineMirrored) {
+                BackgroundFunction = SetWavyBackground_Strategy3;
             } else {
                 BackgroundFunction = null;
             }
@@ -78,7 +78,7 @@ namespace StarFox.Interop.EFFECTS
         /// <summary>
         /// 512^2 * <see langword="sizeof"/>(<see cref="Color"/>) bytes large max
         /// </summary>
-        System.Drawing.Color[,] BackgroundCache = null;
+        Color[,] BackgroundCache = null;
         int SinX = 0;
         // **
 

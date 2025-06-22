@@ -22,7 +22,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         /// <param name="e"></param>
         private void CopyImage_Click(object sender, RoutedEventArgs e)
         {
-            var image = this.Source as BitmapImage;
+            var image = Source as BitmapImage;
             if (image != null) Clipboard.SetImage(image);
             else
             {

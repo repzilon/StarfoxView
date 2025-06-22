@@ -50,7 +50,7 @@ namespace StarFox.Interop.GFX.CONVERT
             byte[] cgxFileData = new byte[CanvasW * CanvasH];
             ConvertAllChrToMem(GenericImage, ref cgxFileData);
             using (var ms = new MemoryStream(cgxFileData))
-                return CAD.CGX.GetRAWCGXDataArray(ms, BitDepthFormats.BPP_4);
+                return CGX.GetRAWCGXDataArray(ms, BitDepthFormats.BPP_4);
         }
         private static void ConvertAllChrToMem(FXConvertImage Image, ref byte[] Buffer, int addr = 0)
         {

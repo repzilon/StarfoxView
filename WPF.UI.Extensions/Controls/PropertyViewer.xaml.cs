@@ -302,7 +302,7 @@ namespace WPF.UI.Extensions.Controls
                             Foreground = Brushes.Red,
                         };
                         Children.Add(msg);
-                        Grid.SetColumn(msg, 1);
+                        SetColumn(msg, 1);
                     }
                     break;
                 case TypeConversionTechniques.ArrayInfoConverter:
@@ -312,7 +312,7 @@ namespace WPF.UI.Extensions.Controls
                             Text = $"{((Array)AttachedProperty.GetValue(ParentObject)).Length} value(s).",
                         };
                         Children.Add(msg);
-                        Grid.SetColumn(msg, 1);
+                        SetColumn(msg, 1);
                     }
                     break;
             }

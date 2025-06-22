@@ -83,9 +83,9 @@ namespace EarClipperLib
 
         public static bool PointInOrOnTriangle(Vector3m prevPoint, Vector3m curPoint, Vector3m nextPoint, Vector3m nonConvexPoint, Vector3m normal)
         {
-            var res0 = Misc.GetOrientation(prevPoint, nonConvexPoint, curPoint, normal);
-            var res1 = Misc.GetOrientation(curPoint, nonConvexPoint, nextPoint, normal);
-            var res2 = Misc.GetOrientation(nextPoint, nonConvexPoint, prevPoint, normal);
+            var res0 = GetOrientation(prevPoint, nonConvexPoint, curPoint, normal);
+            var res1 = GetOrientation(curPoint, nonConvexPoint, nextPoint, normal);
+            var res2 = GetOrientation(nextPoint, nonConvexPoint, prevPoint, normal);
             return res0 != 1 && res1 != 1 && res2 != 1;
         }
 

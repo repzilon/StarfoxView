@@ -82,7 +82,7 @@ namespace StarFoxMapVisualizer.Misc
             //INTERPRET IT INTO AN INSTANCE
             var file = await import.ImportAsync(File.FullName);
             var dir = File.DirectoryName;
-            dir = System.IO.Path.Combine(dir, System.IO.Path.GetFileNameWithoutExtension(File.Name));
+            dir = Path.Combine(dir, Path.GetFileNameWithoutExtension(File.Name));
             //CREATE DIRECTORIES
             Directory.CreateDirectory(dir);
 
@@ -105,10 +105,10 @@ namespace StarFoxMapVisualizer.Misc
             foreach (var song in file.Songs)
             {
                 songIndex++;
-                string sampleName = System.IO.Path.GetFileNameWithoutExtension(File.FullName);
+                string sampleName = Path.GetFileNameWithoutExtension(File.FullName);
                 sampleName = $"{sampleName}_SONG_{songIndex}";
                 string newFileName = sampleName + ".SPC";
-                string newPath = System.IO.Path.Combine(dir, newFileName);
+                string newPath = Path.Combine(dir, newFileName);
                 //MAKE A SAMPLE SPC FILE
                 var spcFile = new SPCFile(newPath)
                 {

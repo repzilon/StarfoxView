@@ -11,8 +11,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Microsoft.Win32;
 using Starfox.Editor;
 using StarFox.Interop;
+using StarFox.Interop.BSP;
 using StarFox.Interop.BSP.SHAPE;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.COLTAB;
@@ -25,9 +27,6 @@ using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
-using Microsoft.Win32;
-using StarFox.Interop.BSP;
-using StarFoxMapVisualizer.Dialogs;
 
 namespace StarFoxMapVisualizer.Misc
 {
@@ -42,17 +41,19 @@ namespace StarFoxMapVisualizer.Misc
         /// Gets the Color Table defined in this project
         /// </summary>
         internal static COLTABFile ProjectColorTable => AppResources.Includes?.OfType<COLTABFile>().FirstOrDefault();
+
         /// <summary>
         /// The directory to extract models using the <see cref="ExportShapeToSfShape(BSPShape, out IEnumerable{string})"/> function to
         /// <para>Is Export/Shapes by <see langword="default"/></para>
         /// </summary>
-        internal static string DefaultShapeExtractionDirectory { get; set; } = System.IO.Path.Combine(Environment.CurrentDirectory, "export/shapes");
+        internal static string DefaultShapeExtractionDirectory { get; set; } =
+	       Path.Combine(Environment.CurrentDirectory, "export/shapes");
 
         internal static COL GetPaltByFileName(string FileName)
         {
             FileName = FileName.ToUpper().Replace(".COL", "");
             return AppResources.ImportedProject.Palettes.FirstOrDefault
-                (x => System.IO.Path.GetFileNameWithoutExtension(x.Key).ToUpper() == FileName).Value;
+                (x => Path.GetFileNameWithoutExtension(x.Key).ToUpper() == FileName).Value;
         }
 
         /// <summary>
@@ -109,15 +110,15 @@ namespace StarFoxMapVisualizer.Misc
 
             //make a list of all banks added to the optimizer separated into its HIGH and LOW counterpart
             string[] banks = optimizer.OptimizerData.ObjectMap.SelectMany(x =>
-                new string[] { System.IO.Path.GetFileNameWithoutExtension(x.Key) + "_low.cgx",
-                System.IO.Path.GetFileNameWithoutExtension(x.Key) + "_high.cgx" }).ToArray();
+                new string[] { Path.GetFileNameWithoutExtension(x.Key) + "_low.cgx",
+                Path.GetFileNameWithoutExtension(x.Key) + "_high.cgx" }).ToArray();
 
             if (CGXCache.Count < banks.Length) // have we loaded every bank?
             { // no, reload them all -- we need all of them loaded for accuracy
                 CGXCache.Clear();
                 foreach (var bankName in banks)
                 { // load all required banks into CGX files
-                    string filePath = System.IO.Path.Combine(bankDirectory, bankName);
+                    string filePath = Path.Combine(bankDirectory, bankName);
                     if (!File.Exists(filePath))
                     { // this high/low bank was not found -- try extracting it
                         string BINFileName = filePath // get the original BIN file name
@@ -223,8 +224,8 @@ namespace StarFoxMapVisualizer.Misc
         internal static async Task<IEnumerable<string>> ExportShapeToSfShape(BSPShape Shape)
         {
             var filesCreated = new List<string>();
-            var fileName = System.IO.Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}.sfshape");
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(fileName));
+            var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}.sfshape");
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             using (var modelFile = File.Create(fileName))
             {
 #if NET46
@@ -242,7 +243,7 @@ namespace StarFoxMapVisualizer.Misc
                 filesCreated.Add(fileName);
             }
             var colorPalPtr = Shape.Header.ColorPalettePtr;
-            fileName = System.IO.Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.sfpal");
+            fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.sfpal");
             if (!File.Exists(fileName))
             {
                 CreateSFPalette(colorPalPtr, out var sfPal, out _);
@@ -264,7 +265,7 @@ namespace StarFoxMapVisualizer.Misc
             var shapeMap = shapeOptim.OptimizerData.ObjectMap;
             //Try to find the file that contains the shape we want
             if (!shapeMap.TryGetValue(HeaderName, out var FileName)) return default;
-            var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(shapeOptim.FilePath), FileName);
+            var path = Path.Combine(Path.GetDirectoryName(shapeOptim.FilePath), FileName);
             //Open the file
             var file = await FILEStandard.OpenBSPFile(new FileInfo(path));
             if (file != null && !AppResources.OpenFiles.ContainsKey(path))
@@ -430,7 +431,7 @@ namespace StarFoxMapVisualizer.Misc
                         fooColor = palette.Coldepths.ElementAtOrDefault(colIndex).Value;
                         break;
                 }
-                return new System.Windows.Media.Color() //to media color
+                return new Color() //to media color
                 {
                     A = 255,
                     B = fooColor.B,

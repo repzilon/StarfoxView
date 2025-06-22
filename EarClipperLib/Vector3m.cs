@@ -54,37 +54,37 @@ namespace EarClipperLib
 
         public Vector3m Plus(Vector3m a)
         {
-            return new Vector3m(this.X + a.X, this.Y + a.Y, this.Z + a.Z);
+            return new Vector3m(X + a.X, Y + a.Y, Z + a.Z);
         }
 
         public Vector3m Minus(Vector3m a)
         {
-            return new Vector3m(this.X - a.X, this.Y - a.Y, this.Z - a.Z);
+            return new Vector3m(X - a.X, Y - a.Y, Z - a.Z);
         }
 
         public Vector3m Times(Rational a)
         {
-            return new Vector3m(this.X * a, this.Y * a, this.Z * a);
+            return new Vector3m(X * a, Y * a, Z * a);
         }
 
         public Vector3m DividedBy(Rational a)
         {
-            return new Vector3m(this.X / a, this.Y / a, this.Z / a);
+            return new Vector3m(X / a, Y / a, Z / a);
         }
 
         public Rational Dot(Vector3m a)
         {
-            return this.X * a.X + this.Y * a.Y + this.Z * a.Z;
+            return X * a.X + Y * a.Y + Z * a.Z;
         }
 
         public Vector3m Lerp(Vector3m a, Rational t)
         {
-            return this.Plus(a.Minus(this).Times(t));
+            return Plus(a.Minus(this).Times(t));
         }
 
         public double Length()
         {
-            return System.Math.Sqrt(Dot(this).ToDouble());
+            return Math.Sqrt(Dot(this).ToDouble());
         }
 
         public Rational LengthSquared()
@@ -94,7 +94,7 @@ namespace EarClipperLib
 
         public Vector3m ShortenByLargestComponent()
         {
-            if (this.LengthSquared() == 0)
+            if (LengthSquared() == 0)
                 return new Vector3m(0, 0, 0);
             var absNormal = Absolute();
             Rational largestValue = 0;
@@ -113,9 +113,9 @@ namespace EarClipperLib
         public Vector3m Cross(Vector3m a)
         {
             return new Vector3m(
-            this.Y * a.Z - this.Z * a.Y,
-            this.Z * a.X - this.X * a.Z,
-            this.X * a.Y - this.Y * a.X
+            Y * a.Z - Z * a.Y,
+            Z * a.X - X * a.Z,
+            X * a.Y - Y * a.X
             );
         }
 
@@ -138,7 +138,7 @@ namespace EarClipperLib
 
         public override int GetHashCode()
         {
-            return this.X.GetHashCode() ^ this.Y.GetHashCode() ^ this.Z.GetHashCode();
+            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
         }
 
         public static Vector3m operator +(Vector3m a, Vector3m b)
@@ -175,7 +175,7 @@ namespace EarClipperLib
 
         public bool SameDirection(Vector3m he)
         {
-            var res = this.Cross(he);
+            var res = Cross(he);
             return res.X == 0 && res.Y == 0 && res.Z == 0;
         }
     }

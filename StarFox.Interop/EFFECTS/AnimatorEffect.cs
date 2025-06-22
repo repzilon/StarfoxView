@@ -315,7 +315,7 @@ namespace StarFox.Interop.EFFECTS
         protected Color[,] CopyPixels(Bitmap Image, Rectangle? SourceRect = null)
         {
             SourceRect = SourceRect ?? new Rectangle(0, 0, Image.Width, Image.Height);
-            BitmapData handle = Image.LockBits(SourceRect.Value,System.Drawing.Imaging.ImageLockMode.ReadOnly,Image.PixelFormat);
+            BitmapData handle = Image.LockBits(SourceRect.Value,ImageLockMode.ReadOnly,Image.PixelFormat);
 
             //first item in data array
             IntPtr arrPtr = handle.Scan0;
@@ -325,7 +325,7 @@ namespace StarFox.Interop.EFFECTS
             byte[] rgbValues = new byte[bytes];
 
             // Copy the RGB values into the array.
-            System.Runtime.InteropServices.Marshal.Copy(arrPtr, rgbValues, 0, bytes);
+            Marshal.Copy(arrPtr, rgbValues, 0, bytes);
 
             int bpp = Image.PixelFormat == PixelFormat.Format24bppRgb ? 3 :
                    Image.PixelFormat == PixelFormat.Format32bppArgb ? 4 : 4;
@@ -388,7 +388,7 @@ namespace StarFox.Interop.EFFECTS
             byte[] rgbValues = new byte[bytes];
 
             // Copy the RGB values into the array.
-            System.Runtime.InteropServices.Marshal.Copy(handle.Scan0, rgbValues, 0, bytes);
+            Marshal.Copy(handle.Scan0, rgbValues, 0, bytes);
 
             int bpp = 4;
 

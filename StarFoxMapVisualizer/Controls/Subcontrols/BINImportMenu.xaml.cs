@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Starfox.Editor;
-using StarFox.Interop;
 using static StarFox.Interop.SFFileType;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -14,7 +13,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         /// <summary>
         /// The selected type of file
         /// </summary>
-        public SFFileType.BINFileTypes FileType { get; private set; }
+        public BINFileTypes FileType { get; private set; }
         public BINImportMenu()
         {
             InitializeComponent();
@@ -30,11 +29,11 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         private void showOptions()
         {
             TypeMenu.Items.Clear();
-            foreach(var type in SFCodeProject.GetValues<SFFileType.BINFileTypes>())
+            foreach(var type in SFCodeProject.GetValues<BINFileTypes>())
             {
                 var item = new MenuItem()
                 {
-                    Header = SFFileType.GetSummary(type)
+                    Header = GetSummary(type)
                 };
                 item.PreviewMouseLeftButtonUp += delegate
                 {

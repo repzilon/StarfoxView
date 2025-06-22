@@ -58,7 +58,7 @@ namespace StarFoxMapVisualizer.Misc
                     case SFCodeProjectFileTypes.Palette:
                         using (var file = File.OpenRead())
                         {
-                            var palette = StarFox.Interop.GFX.CAD.COL.Load(file);
+                            var palette = CAD.COL.Load(file);
                             if (palette == default) return default;
                             AppResources.ImportedProject.Palettes.Add(File.FullName, palette);
                             return palette as T;
@@ -306,12 +306,12 @@ namespace StarFoxMapVisualizer.Misc
                 switch (selectFileType)
                 {
                     default: return default;
-                    case StarFox.Interop.SFFileType.ASMFileTypes.ASM:
+                    case SFFileType.ASMFileTypes.ASM:
                         goto general;
-                    case StarFox.Interop.SFFileType.ASMFileTypes.MAP:
+                    case SFFileType.ASMFileTypes.MAP:
                         asmfile = await OpenMAPFile(File);
                         break;
-                    case StarFox.Interop.SFFileType.ASMFileTypes.BSP:
+                    case SFFileType.ASMFileTypes.BSP:
                         asmfile = await OpenBSPFile(File);
                         break;
                     case SFFileType.ASMFileTypes.MSG:
@@ -345,7 +345,7 @@ namespace StarFoxMapVisualizer.Misc
             { // there isn't one, try adding it now
                 var hit = AppResources.ImportedProject.SearchFile(DefinitionASMName).FirstOrDefault();
                 if (hit != default) // Can't find DEFSPR.ASM
-                    mSpriteDef = await FILEStandard.OpenDEFSPRFile // found it, trying to add it
+                    mSpriteDef = await OpenDEFSPRFile // found it, trying to add it
                         (new FileInfo(hit.FilePath));
             }
             if (mSpriteDef == null) // could't add it
@@ -445,7 +445,7 @@ namespace StarFoxMapVisualizer.Misc
             var stageMap = stageOptim.OptimizerData.ObjectMap;
             //Try to find the file that contains the stage we want
             if (!stageMap.TryGetValue(HeaderName, out var FileName)) return default;
-            var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(stageOptim.FilePath), FileName);
+            var path = Path.Combine(Path.GetDirectoryName(stageOptim.FilePath), FileName);
             //Open the file
             var file = await OpenMAPFile(new FileInfo(path));
             if (file.Scripts.TryGetValue(LevelMacroName, out var script))

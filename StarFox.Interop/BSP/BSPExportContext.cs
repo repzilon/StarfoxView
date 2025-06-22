@@ -48,14 +48,14 @@ namespace StarFox.Interop.BSP
 		public BSPExportContext(string fileName, BSPShape shape, COLGroup group, SFPalette palette, int frame,
 		COLTABFile colorTable, CAD.COL palt, BSPExporter.BSPExportOptions options = null)
 		{
-			this.FileName   = fileName;
-			this.Shape      = shape;
-			this.Group      = group;
-			this.Palette    = palette;
-			this.Frame      = frame;
-			this.ColorTable = colorTable;
-			this.Palt       = palt;
-			this.Options    = options;
+			FileName   = fileName;
+			Shape      = shape;
+			Group      = group;
+			Palette    = palette;
+			Frame      = frame;
+			ColorTable = colorTable;
+			Palt       = palt;
+			Options    = options;
 		}
 	}
 }

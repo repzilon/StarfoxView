@@ -158,7 +158,7 @@ namespace StarFoxMapVisualizer.Controls
                 RepeatBehavior = RepeatBehavior.Forever
             };
             var rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), 0);
-            this.RegisterName("SceneRotation", rotation);
+            RegisterName("SceneRotation", rotation);
             var transformGroup = new Transform3DGroup();
             transformGroup.Children.Add(new RotateTransform3D()
             {

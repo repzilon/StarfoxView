@@ -57,7 +57,7 @@ namespace StarFoxMapVisualizer.Misc
         public static void DimEditorScreen()
         {
             if (CurrentEditorScreen != default)
-                CurrentEditorScreen.LoadingSpan.Visibility = System.Windows.Visibility.Visible;
+                CurrentEditorScreen.LoadingSpan.Visibility = Visibility.Visible;
         }
         /// <summary>
         /// See: <see cref="DimEditorScreen"/>
@@ -65,7 +65,7 @@ namespace StarFoxMapVisualizer.Misc
         public static void UndimEditorScreen()
         {
             if (CurrentEditorScreen != default)
-                CurrentEditorScreen.LoadingSpan.Visibility = System.Windows.Visibility.Collapsed;
+                CurrentEditorScreen.LoadingSpan.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -117,10 +117,10 @@ namespace StarFoxMapVisualizer.Misc
             if (FilesSelected == default) return default; // User Cancelled
             var errorBuilder = new StringBuilder();       // ERRORS
             if (!FilesSelected.Any()) return default;
-            var dirInfo = System.IO.Path.GetDirectoryName(FilesSelected.First());
+            var dirInfo = Path.GetDirectoryName(FilesSelected.First());
             if (dirInfo == null || !Directory.Exists(dirInfo)) return default;
             //TEST SOMETHING OUT
-            if (!FilesSelected.Select(x => System.IO.Path.GetFileName(x).ToLower()).Contains(KeyFile.ToLower()))
+            if (!FilesSelected.Select(x => Path.GetFileName(x).ToLower()).Contains(KeyFile.ToLower()))
             {
                 if (MessageBox.Show("It looks like the directory you selected doesn't have at least " +
                     $"a {KeyFile.ToUpper()} file in it. Have you selected the {Type.ToString().ToUpper()} directory in your workspace?\n" +
@@ -173,7 +173,7 @@ namespace StarFoxMapVisualizer.Misc
             if (FilesSelected == default) return; // User Cancelled
             if (!FilesSelected.Any()) return;
 
-            EDITORStandard.ShowLoadingWindow();
+            ShowLoadingWindow();
             var errorBuilder  = new StringBuilder(); // ERRORS
             var exportedBSPs  = new StringBuilder(); // BSPS
             var exportedFiles = new StringBuilder(); // ALL FILES
@@ -201,7 +201,7 @@ namespace StarFoxMapVisualizer.Misc
                 }
             }
             //CREATE THE MANIFEST FILE
-            File.WriteAllText(System.IO.Path.Combine(SHAPEStandard.DefaultShapeExtractionDirectory, "manifest.txt"), exportedBSPs.ToString());
+            File.WriteAllText(Path.Combine(SHAPEStandard.DefaultShapeExtractionDirectory, "manifest.txt"), exportedBSPs.ToString());
             MessageBox.Show($"{exportedFiles}", "Exported Files");
             if (!string.IsNullOrWhiteSpace(errorBuilder.ToString()))
                 MessageBox.Show($"{errorBuilder}", "Errors");

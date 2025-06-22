@@ -87,7 +87,7 @@ namespace StarFox.Interop.BSP
         /// <summary>
         /// Options for this export operation in case the user runs into issues exporting certain shapes
         /// </summary>
-        public BSPExporter.BSPExportOptions Options => Context.Options;
+        public BSPExportOptions Options => Context.Options;
         /// <summary>
         /// The file path to be exporting this shape to
         /// <para/>Must end with <see cref="FILE_EXTENSION"/>
@@ -111,7 +111,7 @@ namespace StarFox.Interop.BSP
         {
             this.Context = Context;
             if (Options == default)
-                this.Context.Options = BSPExporter.BSPExportOptions.Default;
+                this.Context.Options = BSPExportOptions.Default;
         }
 
         /// <summary>
@@ -120,14 +120,14 @@ namespace StarFox.Interop.BSP
         /// <para/>Uses the <see cref="Context"/> property to get context for this export operation
         /// </summary>
         /// <returns></returns>
-        public BSPExporter.BSPIOWriteResult ExportShape()
+        public BSPIOWriteResult ExportShape()
         {
             meshData = null;
 
             //ensure valid params
             if (Options == default)
-                this.Context.Options = BSPExporter.BSPExportOptions.Default;
-            if (FileName.Extension != FILE_EXTENSION) return new BSPExporter.BSPIOWriteResult(nameof(NotSupportedException),
+                Context.Options = BSPExportOptions.Default;
+            if (FileName.Extension != FILE_EXTENSION) return new BSPIOWriteResult(nameof(NotSupportedException),
                 "Only accepting " + FILE_EXTENSION + " file extensions at this time.", false);
 
             string userMsg = "";
@@ -138,14 +138,14 @@ namespace StarFox.Interop.BSP
             }
             catch (InvalidOperationException ioe)
             { // invalid operation exception is thrown from the generate function and should not be ignored
-                return BSPExporter.BSPIOWriteResult.Faulted(ioe);
+                return BSPIOWriteResult.Faulted(ioe);
             }
             catch (Exception e)
             { // Lib we're using throws a generic exception when the model MAY be incorrect, so we really can't do much about this right now without more work
                 userMsg += e.Message + "... this model might not look right. "; // alert the user there may be an issue
             }
             if (meshData == null)
-                return BSPExporter.BSPIOWriteResult.Faulted(new InvalidOperationException("MeshData was NOT generated without an error being raised!")); // ???
+                return BSPIOWriteResult.Faulted(new InvalidOperationException("MeshData was NOT generated without an error being raised!")); // ???
 
             //Setup colors if activated
             if (Options.ColorActivated)
@@ -153,7 +153,7 @@ namespace StarFox.Interop.BSP
                 meshData.EnableVertexColors(new Vector3f(0, 1, .25));
                 ProcessVertexColors();
             }
-            return new BSPExporter.BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
+            return new BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
             {
                 bWriteBinary = false,
                 bPerVertexNormals = false,

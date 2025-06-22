@@ -217,11 +217,11 @@ namespace StarFoxMapVisualizer.Screens
                 var menu = new ContextMenu();
                 var thisTreeNode = new TreeViewItem()
                 {
-                    Header = System.IO.Path.GetFileName(DirNode.FilePath),
+                    Header = Path.GetFileName(DirNode.FilePath),
                     Tag = DirNode,
                     ContextMenu = menu
                 };
-                thisTreeNode.SetResourceReference(TreeViewItem.StyleProperty, "FolderTreeStyle");
+                thisTreeNode.SetResourceReference(StyleProperty, "FolderTreeStyle");
                 CreateIncludeDirectoryAsBRRContextMenu(DirNode, menu);
                 CreateExploreContextMenu(DirNode, menu);
                 foreach (var child in DirNode.ChildNodes)
@@ -563,7 +563,7 @@ namespace StarFoxMapVisualizer.Screens
             }
             await UpdateInterface();
             EDITORStandard.HideLoadingWindow();
-            MacroFileCombo.SelectedValue = System.IO.Path.GetFileNameWithoutExtension(File.Name);
+            MacroFileCombo.SelectedValue = Path.GetFileNameWithoutExtension(File.Name);
         }
         /// <summary>
         /// Refreshes the Workspace Explorer, Macros and Open Files for some Editors
@@ -574,7 +574,7 @@ namespace StarFoxMapVisualizer.Screens
             //update explorer
             await ImportCodeProject(FlushFiles);
             //UPDATE INCLUDES
-            MacroFileCombo.ItemsSource = AppResources.Includes.Select(x => System.IO.Path.GetFileNameWithoutExtension(x.OriginalFilePath));
+            MacroFileCombo.ItemsSource = AppResources.Includes.Select(x => Path.GetFileNameWithoutExtension(x.OriginalFilePath));
             //VIEW MODE
             if (CurrentMode is ViewMode.MAP) MAPViewer.InvalidateFiles();
             if (CurrentMode is ViewMode.GFX) GFXViewer.RefreshFiles();

@@ -53,7 +53,7 @@ namespace StarFox.Interop.SPC
                 }
                 //CREATE A TABLE POINTER AND ADD IT TO THE FILE
                 int tablePointerOffset = 0x0871;
-                var tablePointerBytes = SPC.SPCFile.CreateSongTablePointer((ushort)(spcOffset - 2));
+                var tablePointerBytes = SPCFile.CreateSongTablePointer((ushort)(spcOffset - 2));
                 Array.Copy(tablePointerBytes, 0, SPCFile.Data, tablePointerOffset, tablePointerBytes.Length);
             }
             //WRITE THE LOOP POINT

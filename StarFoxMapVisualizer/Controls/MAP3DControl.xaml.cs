@@ -259,7 +259,7 @@ namespace StarFoxMapVisualizer.Controls
                 }
                 ScrunchSlider.Value = Editor_ZScrunchPercentage;
                 ScrunchPercentageBlock.Text = ((1 - Editor_ZScrunchPercentage) * 100).ToString("0.#");
-            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+            }, DispatcherPriority.ContextIdle);
         }
 
         private void ScrunchValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
