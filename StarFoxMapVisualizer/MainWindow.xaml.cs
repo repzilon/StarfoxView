@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 
 namespace StarFoxMapVisualizer
 {
@@ -21,7 +21,19 @@ namespace StarFoxMapVisualizer
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Title = AppResources.GetTitleLabel;
+            await EDITORStandard.ShowNotification("Welcome to SFView!", delegate { }, TimeSpan.FromSeconds(5)); 
             return;            
+        }
+
+        internal void PushNotification(Notification Notification)
+        {            
+            var obj = (ContentControl)Template.FindName("UI_PARENT_NOTIFICATION", this);
+            obj.Content = Notification;
+            Notification.Show();
+            Notification.Dismissed += delegate
+            {
+                obj.Content = null;
+            };
         }
     }
 }

@@ -10,9 +10,9 @@
     <OutputType>WinExe</OutputType>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWPF>true</UseWPF>
-    <FileVersion>0.5.7</FileVersion>
+    <FileVersion>0.6.1</FileVersion>
     <ApplicationIcon>Resources\SFViewLogoSmall.ico</ApplicationIcon>
-    <AssemblyVersion>0.5.7</AssemblyVersion>
+    <AssemblyVersion>0.6.1</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\AtlantisInternational-jen0.ttf" />
