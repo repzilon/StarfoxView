@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
-using StarFox.Interop.BSP;
 using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.MAP.CONTEXT

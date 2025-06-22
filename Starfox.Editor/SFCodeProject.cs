@@ -1,13 +1,13 @@
-﻿using Starfox.Editor.Settings;
-using StarFox.Interop;
-using StarFox.Interop.ASM;
-using StarFox.Interop.BRR;
-using StarFox.Interop.MAP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Starfox.Editor.Settings;
+using StarFox.Interop;
+using StarFox.Interop.ASM;
+using StarFox.Interop.BRR;
+using StarFox.Interop.MAP;
 using static StarFox.Interop.GFX.CAD;
 
 namespace Starfox.Editor

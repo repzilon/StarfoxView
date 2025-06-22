@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.IO;
-using System.Xml.Linq;
+﻿using System.IO;
 using static StarFox.Interop.GFX.CAD;
 
 namespace StarFox.Interop.GFX.DAT

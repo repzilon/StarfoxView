@@ -6,7 +6,6 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using StarFox.Interop.GFX.CONVERT;
 
 namespace StarFox.Interop.GFX.DAT
 {

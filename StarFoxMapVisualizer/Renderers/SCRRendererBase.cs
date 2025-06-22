@@ -1,16 +1,13 @@
-﻿using StarFox.Interop.EFFECTS;
-using StarFox.Interop.MAP.CONTEXT;
-using StarFoxMapVisualizer.Misc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using StarFox.Interop.EFFECTS;
+using StarFox.Interop.MAP.CONTEXT;
+using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Renderers
 {

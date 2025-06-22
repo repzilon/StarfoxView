@@ -1,9 +1,8 @@
-﻿using StarFox.Interop.EFFECTS;
-using StarFoxMapVisualizer.Misc;
-using System;
+﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Controls;
+using StarFox.Interop.EFFECTS;
+using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Renderers
 {

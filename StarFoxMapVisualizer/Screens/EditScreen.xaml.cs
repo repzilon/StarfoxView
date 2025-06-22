@@ -1,4 +1,14 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Threading;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
@@ -9,26 +19,11 @@ using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 using StarFox.Interop.MAP;
 using StarFox.Interop.MSG;
-using StarFox.Interop.SPC;
 using StarFoxMapVisualizer.Controls;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Controls2;
 using StarFoxMapVisualizer.Dialogs;
 using StarFoxMapVisualizer.Misc;
-using StarFoxMapVisualizer.Renderers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
-using System.Windows.Threading;
-using static StarFox.Interop.GFX.DAT.MSPRITES.MSprite;
 
 namespace StarFoxMapVisualizer.Screens
 {

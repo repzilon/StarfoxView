@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace WpfPanAndZoom.CustomControls
 {
-    public interface IDraggable
+	public interface IDraggable
     {
         bool Draggable { get; }
     }
@@ -40,8 +33,6 @@ namespace WpfPanAndZoom.CustomControls
         private Color _lineColor = Colors.Green;
         private Color _backgroundColor = Color.FromArgb(0xFF, 0x33, 0x33, 0x33);
         private List<Line> _gridLines = new List<Line>();
-
-
         #endregion
 
         public event EventHandler<Point> LocationChanged;

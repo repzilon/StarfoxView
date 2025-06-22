@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StarFox.Interop.GFX.CONVERT
+﻿namespace StarFox.Interop.GFX.CONVERT
 {
     /// <summary>
     /// A base format for a bytemap with no format, just raw image data.

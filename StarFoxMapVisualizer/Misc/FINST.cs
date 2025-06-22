@@ -1,11 +1,11 @@
-﻿using StarFox.Interop;
-using StarFox.Interop.ASM;
-using StarFox.Interop.MAP;
-using StarFoxMapVisualizer.Controls.Subcontrols;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using StarFox.Interop;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP;
+using StarFoxMapVisualizer.Controls.Subcontrols;
 
 namespace StarFoxMapVisualizer.Misc
 {

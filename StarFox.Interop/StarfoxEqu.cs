@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StarFox.Interop
+﻿namespace StarFox.Interop
 {
     /// <summary>
     /// Helpful constant values for reference relative to Starfox (SNES)

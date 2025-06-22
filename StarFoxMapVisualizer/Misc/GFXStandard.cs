@@ -1,16 +1,14 @@
-﻿using StarFox.Interop.GFX;
-using StarFox.Interop.GFX.DAT;
-using StarFoxMapVisualizer.Controls.Subcontrols;
-using StarFoxMapVisualizer.Screens;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using StarFox.Interop.GFX;
+using StarFox.Interop.GFX.DAT;
+using StarFoxMapVisualizer.Controls.Subcontrols;
+using StarFoxMapVisualizer.Screens;
 using static StarFox.Interop.GFX.CAD;
 
 namespace StarFoxMapVisualizer.Misc

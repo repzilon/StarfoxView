@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Starfox.Editor.Settings
+﻿namespace Starfox.Editor.Settings
 {
     /// <summary>
     /// Base interface for different settings types

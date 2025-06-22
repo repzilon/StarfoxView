@@ -1,8 +1,7 @@
-﻿using StarFox.Interop;
-using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Starfox.Editor;
+using StarFox.Interop;
 using static StarFox.Interop.SFFileType;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols

@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using StarFox.Interop.GFX.CONVERT;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 
 namespace StarFox.Interop.GFX
 {
-    /// <summary>
-    /// An interface to interact with <see cref="GFX.DAT.FXCGXFile"/> and <see cref="GFX.DAT.FXDatFile"/> objects
-    /// </summary>
-    public static class SFGFXInterface
+	/// <summary>
+	/// An interface to interact with <see cref="GFX.DAT.FXCGXFile"/> and <see cref="GFX.DAT.FXDatFile"/> objects
+	/// </summary>
+	public static class SFGFXInterface
     {
         /// <summary>
         /// Opens a Starfox DAT (or BIN) file containing <see cref="FXPCRFile"/> data

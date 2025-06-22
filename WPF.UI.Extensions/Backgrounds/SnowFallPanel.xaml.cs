@@ -7,11 +7,11 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace WPF.UI.Extensions.Backgrounds
-{    
-    /// <summary>
-    /// Interaction logic for SnowFallPanel.xaml
-    /// </summary>
-    public partial class SnowFallPanel : UserControl
+{
+	/// <summary>
+	/// Interaction logic for SnowFallPanel.xaml
+	/// </summary>
+	public partial class SnowFallPanel : UserControl
     {
         internal static Random SnowFallRandom = new Random();
         

@@ -1,15 +1,11 @@
-﻿using System.Numerics;
-using System;
-using System.Windows.Controls;
-using System.Windows.Media.Media3D;
-using System.Windows;
-using StarFox.Interop.MAP.CONTEXT;
-using System.Collections.Generic;
+﻿using System;
 using System.Threading.Tasks;
-using StarFoxMapVisualizer.Misc;
+using System.Windows;
 using System.Windows.Media;
-using StarFox.Interop.EFFECTS;
+using System.Windows.Media.Media3D;
 using StarFox.Interop;
+using StarFox.Interop.EFFECTS;
+using StarFox.Interop.MAP.CONTEXT;
 
 namespace StarFoxMapVisualizer.Renderers
 {

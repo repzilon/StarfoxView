@@ -1,4 +1,10 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
@@ -12,12 +18,6 @@ using StarFox.Interop.MSG;
 using StarFox.Interop.SPC;
 using StarFoxMapVisualizer.Controls;
 using StarFoxMapVisualizer.Controls.Subcontrols;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace StarFoxMapVisualizer.Misc
 {

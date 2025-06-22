@@ -1,25 +1,22 @@
-﻿using Starfox.Editor;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
+using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.MAP;
 using StarFoxMapVisualizer.Dialogs;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using static StarFoxMapVisualizer.Controls.ASMControl;
 
 namespace StarFoxMapVisualizer
 {
-    /// <summary>
-    /// Resources that can be accessed throughout all of the User Interface code
-    /// </summary>
-    internal static class AppResources
+	/// <summary>
+	/// Resources that can be accessed throughout all the User Interface code
+	/// </summary>
+	internal static class AppResources
     {
         public const string ApplicationName = "SF-View";
         public static string GetTitleLabel
@@ -40,7 +37,7 @@ namespace StarFoxMapVisualizer
             }
         }
         /// <summary>
-        /// Dictates whether the <see cref="MAPImporter"/> can automatically find refernenced level sections and populate them
+        /// Dictates whether the <see cref="MAPImporter"/> can automatically find referenced level sections and populate them
         /// </summary>
         public static Boolean MapImporterAutoDereferenceMode = true;
         /// <summary>

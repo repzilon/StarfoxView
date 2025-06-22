@@ -1,26 +1,17 @@
-﻿using StarFox.Interop;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using StarFox.Interop;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.CONVERT;
 using StarFox.Interop.GFX.DAT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Dialogs;
 using StarFoxMapVisualizer.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static StarFox.Interop.GFX.CAD;
-using static StarFox.Interop.GFX.Render;
 
 namespace StarFoxMapVisualizer.Controls
 {

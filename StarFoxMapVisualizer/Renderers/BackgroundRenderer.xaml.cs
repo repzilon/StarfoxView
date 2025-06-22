@@ -1,11 +1,11 @@
-﻿using StarFox.Interop;
-using StarFox.Interop.EFFECTS;
-using StarFox.Interop.MAP.CONTEXT;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using StarFox.Interop;
+using StarFox.Interop.EFFECTS;
+using StarFox.Interop.MAP.CONTEXT;
 
 namespace StarFoxMapVisualizer.Renderers
 {

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 
 namespace StarFox.Interop.Audio.ABIN
 {
-    /// <summary>
-    /// Represents a chunk of audio BIN file data
-    /// </summary>
-    public class AudioBINChunk
+	/// <summary>
+	/// Represents a chunk of audio BIN file data
+	/// </summary>
+	public class AudioBINChunk
     {
         public enum ChunkTypes
         {

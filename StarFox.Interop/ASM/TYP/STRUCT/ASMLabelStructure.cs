@@ -1,5 +1,4 @@
 ﻿using System;
-using StarFox.Interop;
 using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP.STRUCT

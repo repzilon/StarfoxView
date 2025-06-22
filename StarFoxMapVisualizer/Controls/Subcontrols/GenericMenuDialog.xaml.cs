@@ -1,6 +1,4 @@
-﻿using StarFox.Interop;
-using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols

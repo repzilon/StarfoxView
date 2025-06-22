@@ -1,7 +1,6 @@
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Diagnostics;
 
 namespace WPF.UI.Extensions.Shapes
 {

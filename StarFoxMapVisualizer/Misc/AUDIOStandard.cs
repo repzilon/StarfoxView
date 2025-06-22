@@ -1,14 +1,11 @@
-﻿using StarFox.Interop.Audio.ABIN;
-using StarFox.Interop.BRR;
-using StarFox.Interop.BSP;
-using StarFox.Interop.SPC;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using StarFox.Interop.Audio.ABIN;
+using StarFox.Interop.BRR;
+using StarFox.Interop.SPC;
 
 namespace StarFoxMapVisualizer.Misc
 {

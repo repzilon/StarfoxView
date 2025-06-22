@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using EarClipperLib;
 using StarFox.Interop.BSP.SHAPE;
 
 namespace StarFox.Interop.BSP
 {
-    public static class BSPTriangulate
+	public static class BSPTriangulate
     {
         public static bool EarClipTriangulationAlgorithm(IEnumerable<BSPPoint> FacePoints, BSPVec3 Normal, out List<BSPPoint> NewVerts)
         {

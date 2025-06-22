@@ -1,6 +1,4 @@
-﻿using StarFox.Interop.GFX.COLTAB.DEF;
-
-namespace StarFox.Interop.GFX.COLTAB.DEF
+﻿namespace StarFox.Interop.GFX.COLTAB.DEF
 {
     /// <summary>
     /// A COLTexture function call, which takes a table name

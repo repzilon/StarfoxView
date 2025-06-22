@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using StarFox.Interop;
 using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFox.Interop.MISC;
 

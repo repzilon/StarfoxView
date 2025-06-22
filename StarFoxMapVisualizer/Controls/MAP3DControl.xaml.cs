@@ -1,11 +1,4 @@
-﻿using Starfox.Editor.Settings;
-using StarFox.Interop.ASM;
-using StarFox.Interop.BSP.SHAPE;
-using StarFox.Interop.MAP;
-using StarFox.Interop.MAP.CONTEXT;
-using StarFox.Interop.MAP.EVT;
-using StarFoxMapVisualizer.Misc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +9,13 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using Starfox.Editor.Settings;
+using StarFox.Interop.ASM;
+using StarFox.Interop.BSP.SHAPE;
+using StarFox.Interop.MAP;
+using StarFox.Interop.MAP.CONTEXT;
+using StarFox.Interop.MAP.EVT;
+using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Controls
 {

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.MISC;
 
