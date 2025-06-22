@@ -10,4 +10,7 @@
     <ProjectReference Include="..\StarFox.Interop.Audio\StarFox.Interop.Audio.csproj" />
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" Version="9.0.6" />
+  </ItemGroup>
 </Project>
