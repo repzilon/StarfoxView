@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -104,7 +104,7 @@ namespace StarFox.Interop.GFX
         /// </summary>
         public async Task SerializeColors(Stream Destination)
         {
-#if NET46
+#if NET46 || NET40
             using (var writer = new StreamWriter(Destination)) {
 				JsonSerializer.Create().Serialize(writer, Colors.Select(x => BSPColor.FromDrawing(x)));
 			}

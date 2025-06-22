@@ -53,4 +53,30 @@ namespace StarFox.Interop
 			return x.Take(checked(last - first + 1)).ToArray();
 		}
 	}
+
+#if NET40
+	internal struct Vector3
+	{
+		public float X;
+		public float Y;
+		public float Z;
+
+		public Vector3(float x, float y, float z) : this()
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
+
+		public static Vector3 operator +(Vector3 u, Vector3 v)
+		{
+			return new Vector3(u.X + v.X, u.Y + v.Y, u.Z + v.Z);
+		}
+
+		public static Vector3 operator -(Vector3 u, Vector3 v)
+		{
+			return new Vector3(u.X - v.X, u.Y - v.Y, u.Z - v.Z);
+		}
+	}
+#endif
 }

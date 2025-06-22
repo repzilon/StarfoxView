@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -19,6 +19,7 @@ using StarFox.Interop.MAP.CONTEXT;
 using StarFox.Interop.MAP.EVT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Misc;
+using WpfPanAndZoom;
 using WpfPanAndZoom.CustomControls;
 
 namespace StarFoxMapVisualizer.Controls
@@ -89,7 +90,7 @@ namespace StarFoxMapVisualizer.Controls
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(fileName));
             using (var file = File.Create(fileName))
             {
-#if NET46
+#if NET46 || NET40
                 using (var wrtStream = new StreamWriter(file)) {
                     using (var wrtJson = new JsonTextWriter(wrtStream)) {
                         selectedScript.LevelData.Serialize(wrtJson);
@@ -522,7 +523,7 @@ namespace StarFoxMapVisualizer.Controls
             control.LocationChanged += CanvasMoved;
         }
 
-        private void CanvasMoved(object sender, Point e)
+        private void CanvasMoved(object sender, ValueEventArgs<Point> e)
         {
             var control = ((PanAndZoomCanvas)sender);
             ChronologySlider.Scroll -= ChronologySlider_Scroll;

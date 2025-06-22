@@ -52,7 +52,11 @@ namespace StarFox.Interop.GFX.DAT
             using (FileStream ImageStream = File.OpenRead(FilePath))
             {
                 ImageStream.Seek(Offset, SeekOrigin.Begin);
+#if NET40
+	            ImageStream.Read(fileData, 0, fileData.Length);
+#else
                 await ImageStream.ReadAsync(fileData, 0, fileData.Length);
+#endif
 
                 ////////////////////////////////////////////////
                 // FX 4-bpp interleaved image ==> 4-bpp linear

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
     <TargetFrameworks>net6.0;net5.0;net48;net46;netstandard2.0</TargetFrameworks>
     <NoWarn>NETSDK1138</NoWarn>
@@ -11,6 +11,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EarClipperLib\EarClipperLib.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Net35.Threading.Tasks" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="System.Numerics.Vectors" Version="[4.5.0]"  />

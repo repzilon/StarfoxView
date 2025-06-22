@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-#if NET46
+﻿using System.Linq;
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json.Serialization;

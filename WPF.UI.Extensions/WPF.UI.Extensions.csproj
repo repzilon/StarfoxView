@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
     <TargetFrameworks>net6.0-windows7.0;net5.0-windows7.0;net48;net46</TargetFrameworks>
     <NoWarn>NETSDK1138</NoWarn>
@@ -41,5 +41,11 @@
     <Resource Include="Resources\Graphics\Snow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <PackageReference Include="Net35.Threading.Tasks" Version="1.4.0" Aliases="CompatTPL" />
+    <!--<PackageReference Include="System.Threading.Tasks.Unofficial" Version="3.1.0" Aliases="CompatTPL" />-->
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -27,7 +27,7 @@ namespace StarFox.Interop.MISC
 
 		private static string SerializeToString(object instance)
 		{
-#if NET46
+#if NET46 || NET40
 			string text;
 			using (var wrtString = new StringWriter()) {
 				JsonSerializer.Create().Serialize(wrtString, instance, instance.GetType());
@@ -42,7 +42,7 @@ namespace StarFox.Interop.MISC
 
 		private static async void SerializeToStream(Stream Stream, object obj)
 		{
-#if NET46
+#if NET46 || NET40
 			using (var wrtStream = new StreamWriter(Stream)) {
 				using (var wrtJson = new JsonTextWriter(wrtStream)) {
 					JsonSerializer.Create().Serialize(wrtJson, obj);
@@ -92,7 +92,7 @@ namespace StarFox.Interop.MISC
 
 		private static async Task<T> Deserialize<T>(Stream stream)
 		{
-#if NET46
+#if NET46 || NET40
 			using (var rdrStream = new StreamReader(stream)) {
 				using (var rdrJson = new JsonTextReader(rdrStream)) {
 					return JsonSerializer.Create().Deserialize<T>(rdrJson);
@@ -105,7 +105,7 @@ namespace StarFox.Interop.MISC
 
 		private static object Deserialize(StrongTypeSerializationObject stso)
 		{
-#if NET46
+#if NET46 || NET40
 			using (var rdrString = new StringReader(stso.SerializedData)) {
 				using (var rdrJson = new JsonTextReader(rdrString)) {
 					return JsonSerializer.Create().Deserialize(rdrJson, Type.GetType(stso.TypeName));

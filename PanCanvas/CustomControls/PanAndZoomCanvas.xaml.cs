@@ -35,7 +35,7 @@ namespace WpfPanAndZoom.CustomControls
         private List<Line> _gridLines = new List<Line>();
         #endregion
 
-        public event EventHandler<Point> LocationChanged;
+        public event EventHandler<ValueEventArgs<Point>> LocationChanged;
 
         /// <summary>
         /// The current position of the camera in this virtual 2D space
@@ -191,7 +191,7 @@ namespace WpfPanAndZoom.CustomControls
                 child.RenderTransform = _transform;
             }
 
-            LocationChanged?.Invoke(this, Location);
+            LocationChanged?.Invoke(this, new ValueEventArgs<Point>(Location));
         }
         public void MoveCanvas(Point Offset) => MoveCanvas(new Vector(Offset.X,Offset.Y));
         public void SetCanvasLocation(Point Location)

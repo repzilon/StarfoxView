@@ -22,7 +22,11 @@ namespace StarFox.Interop.GFX
             using (var fs = File.OpenRead(fullName))
             {
                 byte[] fileArray = new byte[fs.Length];
+#if NET40
+				fs.Read(fileArray, 0, fileArray.Length);
+#else
                 await fs.ReadAsync(fileArray, 0, fileArray.Length);
+#endif
                 return Decrunch.Decompress(fullName, fileArray);
             }
         }

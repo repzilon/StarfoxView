@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -91,7 +91,7 @@ namespace Starfox.Editor
         public static SFOptimizerNode Create(string BaseDirectory, string Name, SFOptimizerDataStruct DataStruct)
         {
             var path = Path.Combine(BaseDirectory, $"{Name}.{SF_OPTIM_Extension}");
-#if NET46
+#if NET46 || NET40
             string json;
             using (var wrtString = new StringWriter()) {
                 using (var wrtJson = new JsonTextWriter(wrtString)) {
@@ -109,7 +109,7 @@ namespace Starfox.Editor
 
         private void GetOptimizerFileData()
         {
-#if NET46
+#if NET46 || NET40
             using (var rdrStream = new StreamReader(FilePath)) {
                 using (var rdrJson = new JsonTextReader(rdrStream)) {
 					OptimizerData = JsonSerializer.Create().Deserialize<SFOptimizerDataStruct>(rdrJson);

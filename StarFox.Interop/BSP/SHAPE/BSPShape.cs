@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -356,13 +356,13 @@ namespace StarFox.Interop.BSP.SHAPE
 		/// Serializes this object to the given stream
 		/// </summary>
 		/// <param name="Destination"></param>
-#if NET46
+#if NET46 || NET40
 		public void Serialize(JsonWriter Destination)
 #else
         public void Serialize(Utf8JsonWriter Destination)
 #endif
 		{
-#if NET46
+#if NET46 || NET40
             JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, this);
 #else
             

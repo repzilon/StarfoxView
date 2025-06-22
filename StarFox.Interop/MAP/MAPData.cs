@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if NET46
+#if NET46 || NET40
 using Newtonsoft.Json;
 #else
 using System.Text.Json;
@@ -121,7 +121,7 @@ namespace StarFox.Interop.MAP
 		/// Serializes this object to the given stream
 		/// </summary>
 		/// <param name="Destination"></param>
-#if NET46
+#if NET46 || NET40
 		public void Serialize(JsonWriter Destination)
 #else
         public void Serialize(Utf8JsonWriter Destination)
@@ -133,7 +133,7 @@ namespace StarFox.Interop.MAP
                     EventsByDelay = EventsByDelay,
                     SerializedData = mem.ToArray()
                 };
-#if NET46
+#if NET46 || NET40
                 JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, inter);
 #else
                 using (var doc = JsonSerializer.SerializeToDocument(inter, new JsonSerializerOptions() {
@@ -146,7 +146,7 @@ namespace StarFox.Interop.MAP
         }
         public static async Task<MAPData> Deserialize(Stream Json)
         {
-#if NET46
+#if NET46 || NET40
             Intermediary inter = null;
             using (TextReader rdrStream = new StreamReader(Json)) {
                 using (JsonReader rdrJson = new JsonTextReader(rdrStream)) {

@@ -93,27 +93,30 @@ namespace WPF.UI.Extensions.Controls
         /// <returns></returns>
         public bool Attach(PropertyInfo Property, object ParentType)
         {
-            return Application.Current.Dispatcher.Invoke(delegate
-            {
-                Children.Clear();
-
-                ColumnDefinitions.Clear();
-                ColumnDefinitions.Add(new ColumnDefinition());
-                ColumnDefinitions.Add(new ColumnDefinition());
-
-                if (!Property.CanRead) return false;
-                var prop = AttachedProperty = Property;
-                ParentObject = ParentType;
-
-                Children.Add(new TextBlock()
-                {
-                    Text = NormalizeName(prop.Name),
-                });
-                GetConvert();
-                SetConvertElement();
-                return true;
-            });            
+	        return Application.Current.Dispatcher.Invoke(() => AttachImpl(Property, ParentType));
         }
+
+        private bool AttachImpl(PropertyInfo Property, object ParentType)
+        {
+	        Children.Clear();
+
+	        ColumnDefinitions.Clear();
+	        ColumnDefinitions.Add(new ColumnDefinition());
+	        ColumnDefinitions.Add(new ColumnDefinition());
+
+	        if (!Property.CanRead) return false;
+	        var prop = AttachedProperty = Property;
+	        ParentObject = ParentType;
+
+	        Children.Add(new TextBlock()
+	        {
+		        Text = NormalizeName(prop.Name),
+	        });
+	        GetConvert();
+	        SetConvertElement();
+	        return true;
+        }
+
         /// <summary>
         /// Apply the value entered for this control into the parent object
         /// <para>This WILL throw exceptions for a multitude of reasons and the caller is responsible for handling errors.</para>

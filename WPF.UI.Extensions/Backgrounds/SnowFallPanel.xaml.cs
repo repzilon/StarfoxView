@@ -1,6 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if NET40
+extern alias CompatTPL;
+using CompatTPL::System.Threading.Tasks;
+#else
 using System.Threading.Tasks;
+#endif
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
