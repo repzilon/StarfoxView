@@ -59,6 +59,7 @@
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\" />
     <Folder Include="Resources\Model\" />
   </ItemGroup>
   <ItemGroup>
@@ -119,16 +120,5 @@
     <Compile Update="Controls\Subcontrols\GenericMenuDialog.xaml.cs"></Compile>
     <Compile Update="Controls\Subcontrols\PCRImportMenu.xaml.cs"></Compile>
     <Compile Update="Controls\Subcontrols\BPPDepthMenu.xaml.cs"></Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>
