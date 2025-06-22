@@ -796,9 +796,9 @@ namespace StarFoxMapVisualizer.Controls
         private async void ExportMeshButton_Click(object sender, RoutedEventArgs e)
         {
             var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette, out string FilePath, SelectedFrame);
-            await EDITORStandard.ShowNotification($" {(!result.Successful ? "MODEL WAS NOT EXPORTED! " : "MODEL EXPORTED SUCCESSFULLY! ") + result.Message}",  
+            await EDITORStandard.ShowNotification($" {(!result.Successful ? "MODEL WAS NOT EXPORTED! " : "MODEL EXPORTED SUCCESSFULLY! ") + result.Message}",
                 delegate {
-                    using var proc = Process.Start("explorer", FilePath);
+                    using (Process.Start("explorer", FilePath)) { }
                 }, TimeSpan.FromSeconds(5));
         }
     }

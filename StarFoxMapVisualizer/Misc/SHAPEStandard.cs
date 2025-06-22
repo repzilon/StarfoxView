@@ -48,7 +48,7 @@ namespace StarFoxMapVisualizer.Misc
         /// </summary>
         internal static string DefaultShapeExtractionDirectory { get; set; } = System.IO.Path.Combine(Environment.CurrentDirectory, "export/shapes");
 
-        internal static COL? GetPaltByFileName(string FileName)
+        internal static COL GetPaltByFileName(string FileName)
         {
             FileName = FileName.ToUpper().Replace(".COL", "");
             return AppResources.ImportedProject.Palettes.FirstOrDefault
@@ -61,8 +61,8 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="ColGroupName"></param>
         /// <returns></returns>
         internal static bool CreateSFPalette(string ColGroupName, out SFPalette Palette, out COLGroup Group, string ColorPaletteName = "BLUE")
-        {            
-            COL? palette = GetPaltByFileName(ColorPaletteName);
+        {
+            COL palette = GetPaltByFileName(ColorPaletteName);
             var group = default(COLGroup);
             if (ProjectColorTable != null)
                 ProjectColorTable.TryGetGroup(ColGroupName, out group);
@@ -576,9 +576,9 @@ namespace StarFoxMapVisualizer.Misc
             };
         }
 
-        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape? currentShape, COLGroup Group, SFPalette Palette, out string? FilePath, int Frame = 0)
+        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup Group, SFPalette Palette, out string FilePath, int Frame = 0)
         {
-            SaveFileDialog saveDialog = new()
+            var saveDialog = new SaveFileDialog()
             {
                 Title = "Save 3D Object File",
                 AddExtension = true,
@@ -594,7 +594,7 @@ namespace StarFoxMapVisualizer.Misc
             BSPExporter.BSPExportOptions options = BSPExporter.BSPExportOptions.Default;
             try
             { // try invoking the BSP exporter
-                return BSPExporter.ExportShape(saveDialog.FileName, currentShape, Group, Palette, Frame, 
+                return BSPExporter.ExportShape(saveDialog.FileName, currentShape, Group, Palette, Frame,
                     ProjectColorTable, GetPaltByFileName("BLUE.COL"), options);
             }
             catch (Exception ex)

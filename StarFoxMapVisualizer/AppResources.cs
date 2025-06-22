@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using Starfox.Editor;
+using StarFox.Interop;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP;
+using StarFoxMapVisualizer.Dialogs;
 
 namespace StarFoxMapVisualizer
 {

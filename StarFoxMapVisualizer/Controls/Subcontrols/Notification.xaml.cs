@@ -23,7 +23,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
     /// </summary>
     public partial class Notification : ContentControl
     {
-        private static Notification? OpenNotification;
+        private static Notification OpenNotification;
         private static Timer _timer;
 
         public event EventHandler Dismissed;
@@ -59,7 +59,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         /// <param name="Immediate">When true, will dismiss the <see cref="GetOpenNotification"/> now</param>
         internal static async Task<Notification> CreateAsync(string ActionText, TimeSpan Lifespan, Action Callback, bool Immediate = false)
         {
-            Notification notification = new(Callback, Lifespan, ActionText);            
+            var notification = new Notification(Callback, Lifespan, ActionText);
             if(OpenNotification != null)
             { // NOTIFICATION OPEN
                 if (Immediate)
@@ -86,14 +86,14 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         internal void Show()
         {
             double width = Application.Current.MainWindow.ActualWidth;
-            BeginAnimation(MarginProperty, new ThicknessAnimation(new Thickness(width / 2, 10, width / 2, 10), new Thickness(10), TimeSpan.FromSeconds(.15)));            
+            BeginAnimation(MarginProperty, new ThicknessAnimation(new Thickness(width / 2, 10, width / 2, 10), new Thickness(10), TimeSpan.FromSeconds(.15)));
         }
 
         /// <summary>
         /// Gets the notification that's currently open
         /// </summary>
         /// <returns></returns>
-        internal Notification? GetOpenNotification()
+        internal Notification GetOpenNotification()
         {
             return OpenNotification;
         }
@@ -116,7 +116,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                 Dismissed?.Invoke(this, null);
                 OpenNotification = null;
             };
-            BeginAnimation(MarginProperty, anim);            
+            BeginAnimation(MarginProperty, anim);
         }
         /// <summary>
         /// Runs the attached Action Callback on this notification now
@@ -131,7 +131,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
         private void DockPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => Interact();
 
-        private void ProgressBar_Loaded(object sender, RoutedEventArgs e) => 
+        private void ProgressBar_Loaded(object sender, RoutedEventArgs e) =>
             (sender as ProgressBar).BeginAnimation(ProgressBar.ValueProperty, new DoubleAnimation(1, 0, Lifespan));
     }
 }

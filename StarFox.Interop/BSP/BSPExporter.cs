@@ -1,10 +1,12 @@
-﻿using g4;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using g4;
 using StarFox.Interop.BSP.SHAPE;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.COLTAB.DEF;
-using System.Drawing;
-using System.Text.RegularExpressions;
 using static StarFox.Interop.GFX.CAD;
 
 namespace StarFox.Interop.BSP
@@ -14,7 +16,7 @@ namespace StarFox.Interop.BSP
     /// </summary>
     public class BSPExporter
     {
-        public const string FILE_EXTENSION = ".obj"; 
+        public const string FILE_EXTENSION = ".obj";
 
         /// <summary>
         /// Describes how an export operation went
@@ -33,18 +35,18 @@ namespace StarFox.Interop.BSP
             /// A value indicating whether the model was ultimately exported to a file
             /// </summary>
             public bool Successful { get; }
-            
 
-            public BSPIOWriteResult(IOWriteResult Other, string? appendMsg = null)
+
+            public BSPIOWriteResult(IOWriteResult Other, string appendMsg = null)
             {
                 Descriptor = nameof(Other);
                 Successful = Other.code == IOCode.Ok;
-                Message = appendMsg + Other.message;
+                Message = (appendMsg != null) ? appendMsg + Other.message : Other.message;
             }
             internal BSPIOWriteResult(string descriptor, string message, bool successful)
             {
                 Descriptor = descriptor;
-                Message = message;  
+                Message = message;
                 Successful = successful;
             }
 
@@ -79,45 +81,18 @@ namespace StarFox.Interop.BSP
         }
 
         /// <summary>
-        /// The context used to complete an export operation, encompassing palettes, options, etc.
-        /// <para/> Creates a new instance of the <see cref="BSPExportContext"/> with the given formal parameters        
-        /// </summary>
-        /// <param name="FileName"></param>
-        /// <param name="Shape"></param>
-        /// <param name="Group"></param>
-        /// <param name="Palette"></param>
-        /// <param name="Frame"></param>
-        /// <param name="ColorTable"></param>
-        /// <param name="Palt"></param>
-        /// <param name="Options">Optional, will evaluate to <see cref="BSPExportOptions.Default"/> if left <see langword="default"/></param>
-        public record BSPExportContext(string FileName,
-                                       BSPShape Shape,
-                                       COLGroup Group,
-                                       SFPalette Palette,
-                                       int Frame,
-                                       COLTABFile ColorTable,
-                                       COL Palt,
-                                       BSPExportOptions? Options = default)
-        {
-            /// <summary>
-            /// The options for this export to change certain behaviors to mitigate issues involving certain <see cref="BSPShape"/>s
-            /// </summary>
-            public BSPExportOptions Options { get; set; } = Options ?? BSPExportOptions.Default;
-        }
-
-        /// <summary>
         /// The <see cref="BSPExportContext"/> added to this instance being used to describe the parameters for this export operation
         /// </summary>
         public BSPExportContext Context { get; }
         /// <summary>
         /// Options for this export operation in case the user runs into issues exporting certain shapes
         /// </summary>
-        public BSPExportOptions Options => Context.Options;
+        public BSPExporter.BSPExportOptions Options => Context.Options;
         /// <summary>
         /// The file path to be exporting this shape to
         /// <para/>Must end with <see cref="FILE_EXTENSION"/>
         /// </summary>
-        public FileInfo FileName => new(Context.FileName);
+        public FileInfo FileName => new FileInfo(Context.FileName);
         /// <summary>
         /// The shape to export
         /// </summary>
@@ -136,7 +111,7 @@ namespace StarFox.Interop.BSP
         {
             this.Context = Context;
             if (Options == default)
-                this.Context.Options = BSPExportOptions.Default;
+                this.Context.Options = BSPExporter.BSPExportOptions.Default;
         }
 
         /// <summary>
@@ -145,40 +120,40 @@ namespace StarFox.Interop.BSP
         /// <para/>Uses the <see cref="Context"/> property to get context for this export operation
         /// </summary>
         /// <returns></returns>
-        public BSPIOWriteResult ExportShape()
+        public BSPExporter.BSPIOWriteResult ExportShape()
         {
-            meshData = null;            
+            meshData = null;
 
-            //ensure valid params 
+            //ensure valid params
             if (Options == default)
-                this.Context.Options = BSPExportOptions.Default;
-            if (FileName.Extension != FILE_EXTENSION) return new BSPIOWriteResult(nameof(NotSupportedException),
+                this.Context.Options = BSPExporter.BSPExportOptions.Default;
+            if (FileName.Extension != FILE_EXTENSION) return new BSPExporter.BSPIOWriteResult(nameof(NotSupportedException),
                 "Only accepting " + FILE_EXTENSION + " file extensions at this time.", false);
 
             string userMsg = "";
             //Generate the geometry now
             try
             {
-                GenerateMeshGeometry(out meshData);                
+                GenerateMeshGeometry(out meshData);
             }
             catch (InvalidOperationException ioe)
             { // invalid operation exception is thrown from the generate function and should not be ignored
-                return BSPIOWriteResult.Faulted(ioe);
+                return BSPExporter.BSPIOWriteResult.Faulted(ioe);
             }
             catch (Exception e)
             { // Lib we're using throws a generic exception when the model MAY be incorrect, so we really can't do much about this right now without more work
                 userMsg += e.Message + "... this model might not look right. "; // alert the user there may be an issue
             }
             if (meshData == null)
-                return BSPIOWriteResult.Faulted(new InvalidOperationException("MeshData was NOT generated without an error being raised!")); // ???
+                return BSPExporter.BSPIOWriteResult.Faulted(new InvalidOperationException("MeshData was NOT generated without an error being raised!")); // ???
 
             //Setup colors if activated
             if (Options.ColorActivated)
             { // activated
                 meshData.EnableVertexColors(new Vector3f(0, 1, .25));
                 ProcessVertexColors();
-            }        
-            return new BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
+            }
+            return new BSPExporter.BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
             {
                 bWriteBinary = false,
                 bPerVertexNormals = false,
@@ -207,18 +182,18 @@ namespace StarFox.Interop.BSP
         /// <param name="Palt">The Color Animation table to apply, usually is BLUE.COL</param>
         /// <returns></returns>
         public static BSPIOWriteResult ExportShape(string FileName, BSPShape Shape, COLGroup Group,
-            SFPalette Palette, int Frame, COLTABFile ColorTable, COL Palt, BSPExportOptions Options = default) => 
-            new BSPExporter(new(FileName, Shape, Group, Palette, Frame, ColorTable, Palt, Options)).ExportShape();
+            SFPalette Palette, int Frame, COLTABFile ColorTable, COL Palt, BSPExportOptions Options = default) =>
+            new BSPExporter(new BSPExportContext(FileName, Shape, Group, Palette, Frame, ColorTable, Palt, Options)).ExportShape();
 
         /// <summary>
         /// Generates Mesh Geometry using two passes: TRIS and LINEs
         /// <para/> Does not add color data -- needs to be called before <see cref="ProcessVertexColors"/>
         /// </summary>
         /// <exception cref="InvalidDataException"></exception>
-        void GenerateMeshGeometry(out DMesh3? Mesh)
+        void GenerateMeshGeometry(out DMesh3 Mesh)
         {
-            List<Vector3d> vertices = new();
-            List<int> indices = new List<int>();
+            var vertices = new  List<Vector3d>();
+            var indices = new List<int>();
             List<Vector3f> normals = null;
 
             int overallIndex = 0;
@@ -228,7 +203,7 @@ namespace StarFox.Interop.BSP
                 /*
                  * SET UP TWO PASSES:
                  * 2. TRIS
-                 * 1. LINES                 
+                 * 1. LINES
                  */
                 foreach (var face in Shape.Faces)
                 {
@@ -276,7 +251,7 @@ namespace StarFox.Interop.BSP
                 /*
                  * SET UP TWO PASSES:
                  * 2. TRIS
-                 * 1. LINES                 
+                 * 1. LINES
                  */
                 foreach (var face in Shape.Faces)
                 {
@@ -302,11 +277,11 @@ namespace StarFox.Interop.BSP
         static bool PushLine(List<Vector3d> Verticies, List<int> Indices, Vector3d Point1, Vector3d Point2)
         {
             double thickness = .5;
-            int index = Verticies.Count(); // used to push indices
-            Verticies.Add(new(Point1.x, Point1.y, Point1.z)); // i
-            Verticies.Add(new(Point1.x - thickness, Point1.y, Point1.z + thickness)); // i + 1            
-            Verticies.Add(new(Point2.x, Point2.y, Point2.z)); // i + 2
-            Verticies.Add(new(Point2.x + thickness, Point2.y, Point2.z - thickness)); // i + 3
+            int    index     = Verticies.Count();                                              // used to push indices
+            Verticies.Add(new Vector3d(Point1.x, Point1.y, Point1.z));                         // i
+            Verticies.Add(new Vector3d(Point1.x - thickness, Point1.y, Point1.z + thickness)); // i + 1
+            Verticies.Add(new Vector3d(Point2.x, Point2.y, Point2.z));                         // i + 2
+            Verticies.Add(new Vector3d(Point2.x + thickness, Point2.y, Point2.z - thickness)); // i + 3
             Indices.Add(index);
             Indices.Add(index + 1);
             Indices.Add(index + 2);
@@ -328,7 +303,7 @@ namespace StarFox.Interop.BSP
         static bool PushLine(List<Vector3d> Verticies, List<int> Indices, BSPShape Shape, in BSPFace Face, int Frame)
         { // Pushes a line to the mesh geometry provided to this function
             var ModelPoints = Face.PointIndices.Select(x => Shape.GetPointOrDefault(x.PointIndex, Frame)).Where(y => y != default).ToArray();
-            if (ModelPoints.Length != 2) return false; // not a line!!                        
+            if (ModelPoints.Length != 2) return false; // not a line!!
             return PushLine(Verticies, Indices, new Vector3d(ModelPoints[0].X, ModelPoints[0].Y, ModelPoints[0].Z),
                 new Vector3d(ModelPoints[1].X, ModelPoints[1].Y, ModelPoints[1].Z));
         }
@@ -346,9 +321,9 @@ namespace StarFox.Interop.BSP
         /// <exception cref="Exception"></exception>
         static bool TryCreateSFPalette(string ColGroupName, COLTABFile ColorTable, COL Palt, out SFPalette Palette, out COLGroup Group)
         {
-            COL? palette = Palt;
-            COLGroup? group = default;
-            ColorTable?.TryGetGroup(ColGroupName, out group);           
+            COL palette = Palt;
+            COLGroup group = default;
+            ColorTable?.TryGetGroup(ColGroupName, out group);
             if (palette == null || group == null)
                 throw new Exception($"There was a problem loading the palette and/or color table group: {ColGroupName}.");
             Group = group;
@@ -363,7 +338,7 @@ namespace StarFox.Interop.BSP
             var fooColor = System.Drawing.Color.Blue;
             switch (Type)
             {
-                case COLDefinition.CallTypes.Collite: // diffuse                    
+                case COLDefinition.CallTypes.Collite: // diffuse
                     fooColor = palette.Collites[colIndex];
                     break;
                 case COLDefinition.CallTypes.Colnorm: // normal? not sure.
@@ -374,7 +349,8 @@ namespace StarFox.Interop.BSP
                     fooColor = palette.Coldepths.ElementAtOrDefault(colIndex).Value;
                     break;
             }
-            return new(fooColor.R/255.0, fooColor.G/255.0, fooColor.B/255.0);
+
+            return new Vector3f(fooColor.R / 255.0, fooColor.G / 255.0, fooColor.B / 255.0);
         }
         /// <summary>
         /// Gets the color for this Face using its <paramref name="definition"/>, <paramref name="currentSFPalette"/>
@@ -418,7 +394,7 @@ namespace StarFox.Interop.BSP
                     }
                     break;
                 case COLDefinition.CallTypes.Texture:
-                    
+
                     break;
             }
             return new Vector3f(1,1,1);

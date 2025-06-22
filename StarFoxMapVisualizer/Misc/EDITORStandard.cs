@@ -10,6 +10,7 @@ using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.MAP.EVT;
 using StarFoxMapVisualizer.Controls;
+using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Dialogs;
 using StarFoxMapVisualizer.Screens;
 
