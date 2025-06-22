@@ -47,7 +47,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <para>Is Export/Shapes by <see langword="default"/></para>
         /// </summary>
         internal static string DefaultShapeExtractionDirectory { get; set; } =
-	       Path.Combine(Environment.CurrentDirectory, "export/shapes");
+	       Path.Combine(Environment.CurrentDirectory, "export", "shapes");
 
         internal static COL GetPaltByFileName(string FileName)
         {
