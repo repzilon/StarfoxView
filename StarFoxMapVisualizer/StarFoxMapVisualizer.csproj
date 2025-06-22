@@ -30,6 +30,7 @@
     <None Remove="Resources\Image\pause.png" />
     <None Remove="Resources\Image\play.png" />
     <None Remove="Resources\Image\screenIcon.png" />
+    <None Remove="Resources\Image\SectorY.png" />
     <None Remove="Resources\Image\SFViewLogoSmall.png" />
     <None Remove="Resources\Image\sf_frame.png" />
     <None Remove="Resources\Image\sf_frame_cn.png" />
@@ -94,6 +95,7 @@
     <Resource Include="Resources\Image\pause.png" />
     <Resource Include="Resources\Image\play.png" />
     <Resource Include="Resources\Image\screenIcon.png" />
+    <Resource Include="Resources\Image\SectorY.png" />
     <Resource Include="Resources\Image\SFViewLogoSmall.png" />
     <Resource Include="Resources\Image\sf_frame.png" />
     <Resource Include="Resources\Image\sf_frame_cn.png" />

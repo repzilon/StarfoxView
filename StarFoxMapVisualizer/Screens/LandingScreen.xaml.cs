@@ -2,7 +2,6 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using StarFoxMapVisualizer.Misc;
 
@@ -16,19 +15,12 @@ namespace StarFoxMapVisualizer.Screens
         const string RecentTXTFileName = "recent.txt";
         bool RecentExists => File.Exists(RecentTXTFileName);
 
-        private NavigationService _service;
-
         public LandingScreen()
         {
             InitializeComponent();
 
             if (!RecentExists)
                 ClearRecentFile.Visibility = Visibility.Collapsed;
-        }
-
-        private void LandingScreen_Loaded(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private async void GetStartedButton_Click(object sender, RoutedEventArgs e)
@@ -57,7 +49,7 @@ namespace StarFoxMapVisualizer.Screens
                 }
 
                 //TRY TO LOAD THE PROJECT
-                if (await AppResources.TryImportProject(new System.IO.DirectoryInfo(fileLoc)))
+                if (await AppResources.TryImportProject(new DirectoryInfo(fileLoc)))
                 {
                     result = true;
                     break; // loading the project success, break out
