@@ -20,7 +20,7 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
 - [ ] Replace the optimizers' message box wagon with a single dialog
 - [ ] Handle English<->foreign language mapping with the newest message format
-- [ ] Replace auto-import message box with the notification banner
+- [x] Replace auto-import message box with the notification banner
 - [ ] Correct the dialog and menu background color that is too light, making text unreadable
 - [ ] Add a Collect garbage button (trigger GC) to the About box
 - [ ] In Messages view, have taller lists so we scroll less vertically
