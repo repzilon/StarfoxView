@@ -14,7 +14,7 @@ Thank you very much to the following projects for being Open-Source and helping 
     > His work helped me create FX.cs - a C# translation of FX.cpp for compressed CGX imagery.
 * Special thanks to LUIGIBLOOD! Maker of hcgcad: https://github.com/LuigiBlood/hcgcad
     > His work helped me create CAD.cs - an adaptation of CAD.cs from his project for 2D imagery.
-* Special thanks to Euclidium, Sunlit, segaretro92, Random and kando from the Starfox EX discord for helping with various curiousities.
+* Special thanks to Euclidium, Sunlit, segaretro92, Random and kando from the Starfox EX discord for helping with various curiosities.
 
 You are all appreciated.
 
@@ -23,7 +23,7 @@ NO copyrighted content is distributed through this project. I do not endorse any
 use this program. This program will interpret only files you provide to be used with it.
 
 ## Setup
-Instructions for setup I have split into two user-groups.
+Instructions for setup I have split into two user groups.
 
 **Everyone!** You need to have a copy of the StarFox source code. 
 
@@ -33,19 +33,19 @@ Instructions for setup I have split into two user-groups.
 ### Developers
 Before cloning the repository, allow me to draw your attention to the following:
 
-* Requires Visual Studio 2022
-* Requires .NET Standard 5.0 / 6.0
-* Requires Windows Presentation Foundation package included
+* Requires Visual Studio 2022 or JetBrains Rider (2024.1 or newer)
+* Targets .NET Framework 4.6, 4.8 and Unified .NET 5.0 and 6.0 (SDK-style projects)
+* Requires *Windows* Presentation Foundation to run and debug (but can be compiled with Rider on Mac)
 
 After cloning the repository, there are some additional things to note:
 
-* This project has NuGet packages, ensure they are installed and updated.
-* Project references should all be valid, you shouldn't need to edit project references.
+* This solution has NuGet packages, ensure they are restored. Many are version-locked to ensure every target framework uses a compatible version.
+* *This fork* also needs a back port fork of geometry4Sharp set up as a project reference, clone https://github.com/repzilon/geometry4Shsarp/ to a directory *a*side the StarfoxView directory.
 
 ### Enthusiasts 
 People who just want to explore the StarFox source code.
 
-Refer to the *Packages* section for the latest build, if one is available.
+Refer to the *Packages* section for the latest build *upstream*, if one is available.
 
 Once the latest build package has been downloaded, place it somewhere you won't lose it. (Shorter paths are generally safer)
 
