@@ -623,7 +623,7 @@ namespace StarFoxMapVisualizer.Controls
                 var item = new TreeViewItem()
                 {
                     Foreground = Brushes.White,
-                    Header = $"[{face.Index}] FACE::Color={face.Color},Points={face.PointIndices.Count()}"
+                    Header = $"[{face.Index,2}] FACE::Color={face.Color,2},Points={face.PointIndices.Length}"
                 };
                 item.Selected += delegate
                 {

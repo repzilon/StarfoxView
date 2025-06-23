@@ -15,6 +15,7 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] Simplify serialization of .sfpal (use HTML color codes)
 - [ ] Experiment with fastJSON (fast, stable, available on older frameworks)
 - [ ] Interpret Japanese communication messages and its proprietary character set
+- [ ] Have the menu bar items do something
 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
@@ -26,4 +27,5 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] In Messages view, have taller lists so we scroll less vertically
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)
 - [x] In Messages view, fit a bit more text in each entry of the lists
-- [ ] In Shapes view, format the coordinates numbers to align them
+- [x] In Shapes view, format the coordinates numbers to align them
+- [ ] Include Pepper and Andross to communication mugshots

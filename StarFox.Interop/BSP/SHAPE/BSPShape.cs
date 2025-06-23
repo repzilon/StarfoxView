@@ -35,7 +35,7 @@ namespace StarFox.Interop.BSP.SHAPE
         }
         public override string ToString()
         {
-            return $"X: {X}, Y: {Y}, Z: {Z}";
+            return $"X: {X,3}, Y: {Y,3}, Z: {Z,3}";
         }
     }
     /// <summary>
