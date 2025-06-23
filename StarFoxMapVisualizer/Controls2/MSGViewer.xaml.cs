@@ -89,7 +89,7 @@ namespace StarFoxMapVisualizer.Controls2
 
 		private void AddMessage(Dictionary<string, ListBox> personToListBoxMap, MSGEntry Entry, int messageNumber)
 		{
-			const int kCroppedLength = 25;
+			const int kCroppedLength = 35;
 
 			if (!personToListBoxMap.TryGetValue(Entry.Speaker, out ListBox listBox)) { // we haven't created UI containers for this person yet
 				listBox = new ListBox(); // make a message list
@@ -124,7 +124,11 @@ namespace StarFoxMapVisualizer.Controls2
 				return;
 			}
 			var messageEntry = currentMessage = Entry;
-			MugshotControl.Content = EnglishButton.IsChecked ?? false ? messageEntry.English : messageEntry.SecondaryLanguage;
+			var mugshotText = EnglishButton.IsChecked ?? false ? messageEntry.English : messageEntry.SecondaryLanguage;
+			if (!messageEntry.Speaker.EndsWith("3")) {
+				mugshotText = Environment.NewLine + mugshotText;
+			}
+			MugshotControl.Content = mugshotText;
 			MugshotControl.SetCompatibleFonts(!EnglishButton.IsChecked ?? true);
 			CurrentSpeaker = MapSpeakerToCharacter(messageEntry.Speaker);
 			SoundLabel.Text = messageEntry.Sound;

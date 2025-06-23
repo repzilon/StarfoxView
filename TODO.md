@@ -25,5 +25,5 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] Add a Collect garbage button (trigger GC) to the About box
 - [ ] In Messages view, have taller lists so we scroll less vertically
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)
-- [ ] In Messages view, fit a bit more text in each entry of the lists
+- [x] In Messages view, fit a bit more text in each entry of the lists
 - [ ] In Shapes view, format the coordinates numbers to align them
