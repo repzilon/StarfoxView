@@ -39,7 +39,6 @@
     <None Remove="Resources\Image\threedtransparent.png" />
     <None Remove="Resources\Image\transparent.png" />
     <None Remove="Resources\Image\view3d.png" />
-    <None Remove="Resources\Model\Arwing.fbx" />
     <None Remove="Resources\SFviewLogo.png" />
     <None Remove="Resources\SFViewLogoSmall.ico" />
     <None Remove="Resources\Star-Fox-Starwing.ttf" />
@@ -54,10 +53,6 @@
     <ProjectReference Include="..\StarFox.Interop.Audio\StarFox.Interop.Audio.csproj" />
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="Resources\Model\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell " Version="2.12.0.2" />
