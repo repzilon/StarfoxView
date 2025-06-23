@@ -36,9 +36,8 @@ namespace StarFox.Interop.ASM.TYP
         /// <summary>
         /// Creates a new ASMLine instance and references the Current file being imported and any imports for symbol linking
         /// </summary>
-        /// <param name="FileName"></param>
         /// <param name="Position"></param>
-        /// <param name="Imports"></param>
+        /// <param name="context"></param>
         internal ASMLine(long Position, ASMImporterContext context)
         {
             OriginalFileName = context.CurrentFilePath;
@@ -47,6 +46,11 @@ namespace StarFox.Interop.ASM.TYP
             imports = context.Includes;
             Array.Resize(ref imports, imports.Length + 1);
             imports[imports.Length - 1] = context.CurrentFile;
+        }
+
+        internal ASMLine(long position, ASMImporterContext context, int line) : this(position, context)
+        {
+	        this.Line = line;
         }
 
         private void HighCompat_ParseOutLabels(ref string parseLine)

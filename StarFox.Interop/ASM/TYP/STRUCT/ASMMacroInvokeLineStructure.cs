@@ -88,7 +88,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
             return parameters;
         }
         /// <summary>
-        /// Tries to parse this line as a macro invokation
+        /// Tries to parse this line as a macro invocation
         /// </summary>
         /// <param name="input"></param>
         /// <param name="Reference"></param>
@@ -96,7 +96,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         public static bool TryParse(string input, out ASMMacroInvokeLineStructure result, params ASMFile[] Reference)
         {
             var originalText = input;
-            input = input.TrimStart().TrimEnd();
+            input = input.Trim();
             var blocks = input.Split(' ');
             result = default;
             if (blocks.Length <= 0) return false;

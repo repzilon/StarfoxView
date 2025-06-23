@@ -1,126 +1,163 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM
 {
-    public abstract class ImporterContext<T> where T : IImporterObject
-    {
-        public T[] Includes { get; set; }
-        public T CurrentFile { get; set; }
-        public string CurrentFilePath { get; set; }
-        public int CurrentLine { get; set; }
-    }
-    public class ASMImporterContext : ImporterContext<ASMFile>
-    {
-        public ASMImporterContext() { }
-    }
+	public abstract class ImporterContext<T> where T : IImporterObject
+	{
+		public T[] Includes { get; set; }
+		public T CurrentFile { get; set; }
+		public string CurrentFilePath { get; set; }
+		public int CurrentLine { get; set; }
+	}
 
-    /// <summary>
-    /// A custom-written basic ASM code object importer
-    /// </summary>
-    public class ASMImporter : CodeImporter<ASMFile>
-    {
-        private ASMImporterContext _context;
-        internal ASMImporterContext Context => _context;
-        internal ASMFile[] CurrentIncludes => _context?.Includes;
+	public class ASMImporterContext : ImporterContext<ASMFile>
+	{
+	}
 
-        public ASMImporter()
-        {
-            _context = new ASMImporterContext()
-            {
-                CurrentFilePath = default,
-            };
-        }
+	/// <summary>
+	/// A custom-written basic ASM code object importer
+	/// </summary>
+	public class ASMImporter : CodeImporter<ASMFile>
+	{
+		internal ASMImporterContext Context { get; }
 
-        public ASMImporter(string FilePath, params ASMFile[] Imports) : this()
-        {
-            _context.CurrentFilePath = FilePath;
-            SetImports(Imports);
-            _ = ImportAsync(FilePath);
-        }
+		internal ASMFile[] CurrentIncludes => Context?.Includes;
 
-        /// <summary>
-        /// You can import other ASM files that have symbol definitions in them to have those symbols linked.
-        /// </summary>
-        /// <param name="Imports"></param>
-        public override void SetImports(params ASMFile[] Imports)
-        {
-            _context.Includes = Imports;
-        }
+		public ASMImporter()
+		{
+			Context = new ASMImporterContext()
+			{
+				CurrentFilePath = null,
+			};
+		}
 
-        public override async Task<ASMFile> ImportAsync(string FilePath)
-        {
-            _context.CurrentFilePath = FilePath;
-            var newFile = _context.CurrentFile = new ASMFile(FilePath);
-            _context.CurrentLine = -1;
-            using (var fs = File.OpenText(FilePath)) // open the file as StreamReader
-            {
-                while(!fs.EndOfStream)
-                {
-                    var chunk = ProcChunk(FilePath, _context, fs); // process this line as a new chunk
-                    if (chunk == default) // fail out if not processed (unknown chunk syntax, other errors)
-                        continue; // the assembly chunk was not useful or an error,
-                    newFile.Chunks.Add(chunk); // upon success, add this chunk to the Chunks collection
-                }
-            }
-            return ImportedObject = newFile;
-        }
-        /// <summary>
-        /// Process the current line of the FileStream as a chunk header
-        /// </summary>
-        /// <param name="fs"></param>
-        /// <returns></returns>
-        internal static ASMChunk ProcChunk(string FileName, ASMImporterContext Context, StreamReader fs)
-        {
-            var Current = Context.CurrentFile;
-            var imports = Context.Includes;
+		public ASMImporter(string FilePath, params ASMFile[] Imports) : this()
+		{
+			Context.CurrentFilePath = FilePath;
+			SetImports(Imports);
+			_ = ImportAsync(FilePath);
+		}
 
-            long position = fs.GetCharPosition();
-            var header = fs.ReadLine().RemoveEscapes(); // read line
-            Context.CurrentLine++;//increment line register
-            var type = ASMChunk.Conjecture(header); // investigate what it is
+		/// <summary>
+		/// You can import other ASM files that have symbol definitions in them to have those symbols linked.
+		/// </summary>
+		/// <param name="Imports"></param>
+		public override void SetImports(params ASMFile[] Imports)
+		{
+			Context.Includes = Imports;
+		}
 
-            ASMChunk chunk = default;
-            switch (type)
-            {
-                case ASMChunks.Comment:
-                    chunk = new ASMComment(FileName, position)
-                    {
-                        Line = Context.CurrentLine
-                    };
-                    chunk.Parse(fs);
-                    break;
-                case ASMChunks.Macro:
-                    chunk = new ASMMacro(position, Context)
-                    {
-                        Line = Context.CurrentLine
-                    };
-                    chunk.Parse(fs);
-                    break;
-                default:
-                case ASMChunks.Unknown:
-                case ASMChunks.Line:
-                    chunk = new ASMLine(position, Context)
-                    {
-                        IsUnknownType = type is ASMChunks.Unknown,
-                        Line = Context.CurrentLine
-                    };
-                    chunk.Parse(fs);
-                    break;
-            }
-            if (chunk is ASMLine line) // check if this is a LINE of Assembly code
-            {
-                if (string.IsNullOrWhiteSpace(line.Text))// is the string empty or just spaces?
-                    return null; // return nothing if this isn't useful.
-            }
-            return chunk;
-        }
+		public override async Task<ASMFile> ImportAsync(string FilePath)
+		{
+			Context.CurrentFilePath = FilePath;
+			var newFile = Context.CurrentFile = new ASMFile(FilePath);
+			Context.CurrentLine = -1;
+#if NETFRAMEWORK || NETSTANDARD
+			var charSet = Encoding.Default;
+#else
+			var charSet = Encoding.Latin1;
+#endif
+			// ReSharper disable once UseAwaitUsing (needs C# 8, but we are locked to 7.3)
+			using (var fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read)) {
+				StreamReader reader = null;
+				try {
+					reader = ImportCore(FilePath, fs, ref charSet, newFile);
+				} catch (EncoderFallbackException) {
+					// Bad encoding detected, reset reading
+					newFile.Chunks.Clear();
+					reader?.Dispose();
+					fs.Position = 0;
+					// Re-read with the detected encoding
+					reader = ImportCore(FilePath, fs, ref charSet, newFile);
+				} finally {
+					reader?.Dispose();
+				}
+			}
+			return ImportedObject = newFile;
+		}
 
-        public override ImporterContext<IncludeType> GetCurrentContext<IncludeType>()
-        {
-            return Context as ImporterContext<IncludeType>;
-        }
-    }
+		private StreamReader ImportCore(string filePath, FileStream stream, ref Encoding charSet, ASMFile newFile)
+		{
+			var reader = new StreamReader(stream, charSet);
+			while (!reader.EndOfStream) {
+				var chunk = ProcChunk(filePath, Context, reader, ref charSet); // process this line as a new chunk
+				if (chunk == null) // fail out if not processed (unknown chunk syntax, other errors)
+					continue; // the assembly chunk was not useful or an error,
+				newFile.Chunks.Add(chunk); // upon success, add this chunk to the Chunks collection
+			}
+			return reader;
+		}
+
+		private static void GuessEncoding(string readLine, string indicator, ref Encoding textEncoding)
+		{
+			if (readLine.Contains(indicator)) {
+				try {
+					var encodingName = readLine.Replace(indicator, "").Replace(".", "").Trim();
+					textEncoding = Encoding.GetEncoding(encodingName);
+				} catch (ArgumentException) {
+					// ignore fake encoding name
+				}
+			}
+		}
+
+		/// <summary>
+		/// Process the current line of the FileStream as a chunk header
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="fs"></param>
+		/// <param name="filePath"></param>
+		/// <param name="textEncoding"></param>
+		/// <returns></returns>
+		internal static ASMChunk ProcChunk(string filePath, ASMImporterContext context, StreamReader fs, ref Encoding textEncoding)
+		{
+			long position = fs.GetCharPosition();
+			var header = fs.ReadLine().RemoveEscapes(); // read line
+			if (header.Contains('\uFFFD')) {
+				throw new EncoderFallbackException("Detected character encoding error in " +
+				                                   Path.GetFileName(filePath) + ".");
+			} else if (!textEncoding.Equals(fs.CurrentEncoding)) {
+				throw new EncoderFallbackException("Character set declared in " + Path.GetFileName(filePath) + " is " +
+				                                   textEncoding.WebName + " and does not match " +
+				                                   fs.CurrentEncoding.WebName + " of the file reader.");
+			} else {
+				GuessEncoding(header, "; Character set of this file is ", ref textEncoding);
+				GuessEncoding(header, "; This file is encoded in ", ref textEncoding);
+			}
+
+			context.CurrentLine++; // increment line register
+			var type = ASMChunk.Conjecture(header); // investigate what it is
+
+			ASMChunk chunk;
+			if (type == ASMChunks.Comment) {
+				chunk = new ASMComment(filePath, position, context.CurrentLine);
+				chunk.Parse(fs);
+			} else if (type == ASMChunks.Macro) {
+				chunk = new ASMMacro(position, context, context.CurrentLine);
+				chunk.Parse(fs);
+			} else {
+				chunk = new ASMLine(position, context, context.CurrentLine)
+				{
+					IsUnknownType = type == ASMChunks.Unknown,
+				};
+				chunk.Parse(fs);
+			}
+
+			if (chunk is ASMLine line) // check if this is a LINE of Assembly code
+			{
+				if (string.IsNullOrWhiteSpace(line.Text))// is the string empty or just spaces?
+					return null; // return nothing if this isn't useful.
+			}
+			return chunk;
+		}
+
+		public override ImporterContext<TInclude> GetCurrentContext<TInclude>()
+		{
+			return Context as ImporterContext<TInclude>;
+		}
+	}
 }
