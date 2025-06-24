@@ -193,36 +193,43 @@ namespace StarFoxMapVisualizer.Misc
             //RENDER OUT
             return fxSCR.Render(fxCGX, Palette, false, Screen);
         }
-        /// <summary>
-        /// Includes a *.CGX file into the project.
-        /// <para>This function will NOT extract a *.CGR file.</para>
-        /// <para>This function spawns dialog modals.</para>
-        /// </summary>
-        /// <param name="File"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        internal static async Task<FXCGXFile> OpenCGX(FileInfo File)
-        {
-            if (!AppResources.OpenFiles.ContainsKey(File.FullName))
+
+		/// <summary>
+		/// Includes a *.CGX file into the project.
+		/// <para>This function will NOT extract a *.CGR file.</para>
+		/// <para>This function spawns dialog modals.</para>
+		/// </summary>
+		/// <param name="fileMeta"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		internal static async Task<FXCGXFile> OpenCGX(FileInfo fileMeta)
+		{
+			var fullPath = fileMeta.FullName;
+            if (!AppResources.OpenFiles.ContainsKey(fullPath))
             {
                 //ATTEMPT TO OPEN THE FILE AS WELL-FORMED
-                var fxGFX = SFGFXInterface.OpenCGX(File.FullName);
-                if (fxGFX == null)
-                { // NOPE CAN'T DO THAT
+                var fxGFX = SFGFXInterface.OpenCGX(fullPath);
+
+				if (fxGFX == null) {
+					// Attempt to open StarFox truncated CGX without prompting a bit depth
+					fxGFX = await SFGFXInterface.TryImportFoxCGX(fullPath);
+                }
+
+                if (fxGFX == null) { // NOPE CAN'T DO THAT
                     var menu = new BPPDepthMenu()
                     {
                         Owner = Application.Current.MainWindow
                     };
-                    if (!menu.ShowDialog() ?? true) return default; // USER CANCELLED!
-                    //OKAY, TRY TO IMPORT IT WITH THE SPECIFIED BITDEPTH
-                    fxGFX = await SFGFXInterface.ImportCGX(File.FullName, menu.FileType);
+                    if (!menu.ShowDialog() ?? true) return null; // USER CANCELLED!
+                    //OKAY, TRY TO IMPORT IT WITH THE SPECIFIED BIT DEPTH
+                    fxGFX = await SFGFXInterface.ImportCGX(fullPath, menu.FileType);
                 }
                 if (fxGFX == null) throw new Exception("That file cannot be opened or imported."); // GIVE UP
                 //ADD IT AS AN OPEN FILE
-                AppResources.OpenFiles.Add(File.FullName, fxGFX);
+                AppResources.OpenFiles.Add(fullPath, fxGFX);
                 return fxGFX;
             }
-            else return AppResources.OpenFiles[File.FullName] as FXCGXFile;
+            else return AppResources.OpenFiles[fullPath] as FXCGXFile;
         }
 
         /// <summary>

@@ -4,8 +4,8 @@ Large plans are in order of priority, while everything else is in no particular 
 ## Large plans
 - [ ] Replace System.Drawing with SkiaSharp (multi OS and used by Avalonia)
 - [ ] Port to Avalonia
-- [ ] Have System.Threading.Tasks available for .NET Framework 3.5 and 4.0 {WIP}
-- [ ] Back port to .NET Framework 4.0 {WIP}
+- [ ] Have System.Threading.Tasks available for .NET Framework 3.5 and 4.0 ==WIP==
+- [ ] Back port to .NET Framework 4.0 ==WIP==
 - [ ] Correct code analyzers warnings
 - [ ] Find and refactor duplicate code
 
@@ -16,7 +16,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [ ] Experiment with fastJSON (fast, stable, available on older frameworks)
 - [ ] Interpret Japanese communication messages and its proprietary character set
 - [ ] Have the menu bar items do something
-- [ ] Stop asking for bit depth of CGX files when it can be guessed by file contents (not really metadata)
+- [ ] Stop asking for bit depth of CGX files when it can be guessed by file contents ==WIP==
 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
