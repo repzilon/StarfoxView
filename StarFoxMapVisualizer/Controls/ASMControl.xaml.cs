@@ -16,8 +16,11 @@ namespace StarFoxMapVisualizer.Controls
 	/// Interaction logic for ASMControl.xaml
 	/// </summary>
 	public partial class ASMControl : UserControl
-    {
-        private const double BASE_TEXT_SIZE = 12;
+	{
+		private const byte MinTextSize = 9;
+        private const byte BaseTextSize = 12;
+        private const byte MaxTextSize = 96;
+        private const double ZoomStepFactor = 1.095445115; // Math.Sqrt(1.2)
 
         private ASM_FINST current;
         private ASMCodeEditor EditorScreen => current?.EditorScreen;
@@ -175,7 +178,7 @@ namespace StarFoxMapVisualizer.Controls
             tab.Tag = instance;
             var newEditZone = new ASMCodeEditor(this, instance)
             {
-                FontSize = BASE_TEXT_SIZE
+                FontSize = BaseTextSize
             };
             instance.StateObject = newEditZone;
             tab.Content = newEditZone;
@@ -213,17 +216,19 @@ namespace StarFoxMapVisualizer.Controls
 
         private void ButtonZoomRestore_Click(object sender, RoutedEventArgs e)
         {
-            EditorScreen.FontSize = BASE_TEXT_SIZE;
+            EditorScreen.FontSize = BaseTextSize;
         }
 
         private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            EditorScreen.FontSize--;
+            // The compiler will turn the division of the constant 
+            // to a multiplication of its reciprocal.
+	        EditorScreen.FontSize = Math.Max(MinTextSize, EditorScreen.FontSize * (1.0 / ZoomStepFactor));
         }
 
         private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            EditorScreen.FontSize+=1;
+	        EditorScreen.FontSize = Math.Min(MaxTextSize, EditorScreen.FontSize * ZoomStepFactor);
         }
     }
 }
