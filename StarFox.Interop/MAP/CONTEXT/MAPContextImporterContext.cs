@@ -39,7 +39,7 @@ namespace StarFox.Interop.MAP.CONTEXT
         /// </summary>
         internal void SetLevelConstraints()
         {
-            var stratequ = Includes.FirstOrDefault(x => ((IImporterObject)x).FileName() == "STRATEQU");
+            var stratequ = Includes.FirstOrDefault(x => ((IImporterObject)x).FileTitle() == "STRATEQU");
             if (stratequ == null) throw new NullReferenceException("STRATEQU was not imported.");
 
             var Definition = CurrentDefinition;

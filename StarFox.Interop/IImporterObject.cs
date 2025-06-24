@@ -7,12 +7,12 @@ namespace StarFox.Interop
         string OriginalFilePath { get; }
     }
 
-    public static class ImporteObjectExtension
+    public static class ImporterObjectExtension
     {
         /// <summary>
         /// The file name of this file using OriginalFilePath
         /// </summary>
-        public static string FileName(this IImporterObject self)
+        public static string FileTitle(this IImporterObject self)
         {
             return Path.GetFileNameWithoutExtension(self.OriginalFilePath);
         }
