@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using StarFox.Interop.ASM.TYP.STRUCT;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.MSG
 {
@@ -44,7 +44,7 @@ namespace StarFox.Interop.MSG
 				if (String.Equals(macroLine.MacroReference.Name, kCompatibleMacroName, StringComparison.OrdinalIgnoreCase)) {
 					var person = macroLine.TryGetParameter(0)?.ParameterContent ?? "nobody";
 					MSGEntry entry;
-					if (AnyOf(person, "white", "yellow", "red", "blue")) { // person is in fact color
+					if (Utility.AnyOf(person, "white", "yellow", "red", "blue")) { // person is in fact color
 						person = macroLine.TryGetParameter(1)?.ParameterContent ?? "nobody";
 						if (macroLine.Parameters.Length == 5) {
 							entry = Create(fileName, macroLine, person, true, 2, 3, 4);
@@ -73,17 +73,6 @@ namespace StarFox.Interop.MSG
 			var second = macroLine.TryGetParameter(translationIndex)?.ParameterContent ?? "blank in " + fileName;
 			var sound = macroLine.TryGetParameter(soundIndex)?.ParameterContent ?? "other";
 			return new MSGEntry(person, english, second, sound);
-		}
-
-		/*
-		private static bool AnyOf<T>(T toCheck, T first, T second, T third) where T : IEquatable<T>
-		{
-			return toCheck.Equals(first) || toCheck.Equals(second) || toCheck.Equals(third);
-		}// */
-
-		private static bool AnyOf<T>(T toCheck, params T[] allowed) where T : IEquatable<T>
-		{
-			return allowed.Contains(toCheck);
 		}
 	}
 }

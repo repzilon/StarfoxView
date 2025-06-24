@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Starfox.Editor;
 using StarFox.Interop.GFX;
+using StarFox.Interop.MISC;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
 {
@@ -28,7 +28,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         private void showOptions()
         {
             TypeMenu.Items.Clear();
-            foreach(var type in SFCodeProject.GetValues<CAD.BitDepthFormats>())
+            foreach(var type in Utility.GetValues<CAD.BitDepthFormats>())
             {
                 var item = new MenuItem()
                 {

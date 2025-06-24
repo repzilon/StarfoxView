@@ -107,7 +107,6 @@
   <ItemGroup>
     <Compile Update="Controls\Subcontrols\BINImportMenu.xaml.cs"></Compile>
     <Compile Update="Controls\Subcontrols\GenericMenuDialog.xaml.cs"></Compile>
-    <Compile Update="Controls\Subcontrols\PCRImportMenu.xaml.cs"></Compile>
     <Compile Update="Controls\Subcontrols\BPPDepthMenu.xaml.cs"></Compile>
   </ItemGroup>
 </Project>

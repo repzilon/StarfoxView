@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Starfox.Editor;
 using StarFox.Interop.EFFECTS;
 using StarFox.Interop.MAP.CONTEXT;
+using StarFox.Interop.MISC;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
 {
@@ -25,7 +25,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             Loaded += delegate
             {
                 //item selector for dynamic backgrounds
-                DynamicBackgroundAnimationSelector.ItemsSource = SFCodeProject.GetValues<WavyBackgroundRenderer.WavyEffectStrategies>();
+                DynamicBackgroundAnimationSelector.ItemsSource = Utility.GetValues<WavyBackgroundRenderer.WavyEffectStrategies>();
                 PendingChangesMessage.Visibility = Visibility.Collapsed; // pending changes message for dynamic backgrounds
             };
             Unloaded += delegate

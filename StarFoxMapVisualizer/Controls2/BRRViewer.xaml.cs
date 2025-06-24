@@ -9,8 +9,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Starfox.Editor;
 using StarFox.Interop.BRR;
+using StarFox.Interop.MISC;
 using StarFoxMapVisualizer.Misc.Audio;
 using WpfPanAndZoom.CustomControls;
 
@@ -54,7 +54,7 @@ namespace StarFoxMapVisualizer.Controls2
             FileBrowser.SelectionChanged += FileSelected;
             SamplesList.SelectionChanged += SampleSelected;
             SampleRates.Children.Clear();
-            foreach(int rate in SFCodeProject.GetValues<WAVSampleRates>())
+            foreach(int rate in Utility.GetValues<WAVSampleRates>())
             {
                 if (rate > 20000) continue;
                 SampleRates.Children.Add(new RadioButton()
