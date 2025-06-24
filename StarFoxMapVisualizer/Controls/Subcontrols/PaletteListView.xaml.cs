@@ -38,7 +38,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                 var item = new ListViewItem()
                 {
                     Content = Path.GetFileNameWithoutExtension(col.Key),
-                    Tag = new PaletteTuple(col.Key, col.Value)
+                    Tag = new PaletteTuple(col.Key, col.Value),
+                    ToolTip = col.Key
                 };
                 Items.Add(item);
                 if (col.Value == SelectedPalette?.Palette)

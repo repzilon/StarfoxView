@@ -195,7 +195,8 @@ namespace StarFoxMapVisualizer.Screens
                 var node = new TreeViewItem()
                 {
                     IsExpanded = true,
-                    Tag = Node
+                    Tag = Node,
+                    ToolTip = Node.FilePath
                 };
                 //node.SetResourceReference(TreeViewItem.StyleProperty, "ProjectTreeStyle");
                 foreach (var child in Node.ChildNodes)
@@ -219,8 +220,11 @@ namespace StarFoxMapVisualizer.Screens
                 {
                     Header = Path.GetFileName(DirNode.FilePath),
                     Tag = DirNode,
-                    ContextMenu = menu
-                };
+                    ContextMenu = menu,
+					ToolTip = String.Format("{0} subdirectories and {1} files (not recursive)",
+						DirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.Directory),
+						DirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.File))
+				};
                 thisTreeNode.SetResourceReference(StyleProperty, "FolderTreeStyle");
                 CreateIncludeDirectoryAsBRRContextMenu(DirNode, menu);
                 CreateExploreContextMenu(DirNode, menu);
@@ -248,7 +252,8 @@ namespace StarFoxMapVisualizer.Screens
                 {
                     Header = fileInfo.Name,
                     Tag = FileNode,
-                    ContextMenu= contextMenu
+                    ContextMenu = contextMenu,
+                    ToolTip = $"{fileInfo.Length:n0} bytes"
                 };
                 CreateExploreContextMenu(FileNode, contextMenu);
                 switch (FileNode.RecognizedFileType)

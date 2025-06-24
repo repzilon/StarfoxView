@@ -101,7 +101,7 @@ namespace StarFoxMapVisualizer.Controls
                 }
                 var item = new TabItem()
                 {
-                    Header = Object.ToString(), 
+                    Header = ImporterObjectExtension.ToString(Object),
                     ToolTip = Object.OriginalFilePath,
                     Tag = state,
                 };

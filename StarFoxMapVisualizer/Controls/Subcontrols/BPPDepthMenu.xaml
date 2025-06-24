@@ -8,7 +8,7 @@
              Width="250" Title="OPEN FILE" Foreground="White" SizeToContent="Height"
              WindowStartupLocation="CenterOwner" Style="{StaticResource SFDialogModalMenuStyle}" Background="#FF118E00">
     <DockPanel>
-        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,10">You're opening a *.CGX file, how many bits per pixel? <LineBreak/>(Default is 4BPP)</TextBlock>
+        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,10">You're opening a *.CGX file, how many bits per pixel?</TextBlock>
         <Menu Name="TypeMenu">
             <MenuItem x:Name="CancelItem" Header="Cancel" Click="CancelItem_Click"></MenuItem>
         </Menu>
