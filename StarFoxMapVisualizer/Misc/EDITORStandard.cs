@@ -324,7 +324,7 @@ namespace StarFoxMapVisualizer.Misc
         }
 
         /// <summary>
-        /// Ensures all prerequesites are added to the project
+        /// Ensures all prerequisites are added to the project
         /// </summary>
         /// <returns>True if any changes were made to the project, false if there are no changes</returns>
         internal static async Task<bool> WelcomeWagon()

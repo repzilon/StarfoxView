@@ -33,13 +33,14 @@ namespace StarFox.Interop.BSP.SHAPE
             Y = y;
             Z = z;
         }
+
         public override string ToString()
         {
             return $"X: {X,3}, Y: {Y,3}, Z: {Z,3}";
         }
     }
     /// <summary>
-    /// A rudementary Vector 3 class that only deals in integers (SF Source Code Compatibility)
+    /// A rudimentary Vector 3 class that only deals in integers (SF Source Code Compatibility)
     /// </summary>
     public struct BSPVec3
     {
@@ -67,7 +68,7 @@ namespace StarFox.Interop.BSP.SHAPE
     public class BSPPointRef
     {
         /// <summary>
-        /// The position this reference falls in the Face macro invokation callsite.
+        /// The position this reference falls in the Face macro invocation callsite.
         /// <para>Effectively, which vert this one is, in the order they were called in the source code.</para>
         /// </summary>
         public int Position { get; set; }
@@ -82,7 +83,7 @@ namespace StarFox.Interop.BSP.SHAPE
         }
     }
     /// <summary>
-    /// A face on a 3D shape. These can be any amount of verts, dependent on the implementation in the source code.
+    /// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
     /// </summary>
     [Serializable]
     public class BSPFace

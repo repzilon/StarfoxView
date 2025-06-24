@@ -40,7 +40,7 @@ Before cloning the repository, allow me to draw your attention to the following:
 After cloning the repository, there are some additional things to note:
 
 * This solution has NuGet packages, ensure they are restored. Many are version-locked to ensure every target framework uses a compatible version.
-* *This fork* also needs a back port fork of geometry4Sharp set up as a project reference, clone https://github.com/repzilon/geometry4Shsarp/ to a directory *a*side the StarfoxView directory.
+* *This fork* also needs a back port fork of geometry4Sharp set up as a project reference, clone https://github.com/repzilon/geometry4Sharp/ to a directory *a*side the StarfoxView directory.
 
 ### Enthusiasts 
 People who just want to explore the StarFox source code.

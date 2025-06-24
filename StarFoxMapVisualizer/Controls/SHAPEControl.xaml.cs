@@ -628,7 +628,7 @@ namespace StarFoxMapVisualizer.Controls
                 item.Selected += delegate
                 {
                     EDITOR_SelectedFace = face;
-                    if (!animating) // rerender the model
+                    if (!animating) // render the model again
                         ShowShape(currentShape);
                 };
                 BSPTreeView.Items.Add(item);

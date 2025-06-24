@@ -1,5 +1,5 @@
 # Repzilon's TODO list
-Large plans are in order of priority, other parts are in no particular order.
+Large plans are in order of priority, while everything else is in no particular order.
 
 ## Large plans
 - [ ] Replace System.Drawing with SkiaSharp (multi OS and used by Avalonia)
@@ -16,6 +16,7 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] Experiment with fastJSON (fast, stable, available on older frameworks)
 - [ ] Interpret Japanese communication messages and its proprietary character set
 - [ ] Have the menu bar items do something
+- [ ] Stop asking for bit depth of CGX files when it can be guessed by file contents (not really metadata)
 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
@@ -23,7 +24,7 @@ Large plans are in order of priority, other parts are in no particular order.
 - [ ] Handle English<->foreign language mapping with the newest message format
 - [x] Replace auto-import message box with the notification banner
 - [ ] Correct the dialog and menu background color that is too light, making text unreadable
-- [ ] Add a Collect garbage button (trigger GC) to the About box
+- [ ] Add a Collect garbage button and memory stats to the About box
 - [ ] In Messages view, have taller lists so we scroll less vertically
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)
 - [x] In Messages view, fit a bit more text in each entry of the lists
