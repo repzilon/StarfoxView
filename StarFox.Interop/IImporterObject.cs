@@ -16,5 +16,14 @@ namespace StarFox.Interop
         {
             return Path.GetFileNameWithoutExtension(self.OriginalFilePath);
         }
+
+        public static string ToString(this IImporterObject self)
+        {
+	        var strText = self.ToString();
+	        if ((strText == null) || strText.Contains(self.GetType().Name)) {
+		        strText = Path.GetFileName(self.OriginalFilePath);
+	        }
+	        return strText;
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace StarFoxMapVisualizer.Controls
         private ASM_FINST current;
         private ASMCodeEditor EditorScreen => current?.EditorScreen;
         private Dictionary<string, ASM_FINST> fileInstanceMap = new Dictionary<string, ASM_FINST>();
+
         /// <summary>
         /// The queue of <see cref="OpenFileContents(FileInfo, ASMFile?)"/> calls made while paused
         /// </summary>
@@ -36,12 +37,32 @@ namespace StarFoxMapVisualizer.Controls
         {
             InitializeComponent();
             FileBrowserTabView.Items.Clear();
-        }
+			FileBrowserTabView.SelectionChanged += FileBrowserTabView_SelectionChanged;
+		}
 
-        /// <summary>
-        /// Any calls made to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> are queued until this control is <see cref="Unpause"/>'d
-        /// </summary>
-        public void Pause()
+		private void FileBrowserTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var tag = TabItemTagAt(FileBrowserTabView.SelectedIndex);
+			if (tag != null) {
+				current = tag;
+				DisplayEditorTab(tag, null);
+			}
+		}
+
+		private void DisplayEditorTab(ASM_FINST tag, ASMChunk chunk)
+		{
+			FilePathBlock.Text = tag.OpenFile.FullName;
+			current.EditorScreen.Focus();
+			if (chunk != null) {
+				current.EditorScreen.JumpToSymbol(chunk);
+			}
+			_ = Dispatcher.InvokeAsync(current.EditorScreen.Focus, DispatcherPriority.ApplicationIdle);
+		}
+
+		/// <summary>
+		/// Any calls made to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> are queued until this control is <see cref="Unpause"/>'d
+		/// </summary>
+		public void Pause()
         {
             Paused = true;
             IsEnabled = false;
@@ -74,7 +95,18 @@ namespace StarFoxMapVisualizer.Controls
             }
         }
 
-        private class FOPENCALL
+		private ASM_FINST TabItemTagAt(int index)
+		{
+			if (index >= 0) {
+				// WTF M$, using weakly typed collections when you already have GENERICS
+				var selectedTab = FileBrowserTabView.Items[index] as TabItem;
+				return selectedTab?.Tag as ASM_FINST;
+			} else {
+				return null;
+			}
+		}
+
+		private class FOPENCALL
         {
             public FileInfo FileSelected;
             public ASMFile FileData;
@@ -85,20 +117,12 @@ namespace StarFoxMapVisualizer.Controls
         }
         private async Task doFileOpenTaskAsync(FOPENCALL Call)
         {
-            void TabShown()
-            {
-                current.EditorScreen.Focus();
-                if (Call.chunk != default)
-                    current.EditorScreen.JumpToSymbol(Call.chunk);
-                _ = Dispatcher.InvokeAsync(current.EditorScreen.Focus, DispatcherPriority.ApplicationIdle);
-            }
             void OpenTab(ASM_FINST inst)
             {
                 FileBrowserTabView.SelectedItem = inst.Tab; // select the tab
-                FilePathBlock.Text = Call.FileSelected.Name;
                 current = inst;
-                TabShown();
-            }
+                DisplayEditorTab(inst, Call.chunk);
+			}
             if (fileInstanceMap.TryGetValue(Call.FileSelected.FullName, out var finst))
             {
                 OpenTab(finst);// select the tab
@@ -115,8 +139,34 @@ namespace StarFoxMapVisualizer.Controls
             var tab = new TabItem()
             {
                 Header = Call.FileSelected.Name,
+                ToolTip = Call.FileSelected.FullName
             };
-            var instance = current = new ASM_FINST() {
+			tab.MouseDoubleClick += delegate
+			{
+				int selectedIndex = FileBrowserTabView.SelectedIndex;
+				if (selectedIndex >= 0) {
+					var tagged = TabItemTagAt(selectedIndex);
+					if (tagged != null) {
+						fileInstanceMap.Remove(tagged.OpenFile.FullName);
+					}
+					FileBrowserTabView.Items.RemoveAt(selectedIndex);
+				}
+				// more tabs, switch to the next one to the left
+				if (FileBrowserTabView.Items.Count <= 1) {
+					selectedIndex = -1;
+				} else if (selectedIndex > 0) {
+					selectedIndex--;
+				}
+				if (selectedIndex > -1) {
+					FileBrowserTabView.SelectedIndex = selectedIndex;
+					var tagged = TabItemTagAt(selectedIndex);
+					if (tagged != null) {
+						current = tagged;
+						DisplayEditorTab(tagged, null);
+					}
+				}
+			};
+            var instance = new ASM_FINST() {
                 OpenFile = Call.FileSelected,
                 symbolMap = new Dictionary<ASMChunk, Run>(),
                 Tab = tab,
@@ -132,13 +182,11 @@ namespace StarFoxMapVisualizer.Controls
 
             fileInstanceMap.Add(Call.FileSelected.FullName, instance);
             FileBrowserTabView.Items.Add(tab);
-            FileBrowserTabView.SelectedItem = tab;
-            FilePathBlock.Text = Call.FileSelected.Name;
+            OpenTab(instance);
             await ParseAsync(Call.FileSelected);
-            TabShown();
         }
 
-        public async Task OpenFileContents(FileInfo FileSelected, ASMFile FileData = default, ASMChunk Symbol = default)
+		public async Task OpenFileContents(FileInfo FileSelected, ASMFile FileData = default, ASMChunk Symbol = default)
         {
             var call = new FOPENCALL()
             {

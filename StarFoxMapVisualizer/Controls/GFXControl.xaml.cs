@@ -101,7 +101,8 @@ namespace StarFoxMapVisualizer.Controls
                 }
                 var item = new TabItem()
                 {
-                    Header = System.IO.Path.GetFileName(Object.OriginalFilePath),
+                    Header = Object.ToString(), 
+                    ToolTip = Object.OriginalFilePath,
                     Tag = state,
                 };
                 if (Background != default) item.Background = Background;
@@ -110,14 +111,18 @@ namespace StarFoxMapVisualizer.Controls
                     int selectedIndex = FileSelectorTabViewer.SelectedIndex;
                     AppResources.ImportedProject.CloseFile(Object);
                     stateMap.Remove(Object.OriginalFilePath);
-                    if (FileSelectorTabViewer.Items.Count <= 1) // more tabs, switch to the next one to the left
-                        selectedIndex = -1;
-                    else if (selectedIndex > 0)
-                        selectedIndex--;
-                    RefreshFiles();
-                    if (selectedIndex > -1)
-                        FileSelectorTabViewer.SelectedIndex = selectedIndex;
-                    else DragImage.Source = null;
+					// more tabs, switch to the next one to the left
+					if (FileSelectorTabViewer.Items.Count <= 1) {
+						selectedIndex = -1;
+					} else if (selectedIndex > 0) {
+						selectedIndex--;
+					}
+					RefreshFiles();
+					if (selectedIndex > -1) {
+						FileSelectorTabViewer.SelectedIndex = selectedIndex;
+					} else {
+						DragImage.Source = null;
+					}
                 };
                 FileSelectorTabViewer.Items.Add(item);
                 return item;
@@ -157,7 +162,7 @@ namespace StarFoxMapVisualizer.Controls
             FileSelectorTabViewer.SelectionChanged += FileChanged;
             if (FileSelectorTabViewer.SelectedIndex == -1 && FileSelectorTabViewer.Items.Count > 0)
                 FileSelectorTabViewer.SelectedIndex = 0;
-            PaletteSelection.SelectionChanged += PaletteChanged; ;
+            PaletteSelection.SelectionChanged += PaletteChanged;
             await RenderOne();
         }
 
