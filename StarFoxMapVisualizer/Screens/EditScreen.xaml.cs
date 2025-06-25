@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -184,8 +183,7 @@ namespace StarFoxMapVisualizer.Screens
                 };
                 importItem.Click += async delegate
                 {
-                    //DO ACTION
-                    Process.Start("explorer.exe", $"/select,\"{FileNode.FilePath}\"");
+                    OpenExternal.Folder(FileNode.FilePath);
                 };
                 contextMenu.Items.Add(importItem);
             }
@@ -870,5 +868,10 @@ namespace StarFoxMapVisualizer.Screens
         {
             new AboutBox() { Owner = Application.Current.MainWindow }.ShowDialog();
         }
-    }
+
+		private void OpenProjectFolderItem_Click(object sender, RoutedEventArgs e)
+		{
+			OpenExternal.Folder(AppResources.ImportedProject.WorkspaceDirectory.FullName, true);
+		}
+	}
 }

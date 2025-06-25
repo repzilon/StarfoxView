@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -798,7 +797,7 @@ namespace StarFoxMapVisualizer.Controls
             var result = SHAPEStandard.ExportShapeTo3DMeshFormat(currentShape, currentGroup, currentSFPalette, out string FilePath, SelectedFrame);
             await EDITORStandard.ShowNotification($" {(!result.Successful ? "MODEL WAS NOT EXPORTED! " : "MODEL EXPORTED SUCCESSFULLY! ") + result.Message}",
                 delegate {
-                    using (Process.Start("explorer", FilePath)) { }
+                    using (OpenExternal.Folder(FilePath)) { }
                 }, TimeSpan.FromSeconds(5));
         }
     }

@@ -15,7 +15,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [ ] Simplify serialization of .sfpal (use HTML color codes)
 - [ ] Experiment with fastJSON (fast, stable, available on older frameworks)
 - [ ] Interpret Japanese communication messages and its proprietary character set
-- [ ] Have the menu bar items do something
+- [ ] Have the menu bar and context menu items do something ==WIP==
 - [ ] Stop asking for bit depth of CGX files when it can be guessed by file contents ==WIP==
 
 ## Smaller tasks
