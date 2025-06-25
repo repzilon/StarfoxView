@@ -26,7 +26,23 @@ namespace StarFoxMapVisualizer.Controls2
 		{
 			InitializeComponent();
 			Loaded += MSGViewer_Loaded;
+			this.SizeChanged += MSGViewer_SizeChanged;
 		}
+
+		private void MSGViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			ResizeActorColumns();
+		}
+
+		private void ResizeActorColumns()
+		{
+			var parentScroller = (ScrollViewer)this.MessagesItemsHost.Parent;
+			var height = Math.Max(89, parentScroller.ActualHeight - 25); // -25 for the horizontal scroll bar below
+			foreach (HeaderedContentControl hccActor in  this.MessagesItemsHost.Children) {
+				hccActor.MaxHeight = height;
+			}
+		}
+
 		/// <summary>
 		/// Fox prompts the user with instructions
 		/// </summary>
@@ -42,6 +58,7 @@ namespace StarFoxMapVisualizer.Controls2
 		private async void MSGViewer_Loaded(object sender, RoutedEventArgs e)
 		{
 			InvokeAnimation();
+			ResizeActorColumns();
 		}
 		/// <summary>
 		/// Refreshes the files included in this view
