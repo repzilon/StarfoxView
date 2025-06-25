@@ -30,4 +30,4 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] In Messages view, fit a bit more text in each entry of the lists
 - [x] In Shapes view, format the coordinates numbers to align them
 - [ ] Include Pepper and Andross to communication mugshots
-- [x] Stop listing .pcr and .ccr files in workspace (generated files)
+- [x] Stop listing duplicate .pcr and .ccr files in workspace (generated files)

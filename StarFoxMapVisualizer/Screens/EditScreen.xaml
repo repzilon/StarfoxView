@@ -166,7 +166,7 @@
         </Grid>
         <Grid Background="{DynamicResource WindowAccentBackgroundColor}" Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" MinHeight="100"/>
+                <RowDefinition Height="2*" MinHeight="100"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*" MinHeight="100"/>
             </Grid.RowDefinitions>

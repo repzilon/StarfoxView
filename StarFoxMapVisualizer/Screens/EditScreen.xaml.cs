@@ -217,10 +217,11 @@ namespace StarFoxMapVisualizer.Screens
             {
                 var menu = new ContextMenu();
                 var thisTreeNode = new TreeViewItem()
-                {
-                    Header = Path.GetFileName(DirNode.FilePath),
-                    Tag = DirNode,
-                    ContextMenu = menu,
+				{
+					Header = Path.GetFileName(DirNode.FilePath),
+					Tag = DirNode,
+					ContextMenu = menu,
+					Margin = new Thickness(0, 2, 0, 2),
 					ToolTip = String.Format("{0} subdirectories and {1} files (not recursive)",
 						DirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.Directory),
 						DirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.File))
@@ -253,8 +254,9 @@ namespace StarFoxMapVisualizer.Screens
                     Header = fileInfo.Name,
                     Tag = FileNode,
                     ContextMenu = contextMenu,
-                    ToolTip = $"{fileInfo.Length:n0} bytes"
-                };
+                    ToolTip = $"{fileInfo.Length:n0} bytes",
+                    Margin = new Thickness(0, 2, 0, 2)
+				};
                 CreateExploreContextMenu(FileNode, contextMenu);
                 switch (FileNode.RecognizedFileType)
                 {
