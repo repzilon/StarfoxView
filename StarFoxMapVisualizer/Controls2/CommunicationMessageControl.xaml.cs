@@ -60,9 +60,11 @@ namespace StarFoxMapVisualizer.Controls2
 			const int charHeight = 39;// FOX FRAME 1
 			switch (Character) {
 				case Characters.FOX: break;
-				case Characters.FALCON: baseX = (charWidth * 2) + 2; break;
+				case Characters.FALCON: baseX = (charWidth + 1) * 2; break;
 				case Characters.RABBIT: baseY = charHeight + 1; break;
-				case Characters.FROG: baseX = (charWidth * 2) + 2; baseY = charHeight + 1; break;
+				case Characters.FROG: baseX = (charWidth + 1) * 2; baseY = charHeight + 1; break;
+				case Characters.PEPPER: baseY = (charHeight + 1) * 2; break;
+				case Characters.ANDROSS: baseX = (charWidth + 1) * 2; baseY = (charHeight + 1) * 2; break;
 				default:
 					ImageMissing();
 					return;

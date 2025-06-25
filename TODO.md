@@ -29,5 +29,5 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)
 - [x] In Messages view, fit a bit more text in each entry of the lists
 - [x] In Shapes view, format the coordinates numbers to align them
-- [ ] Include Pepper and Andross to communication mugshots
+- [x] Include Pepper and Andross to communication mugshots
 - [x] Stop listing duplicate .pcr and .ccr files in workspace (generated files)
