@@ -47,17 +47,17 @@
                 <Setter Property="Padding" Value="10,1"/>
             </Style>
         </Style.Resources>
-        <Setter Property="Background" Value="{DynamicResource WindowColor}"/>
+        <Setter Property="Background" Value="{DynamicResource WindowBackgroundColor}"/>
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="ResizeMode" Value="NoResize"/>
-        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Padding" Value="3"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
                     <Grid>
                         <Button Width="{Binding ActualWidth, ElementName=HOST}" IsEnabled="False" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch"/>
-                        <DockPanel Margin="{TemplateBinding Padding}">
-                            <DockPanel DockPanel.Dock="Top" >
+                        <DockPanel Margin="{TemplateBinding Padding}" Background="{DynamicResource WindowAccentBackgroundColor}">
+                            <DockPanel DockPanel.Dock="Top">
                                 <Image MaxWidth="25" MaxHeight="25" Source="{TemplateBinding Icon}" DockPanel.Dock="Left" Margin="0,0,10,0" Stretch="Fill"/>
                                 <TextBlock VerticalAlignment="Center" Text="{TemplateBinding Title}" FontFamily="{StaticResource SFFont}" FontSize="12"/>
                             </DockPanel>
@@ -252,4 +252,33 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="MenuItemBaseStyle" TargetType="{x:Type MenuItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Grid SnapsToDevicePixels="true">
+                        <DockPanel>
+                            <ContentPresenter x:Name="Icon" ContentSource="Icon" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                            <Path x:Name="GlyphPanel" Fill="{TemplateBinding Foreground}" FlowDirection="LeftToRight" Margin="7,0,0,0" Visibility="Collapsed" VerticalAlignment="Center"/>
+                            <ContentPresenter x:Name="content" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </DockPanel>
+                        <Popup x:Name="PART_Popup" AllowsTransparency="true" Focusable="false" HorizontalOffset="1" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom" VerticalOffset="-1">
+                            <Border BorderThickness="2" BorderBrush="{DynamicResource WindowBackgroundColor}" Background="{DynamicResource WindowAccentBackgroundColor}">
+                                <ScrollViewer x:Name="SubMenuScrollViewer" CanContentScroll="true" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                    <Grid RenderOptions.ClearTypeHint="Enabled">
+                                        <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="true" Margin="2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <LinearGradientBrush x:Key="AboutGradient" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#FF00FE0A" Offset="1"/>
+        <GradientStop Color="#FF0011FF" Offset="0"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

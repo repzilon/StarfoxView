@@ -23,7 +23,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [ ] Replace the optimizers' message box wagon with a single dialog
 - [ ] Handle English<->foreign language mapping with the newest message format
 - [x] Replace auto-import message box with the notification banner
-- [ ] Correct the dialog and menu background color that is too light, making text unreadable
+- [x] Correct the dialog and menu background color that is too light, making text unreadable
 - [ ] Add a Collect garbage button and memory stats to the About box
 - [ ] In Messages view, have taller lists so we scroll less vertically
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)

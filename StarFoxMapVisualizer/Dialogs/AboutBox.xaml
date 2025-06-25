@@ -12,15 +12,9 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
     </Window.Resources>
-    <Window.Background>
-        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="#FF00FE0A" Offset="1"/>
-            <GradientStop Color="#FF0011FF" Offset="0"/>
-        </LinearGradientBrush>
-    </Window.Background>
-    <Grid>
-        <DockPanel Margin="5">
-            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+    <Grid Background="{DynamicResource AboutGradient}">
+        <DockPanel Margin="5" Background="{DynamicResource AboutGradient}" >
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5" >
                 <Image DockPanel.Dock="Left" Width="150" Source="/Resources/SFviewLogo.png" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Top"/>
                 <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" Name="BlurbTextBlock">
                 <Run FontWeight="Bold">Thanks for trying out SFView!</Run> <LineBreak/>
@@ -29,7 +23,7 @@
                 <Hyperlink x:Name="GithubLink" Click="GithubLink_Click">Check me out on GitHub!</Hyperlink>
                 </TextBlock>
             </DockPanel>
-            <Border Style="{x:Null}" Padding="10,2" Cursor="Hand" CornerRadius="5" Background="#FF0011FF" DockPanel.Dock="Bottom" MouseLeftButtonUp="Button_Click" HorizontalAlignment="Right">
+            <Border Style="{x:Null}" Padding="10,2" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowColor}" DockPanel.Dock="Bottom" MouseLeftButtonUp="Button_Click" HorizontalAlignment="Right">
                 <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Thanks!</TextBlock>
             </Border>
         </DockPanel>
