@@ -577,7 +577,7 @@ namespace StarFoxMapVisualizer.Misc
             };
         }
 
-        internal static BSPExporter.BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup Group, SFPalette Palette, out string FilePath, int Frame = 0)
+        internal static BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup Group, SFPalette Palette, out string FilePath, int Frame = 0)
         {
             var saveDialog = new SaveFileDialog()
             {
@@ -590,9 +590,9 @@ namespace StarFoxMapVisualizer.Misc
             };
             FilePath = null;
             if (!saveDialog.ShowDialog() ?? true)
-                return BSPExporter.BSPIOWriteResult.Cancelled;
+                return BSPIOWriteResult.Cancelled;
             FilePath = saveDialog.FileName;
-            BSPExporter.BSPExportOptions options = BSPExporter.BSPExportOptions.Default;
+            BSPExportOptions options = BSPExportOptions.Default;
             try
             { // try invoking the BSP exporter
                 return BSPExporter.ExportShape(saveDialog.FileName, currentShape, Group, Palette, Frame,
@@ -600,7 +600,7 @@ namespace StarFoxMapVisualizer.Misc
             }
             catch (Exception ex)
             { // an error has occurred
-                return BSPExporter.BSPIOWriteResult.Faulted(ex);
+                return BSPIOWriteResult.Faulted(ex);
             }
         }
     }

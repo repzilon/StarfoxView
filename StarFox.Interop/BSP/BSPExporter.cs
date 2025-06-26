@@ -19,68 +19,6 @@ namespace StarFox.Interop.BSP
         public const string FILE_EXTENSION = ".obj";
 
         /// <summary>
-        /// Describes how an export operation went
-        /// </summary>
-        public struct BSPIOWriteResult
-        {
-            /// <summary>
-            /// Generally a <see cref="Type"/> descriptor that can be used to reflect the type -- can be blank.
-            /// </summary>
-            public string Descriptor { get; }
-            /// <summary>
-            /// The message for this result
-            /// </summary>
-            public string Message { get; }
-            /// <summary>
-            /// A value indicating whether the model was ultimately exported to a file
-            /// </summary>
-            public bool Successful { get; }
-
-
-            public BSPIOWriteResult(IOWriteResult Other, string appendMsg = null)
-            {
-                Descriptor = nameof(Other);
-                Successful = Other.code == IOCode.Ok;
-                Message = (appendMsg != null) ? appendMsg + Other.message : Other.message;
-            }
-            internal BSPIOWriteResult(string descriptor, string message, bool successful)
-            {
-                Descriptor = descriptor;
-                Message = message;
-                Successful = successful;
-            }
-
-            public static BSPIOWriteResult Cancelled = new BSPIOWriteResult("Cancelled", "Operation was cancelled.", false);
-            public static BSPIOWriteResult Faulted(Exception exception) => new BSPIOWriteResult(exception.GetType().Name, $"An error has occurred: {exception.Message}", false);
-        }
-
-        /// <summary>
-        /// Options to use when exporting shapes using the <see cref="BSPExporter"/>
-        /// </summary>
-        public class BSPExportOptions
-        {
-            /// <summary>
-            /// Process color information on this shape and apply as Vertex Colors?
-            /// </summary>
-            public bool ColorActivated { get; set; }
-            /// <summary>
-            /// Process color animations?
-            /// </summary>
-            public bool ColorAnimationsActivated { get; set; }
-            /// <summary>
-            /// Process elements of this shape that only are comprised of two 3D positions?
-            /// </summary>
-            public bool ProcessLines { get; set; }
-
-            public static BSPExportOptions Default = new BSPExportOptions()
-            {
-                ColorActivated = true,
-                ColorAnimationsActivated = true,
-                ProcessLines = true
-            };
-        }
-
-        /// <summary>
         /// The <see cref="BSPExportContext"/> added to this instance being used to describe the parameters for this export operation
         /// </summary>
         public BSPExportContext Context { get; }
@@ -153,35 +91,40 @@ namespace StarFox.Interop.BSP
                 meshData.EnableVertexColors(new Vector3f(0, 1, .25));
                 ProcessVertexColors();
             }
-            return new BSPIOWriteResult(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
+            return FromG4Result(StandardMeshWriter.WriteMesh(FileName.FullName, meshData, new WriteOptions()
             {
-                bWriteBinary = false,
-                bPerVertexNormals = false,
-                bPerVertexColors = true,
-                bWriteGroups = false,
-                bPerVertexUVs = false,
-                bCombineMeshes = false,
-                bWriteMaterials = false,
-                ProgressFunc = null,
-                RealPrecisionDigits = 15
+	            bWriteBinary = false,
+	            bPerVertexNormals = false,
+	            bPerVertexColors = true,
+	            bWriteGroups = false,
+	            bPerVertexUVs = false,
+	            bCombineMeshes = false,
+	            bWriteMaterials = false,
+	            ProgressFunc = null,
+	            RealPrecisionDigits = 15
             }), userMsg);
         }
 
-        /// <summary>
-        /// Creates a new throwaway instance of the <see cref="BSPExporter"/> and uses <see cref="ExportShape"/> to Export this shape.
-        /// <para/>
-        /// Exports a <see cref="BSPShape"/> to the given file name -- needs to be a <see cref="FILE_EXTENSION"/> file.
-        /// <para/>This function applies Colors using the supplied parameters.
-        /// </summary>
-        /// <param name="FileName">The destination file name</param>
-        /// <param name="Shape">The shape to export</param>
-        /// <param name="Group">Coloring information for this <see cref="BSPShape"/></param>
-        /// <param name="Palette">The colors to paint this <see cref="BSPShape"/> with</param>
-        /// <param name="Frame">The frame of animation to export</param>
-        /// <param name="ColorTable">Used for ColorAnimations -- should be the Project Color Table</param>
-        /// <param name="Palt">The Color Animation table to apply, usually is BLUE.COL</param>
-        /// <returns></returns>
-        public static BSPIOWriteResult ExportShape(string FileName, BSPShape Shape, COLGroup Group,
+        private static BSPIOWriteResult FromG4Result(IOWriteResult Other, string appendMsg = null)
+        {
+	        return new BSPIOWriteResult(nameof(Other), (appendMsg != null) ? appendMsg + Other.message : Other.message, Other.code == IOCode.Ok);
+        }
+
+		/// <summary>
+		/// Creates a new throwaway instance of the <see cref="BSPExporter"/> and uses <see cref="ExportShape"/> to Export this shape.
+		/// <para/>
+		/// Exports a <see cref="BSPShape"/> to the given file name -- needs to be a <see cref="FILE_EXTENSION"/> file.
+		/// <para/>This function applies Colors using the supplied parameters.
+		/// </summary>
+		/// <param name="FileName">The destination file name</param>
+		/// <param name="Shape">The shape to export</param>
+		/// <param name="Group">Coloring information for this <see cref="BSPShape"/></param>
+		/// <param name="Palette">The colors to paint this <see cref="BSPShape"/> with</param>
+		/// <param name="Frame">The frame of animation to export</param>
+		/// <param name="ColorTable">Used for ColorAnimations -- should be the Project Color Table</param>
+		/// <param name="Palt">The Color Animation table to apply, usually is BLUE.COL</param>
+		/// <returns></returns>
+		public static BSPIOWriteResult ExportShape(string FileName, BSPShape Shape, COLGroup Group,
             SFPalette Palette, int Frame, COLTABFile ColorTable, COL Palt, BSPExportOptions Options = default) =>
             new BSPExporter(new BSPExportContext(FileName, Shape, Group, Palette, Frame, ColorTable, Palt, Options)).ExportShape();
 

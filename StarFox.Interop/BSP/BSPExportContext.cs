@@ -9,14 +9,14 @@ namespace StarFox.Interop.BSP
 	/// </summary>
 	public class BSPExportContext
 	{
-		private BSPExporter.BSPExportOptions m_objOptions;
+		private BSPExportOptions m_objOptions;
 
 		/// <summary>
 		/// The options for this export to change certain behaviors to mitigate issues involving certain <see cref="BSPShape"/>s
 		/// </summary>
-		public BSPExporter.BSPExportOptions Options
+		public BSPExportOptions Options
 		{
-			get { return m_objOptions ?? BSPExporter.BSPExportOptions.Default; }
+			get { return m_objOptions ?? BSPExportOptions.Default; }
 			set { m_objOptions = value; }
 		}
 
@@ -46,7 +46,7 @@ namespace StarFox.Interop.BSP
 		/// <param name="palt"></param>
 		/// <param name="options">Optional, will evaluate to <see cref="BSPExportOptions.Default"/> if left <see langword="default"/></param>
 		public BSPExportContext(string fileName, BSPShape shape, COLGroup group, SFPalette palette, int frame,
-		COLTABFile colorTable, CAD.COL palt, BSPExporter.BSPExportOptions options = null)
+		COLTABFile colorTable, CAD.COL palt, BSPExportOptions options = null)
 		{
 			FileName   = fileName;
 			Shape      = shape;
