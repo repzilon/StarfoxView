@@ -54,9 +54,6 @@
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="WinCopies.WindowsAPICodePack.Shell " Version="2.12.0.2" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
   </ItemGroup>

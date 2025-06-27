@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
@@ -386,19 +386,32 @@ namespace StarFoxMapVisualizer.Misc
 		/// <param name="InitialDirectory"></param>
 		/// <param name="Multiselect"></param>
 		/// <returns></returns>
-		internal static IEnumerable<string> ShowGenericFileBrowser(string Title, bool FolderBrowser = false, string InitialDirectory = null, bool Multiselect = false)
+		internal static string[] ShowGenericFileBrowser(string Title, bool FolderBrowser = false, string InitialDirectory = null, bool Multiselect = false)
 		{
-			if (InitialDirectory == default) InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName;
-			CommonOpenFileDialog d = new CommonOpenFileDialog()
+			if (InitialDirectory == null) InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName;
+			var d = new OpenFileDialog()
 			{
 				Title = Title,
-				IsFolderPicker = FolderBrowser,
 				Multiselect = Multiselect,
 				InitialDirectory = InitialDirectory
 			}; // CREATE THE FOLDER PICKER
-			if (d.ShowDialog() != CommonFileDialogResult.Ok) return default; // OOPSIES x2
-			return d.FileNames;
+			if (d.ShowDialog() == true) {
+				if (!FolderBrowser) {
+					return d.FileNames;
+				} else if (Multiselect) {
+					return d.FileNames.Where(Directory.Exists).ToArray();
+				} else if (Directory.Exists(d.FileName)) {
+					return d.FileNames;
+				} else if (File.Exists(d.FileName)) {
+					return new string[] { Path.GetDirectoryName(d.FileName) };
+				} else {
+					return new string[0];
+				}
+			} else {
+				return new string[0];
+			}
 		}
+
 		/// <summary>
 		/// Attempts to load the given <see cref="SFOptimizerNode"/> for the given type
 		/// <para/>Upon failure, will throw an exception

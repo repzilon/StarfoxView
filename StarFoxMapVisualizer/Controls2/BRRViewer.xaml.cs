@@ -8,9 +8,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 using StarFox.Interop.BRR;
 using StarFox.Interop.MISC;
+using StarFoxMapVisualizer.Misc;
 using StarFoxMapVisualizer.Misc.Audio;
 using WpfPanAndZoom.CustomControls;
 
@@ -366,26 +367,24 @@ namespace StarFoxMapVisualizer.Controls2
         {
             var file = SelectedFile;
             if (file == default) return;
-            var fileDialog = new CommonOpenFileDialog()
-            {
-                IsFolderPicker = true,
-                InitialDirectory = Environment.CurrentDirectory,
-                Multiselect = false,
-                Title = "Select a Folder to Drop These Sounds Into"
-            };
-            if (fileDialog.ShowDialog() != CommonFileDialogResult.Ok) return; // OOPSIES
-            string selectedFolder = fileDialog.FileName;
-            var result =
-                MessageBox.Show("Export as Microsoft Wave format?\n\nSelecting No will export to *.BRR format.",
-                "Format Selection", MessageBoxButton.YesNoCancel);
-            var format = BRRInterface.BRRExportFileTypes.NoneSelected;
-            switch (result)
-            {
-                case MessageBoxResult.Yes: format = BRRInterface.BRRExportFileTypes.WaveFormat; break;
-                case MessageBoxResult.No: format = BRRInterface.BRRExportFileTypes.BRRFormat; break;
-                case MessageBoxResult.Cancel: return;
-            }
-            ExportAll(file, selectedFolder, format);
+			var fileDialog = new OpenFileDialog
+			{
+				InitialDirectory = Environment.CurrentDirectory,
+				Multiselect = false,
+				Title = "Select a Folder to Drop These Sounds Into",
+				Filter = BuildSoundExportFilters(true)
+			};
+
+			if (fileDialog.ShowDialog() == true) {
+	            var selectedFolder = fileDialog.FileName;
+	            if (File.Exists(selectedFolder)) {
+		            selectedFolder = Path.GetDirectoryName(selectedFolder);
+	            }
+	            var format = (fileDialog.FilterIndex == 1)
+		            ? BRRInterface.BRRExportFileTypes.WaveFormat
+		            : BRRInterface.BRRExportFileTypes.BRRFormat;
+	            ExportAll(file, selectedFolder, format);
+			}
         }
 
         private void ExportSoundButton_Click(object sender, RoutedEventArgs e)
@@ -395,34 +394,39 @@ namespace StarFoxMapVisualizer.Controls2
             var sample = SelectedSample;
             if (sample == default) return;
             var freq = GetSampleRate();
-            var fileDialog = new CommonSaveFileDialog()
-            {
-                AlwaysAppendDefaultExtension = true,
+            var fileDialog = new SaveFileDialog()
+            { 
+	            AddExtension= false,
                 CreatePrompt = false,
-                EnsureFileExists= false,
-                EnsurePathExists = true,
+                CheckFileExists= false,
+                CheckPathExists = true,
                 InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName,
-                Title = $"Save {sample.Name} at {freq}Hz to?",
-                DefaultExtension = "wav",
-                DefaultFileName = (SelectedSample.Name ?? "Untitled") + ".wav"
-            };
-            fileDialog.Filters.Add(new CommonFileDialogFilter("Wave Format", "wav"));
-            fileDialog.Filters.Add(new CommonFileDialogFilter("Bit Rate Reduction Format", "brr"));
-            if (fileDialog.ShowDialog() != CommonFileDialogResult.Ok) return; // OOPSIES
-            string selectedFolder = Path.GetDirectoryName(fileDialog.FileName);
-            string fileName = fileDialog.FileAsShellObject.Name;
-            var format = BRRInterface.BRRExportFileTypes.WaveFormat;
-            if (fileName.ToUpper().EndsWith("BRR")) // BRR Selected
-                format = BRRInterface.BRRExportFileTypes.BRRFormat;
-            var path = Path.Combine(selectedFolder, fileName);
-            ExportOne(path, sample, freq, format);
+                Title = $"Save {sample.Name} at {freq}Hz to",
+                FileName = (SelectedSample.Name ?? "Untitled") + ".wav",
+                OverwritePrompt = true
+			};
+            fileDialog.Filter = BuildSoundExportFilters(false);
+
+			if (fileDialog.ShowDialog() == true) {
+	            var format = Path.GetExtension(fileDialog.FileName).Equals(".BRR", StringComparison.OrdinalIgnoreCase) ?  
+		            BRRInterface.BRRExportFileTypes.BRRFormat : BRRInterface.BRRExportFileTypes.WaveFormat;
+	            ExportOne(fileDialog.FileName, sample, freq, format);
+            }
+        }
+
+        private static string BuildSoundExportFilters(bool batch)
+        {
+	        var filters = new FileDialogFilterBuilder(false);
+	        filters.Add("Windows Wave", batch ? "*.*" : "wav");
+	        filters.Add("SNES Bit Rate Reduction format", batch ? "*.*" : "brr");
+	        return filters.ToString();
         }
 
         private void CopyItem_Click(object sender, RoutedEventArgs e)
         {
             var sample = SelectedSample;
             if (sample == default) return;
-            var file = Path.GetTempPath() + $"\\{sample.Name}.wav";
+            var file = Path.Combine(Path.GetTempPath(), $"{sample.Name}.wav");
             ExportOne(file, sample, GetSampleRate(), BRRInterface.BRRExportFileTypes.WaveFormat);
             var collect = new System.Collections.Specialized.StringCollection();
             collect.Add(file);

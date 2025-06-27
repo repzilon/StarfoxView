@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Screens
@@ -35,17 +35,24 @@ namespace StarFoxMapVisualizer.Screens
             {
                 if (fileLoc == default)
                 { // SHOW FILE BROWSER
-                    var dialog = new CommonOpenFileDialog()
+                    var dialog = new OpenFileDialog()
                     {
-                        IsFolderPicker = true,
-                        InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                        InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                        Title = "Select any file in StarFox source base directory"
                     };
-                    if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
-                    {
+                    if (dialog.ShowDialog() == true) {
+	                    if (File.Exists(dialog.FileName)) {
+		                    fileLoc = Path.GetDirectoryName(dialog.FileName);
+	                    } else if (Directory.Exists(dialog.FileName)) {
+		                    fileLoc = dialog.FileName;
+	                    } else {
+		                    GetStartedButton.IsEnabled = true;
+		                    return;
+						}
+                    } else {
                         GetStartedButton.IsEnabled = true;
                         return; // USER CANCELLED
                     }
-                    fileLoc = dialog.FileName;
                 }
 
                 //TRY TO LOAD THE PROJECT
