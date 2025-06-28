@@ -171,7 +171,7 @@
                 <RowDefinition Height="*" MinHeight="100"/>
             </Grid.RowDefinitions>
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Style="{StaticResource TitleText}" Foreground="White" Text="MY WORKSPACE:"/>
+                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Style="{StaticResource TitleText}" Foreground="White" Text="My Workspace:"/>
                 <ContentControl DockPanel.Dock="Top" Style="{StaticResource SFContentBorder}" Margin="10,10,10,10" Background="Black">
                     <TreeView FontSize="22" x:Name="SolutionExplorerView" BorderThickness="0" Background="{x:Null}" FontFamily="{StaticResource Atlantis}" TextOptions.TextRenderingMode="Grayscale">
                         <TreeView.Resources>
@@ -191,7 +191,7 @@
             </DockPanel>
             <GridSplitter Height="2" Grid.Row="1" HorizontalAlignment="Stretch" Background="{Binding Background, ElementName=MainSplitter}" ResizeDirection="Rows"/>
             <DockPanel Grid.Row="2">
-                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Style="{StaticResource TitleText}" Foreground="White" Text="SYMBOLS:"/>
+                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Style="{StaticResource TitleText}" Foreground="White" Text="Symbols:"/>
                 <GroupBox Header="VIEW OPTIONS" FontFamily="{StaticResource Atlantis}" FontSize="18" DockPanel.Dock="Top" Margin="10,10,10,0">
                     <StackPanel>
                         <ComboBox x:Name="MacroFileCombo"  Margin="10" SelectionChanged="FilterFileChanged"/>

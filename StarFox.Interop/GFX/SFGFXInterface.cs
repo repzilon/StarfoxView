@@ -75,7 +75,7 @@ namespace StarFox.Interop.GFX
 		/// Opens a raw *.CGX file -- as in has no metadata.
 		/// </summary>
 		/// <param name="FileName">The path to get to the file</param>
-		/// <param name="BitDepth">Bit depth of the pixel data</param>
+		/// <param name="BitDepth">Color depth of the pixel data</param>
 		/// <returns></returns>
 		public static async Task<FXCGXFile> ImportCGX(string FileName, CAD.BitDepthFormats BitDepth)
 		{

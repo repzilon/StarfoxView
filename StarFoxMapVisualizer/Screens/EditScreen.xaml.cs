@@ -517,7 +517,7 @@ namespace StarFoxMapVisualizer.Screens
         private async Task FileSelected(FileInfo File)
         {
             EDITORStandard.ShowLoadingWindow();
-            //CHECK IF ITS A KNOWN FILE
+            //CHECK IF IT'S A KNOWN FILE
             var result = await HandleKnownFileTypes(File);
             if (!result.HasValue || result.Value) return; // Handled or User Cancelled
             //SWITCH TO ASM VIEWER IF WE HAVEN'T ALREADY

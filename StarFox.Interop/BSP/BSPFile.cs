@@ -9,7 +9,7 @@ namespace StarFox.Interop.BSP
     {
         /// <summary>
         /// The shapes added in this BSP file
-        /// <para>Usually shapes come in large files with many other shapes defined along side them.</para>
+        /// <para>Usually shapes come in large files with many other shapes defined alongside them.</para>
         /// </summary>
         public HashSet<BSPShape> Shapes { get; internal set; } = new HashSet<BSPShape>();
         /// <summary>
@@ -28,15 +28,15 @@ namespace StarFox.Interop.BSP
         /// </summary>
         /// <returns></returns>
         /*
-        public IEnumerable<string> GetShapeHeaderDiscrepencies()
+        public IEnumerable<string> GetShapeHeaderDiscrepancies()
         {
-            List<string> discrepencies = new();
+            List<string> discrepancies = new();
             foreach(var headerItem in ShapeHeaderEntries)
             {
                 if (!Shapes.ContainsKey(headerItem))
-                    discrepencies.Add(headerItem);
+                    discrepancies.Add(headerItem);
             }
-            return discrepencies;
+            return discrepancies;
         }*/
 
         internal BSPFile(string OriginalFilePath) : base(OriginalFilePath)

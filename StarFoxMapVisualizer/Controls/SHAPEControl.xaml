@@ -33,15 +33,15 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">X:</TextBlock>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">X :&#160;</TextBlock>
                 <TextBox Grid.Column="1" Text="{Binding Position.X, ElementName=Camera}" VerticalContentAlignment="Center"/>
-                <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">Y:</TextBlock>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">Y :&#160;</TextBlock>
                 <TextBox Grid.Column="3"  Text="{Binding Position.Y, ElementName=Camera}" VerticalContentAlignment="Center"/>
-                <TextBlock Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">Z:</TextBlock>
+                <TextBlock Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Bold">Z :&#160;</TextBlock>
                 <TextBox Grid.Column="5" Text="{Binding Position.Z, ElementName=Camera}" VerticalContentAlignment="Center"/>
-                <TextBlock Grid.Column="6" VerticalAlignment="Center" FontWeight="Bold" HorizontalAlignment="Right">SHAPE:</TextBlock>
+                <TextBlock Grid.Column="6" VerticalAlignment="Center" FontWeight="Bold" HorizontalAlignment="Right">SHAPE :&#160;</TextBlock>
                 <ComboBox Grid.Column="7" Name="ShapeSelector" SelectionChanged="ShapeSelector_SelectionChanged"/>
-                <TextBlock Grid.Column="8" VerticalAlignment="Center" FontWeight="Bold" HorizontalAlignment="Right">FRAME:</TextBlock>
+                <TextBlock Grid.Column="8" VerticalAlignment="Center" FontWeight="Bold" HorizontalAlignment="Right">FRAME :&#160;</TextBlock>
                 <ComboBox Grid.Column="9" Name="FrameSelector" SelectionChanged="FrameSelector_SelectionChanged"/>
             </Grid>
         </Grid>
