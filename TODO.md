@@ -33,4 +33,3 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] Include Pepper and Andross to communication mugshots
 - [x] Stop listing duplicate .pcr and .ccr files in workspace (generated files)
 - [ ] In Graphics view, export pictures ==WIP== (full palette is missing)
-

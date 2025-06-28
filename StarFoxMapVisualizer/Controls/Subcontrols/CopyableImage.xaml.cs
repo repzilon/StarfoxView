@@ -34,11 +34,39 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			}
 		}
 
+		private static FrameworkElement GetAncestor(FrameworkElement descendant, int levels)
+		{
+			FrameworkElement ancestor = descendant;
+			for (int i = 1; i <= levels; i++) {
+				ancestor = (FrameworkElement)ancestor.Parent;
+			}
+
+			return ancestor;
+		}
+
 		private void ExportItem_Click(object sender, RoutedEventArgs e)
 		{
 			var image = Source as BitmapImage;
 			if (image != null) {
-				var flsImage = image.StreamSource as FileStream;
+				var ctlGFX = GetAncestor(this, 4) as GFXControl;
+				string strImagePath = null;
+				if (ctlGFX != null) { // GFXControl is an ancestor of the image on canvas
+					strImagePath = ctlGFX.SelectedGraphic;
+				} else {
+					ctlGFX = GetAncestor(this, 6) as GFXControl;
+					if (ctlGFX != null) { // GFXControl is an ancestor of the palette swatches 
+						var lvi = ctlGFX.PaletteSelection.SelectedItem as ListViewItem;
+						if ((lvi != null) && (lvi.Tag is PaletteTuple)) {
+							strImagePath = ((PaletteTuple)lvi.Tag).Name;
+						}
+					} else {
+						var flsImage = image.StreamSource as FileStream;
+						if (flsImage != null) {
+							strImagePath = flsImage.Name;
+						}
+					}
+				}
+				
 				var fileDialog = new SaveFileDialog()
 				{
 					AddExtension = true,
@@ -47,7 +75,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					CheckPathExists = true,
 					InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName,
 					Title = "Export image",
-					FileName = (flsImage != null ? Path.GetFileNameWithoutExtension(flsImage.Name) : "Untitled") + ".png",
+					FileName = (strImagePath != null ? Path.GetFileNameWithoutExtension(strImagePath) : "Untitled") + ".png",
 					OverwritePrompt = true
 				};
 				var filters = new FileDialogFilterBuilder(false);
