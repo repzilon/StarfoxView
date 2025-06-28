@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using StarFoxMapVisualizer.Misc;
@@ -50,8 +52,10 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			if (image != null) {
 				var ctlGFX = GetAncestor(this, 4) as GFXControl;
 				string strImagePath = null;
+				bool blnSaveFullPalette = false;
 				if (ctlGFX != null) { // GFXControl is an ancestor of the image on canvas
 					strImagePath = ctlGFX.SelectedGraphic;
+					blnSaveFullPalette = true;
 				} else {
 					ctlGFX = GetAncestor(this, 6) as GFXControl;
 					if (ctlGFX != null) { // GFXControl is an ancestor of the palette swatches 
@@ -87,7 +91,6 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				if (fileDialog.ShowDialog() == true) {
 					var ext = Path.GetExtension(fileDialog.FileName);
 					BitmapEncoder encoder;
-					// TODO : Export with the full palette (BitmapEncoder class has a Palette property)
 					if (ext.Equals(".gif", StringComparison.OrdinalIgnoreCase)) {
 						encoder = new GifBitmapEncoder();
 					} else if (ext.Equals(".tiff", StringComparison.OrdinalIgnoreCase)) {
@@ -97,7 +100,19 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					} else {
 						encoder = new PngBitmapEncoder();
 					}
-					encoder.Frames.Add(BitmapFrame.Create(image));
+
+					BitmapFrame frame;
+					if (blnSaveFullPalette) {
+						// Setting the palette to the image encoder does not work.
+						// Convert the image to indexed color, right before encoding it.
+						var lstColors = ctlGFX.SelectedPalette.GetPalette()
+							.Select(x => Color.FromArgb(x.A, x.R, x.G, x.B)).ToList();
+						frame = BitmapFrame.Create(new FormatConvertedBitmap(image,
+							PixelFormats.Indexed8, new BitmapPalette(lstColors), 0));
+					} else {
+						frame = BitmapFrame.Create(image);
+					}
+					encoder.Frames.Add(frame);
 
 					using (var fileStream = new FileStream(fileDialog.FileName, FileMode.Create)) {
 						encoder.Save(fileStream);
