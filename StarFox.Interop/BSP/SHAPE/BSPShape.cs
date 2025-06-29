@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json;
-#endif
 using StarFox.Interop.GFX;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.BSP.SHAPE
 {
@@ -352,29 +349,6 @@ namespace StarFox.Interop.BSP.SHAPE
             Frames.Add(currentIndex, KeyframeName);
             return true;
         }
-
-		/// <summary>
-		/// Serializes this object to the given stream
-		/// </summary>
-		/// <param name="Destination"></param>
-#if NET46
-		public void Serialize(JsonWriter Destination)
-#else
-        public void Serialize(Utf8JsonWriter Destination)
-#endif
-		{
-#if NET46
-            JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, this);
-#else
-            
-            using (var doc = JsonSerializer.SerializeToDocument(this, new JsonSerializerOptions()
-            {
-                WriteIndented = true,
-            })) {
-                doc.WriteTo(Destination);
-            }
-#endif
-		}
 
         public override string ToString()
         {

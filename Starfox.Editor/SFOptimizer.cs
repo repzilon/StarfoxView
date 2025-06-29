@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json;
-#endif
+using StarFox.Interop.MISC;
 
 namespace Starfox.Editor
 {
@@ -91,34 +87,13 @@ namespace Starfox.Editor
         public static SFOptimizerNode Create(string BaseDirectory, string Name, SFOptimizerDataStruct DataStruct)
         {
             var path = Path.Combine(BaseDirectory, $"{Name}.{SF_OPTIM_Extension}");
-#if NET46
-            string json;
-            using (var wrtString = new StringWriter()) {
-                using (var wrtJson = new JsonTextWriter(wrtString)) {
-                    JsonSerializer.Create().Serialize(wrtJson, DataStruct);
-                    wrtJson.Flush();
-                    json = wrtString.ToString();
-                }
-            }
-#else
-			var json = JsonSerializer.Serialize(DataStruct);
-#endif
-            File.WriteAllText(path, json);
+            File.WriteAllText(path, JsonImportExport.ToString(DataStruct));
             return new SFOptimizerNode(path);
         }
 
         private void GetOptimizerFileData()
         {
-#if NET46
-            using (var rdrStream = new StreamReader(FilePath)) {
-                using (var rdrJson = new JsonTextReader(rdrStream)) {
-					OptimizerData = JsonSerializer.Create().Deserialize<SFOptimizerDataStruct>(rdrJson);
-				}
-            }
-#else
-            var text = File.ReadAllText(FilePath);
-            OptimizerData = JsonSerializer.Deserialize<SFOptimizerDataStruct>(text);
-#endif
+	        OptimizerData = JsonImportExport.LoadTo<SFOptimizerDataStruct>(FilePath);
 		}
     }
 }

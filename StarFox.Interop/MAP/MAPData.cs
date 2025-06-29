@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json;
-#endif
 using System.Threading.Tasks;
 using StarFox.Interop.ASM;
 using StarFox.Interop.MAP.EVT;
@@ -121,11 +116,7 @@ namespace StarFox.Interop.MAP
 		/// Serializes this object to the given stream
 		/// </summary>
 		/// <param name="Destination"></param>
-#if NET46
-		public void Serialize(JsonWriter Destination)
-#else
-        public void Serialize(Utf8JsonWriter Destination)
-#endif
+        public void Serialize(Stream destination)
 		{
 			using (MemoryStream mem = new MemoryStream()) {
                 StrongTypeSerialization.SerializeObjects(mem, Events);
@@ -133,29 +124,13 @@ namespace StarFox.Interop.MAP
                     EventsByDelay = EventsByDelay,
                     SerializedData = mem.ToArray()
                 };
-#if NET46
-                JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented }).Serialize(Destination, inter);
-#else
-                using (var doc = JsonSerializer.SerializeToDocument(inter, new JsonSerializerOptions() {
-                    WriteIndented = true,
-                })) {
-                    doc.WriteTo(Destination);
-                }
-#endif
+                JsonImportExport.Serialize(inter, destination);
             }
         }
+
         public static async Task<MAPData> Deserialize(Stream Json)
         {
-#if NET46
-            Intermediary inter = null;
-            using (TextReader rdrStream = new StreamReader(Json)) {
-                using (JsonReader rdrJson = new JsonTextReader(rdrStream)) {
-                    inter = JsonSerializer.Create().Deserialize<Intermediary>(rdrJson);
-                }
-            }
-#else
-            Intermediary inter = await JsonSerializer.DeserializeAsync<Intermediary>(Json);
-#endif
+	        var inter = await JsonImportExport.LoadTo<Intermediary>(Json);
 			if (inter == null) throw new Exception("Couldn't create the intermediary!");
             var data = new MAPData()
             {

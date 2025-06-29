@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json;
-#endif
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +15,7 @@ using StarFox.Interop.MAP.EVT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Misc;
 using WpfPanAndZoom.CustomControls;
+using Path = System.IO.Path;
 
 namespace StarFoxMapVisualizer.Controls
 {
@@ -84,22 +80,15 @@ namespace StarFoxMapVisualizer.Controls
         private void MapExportButton_Click(object sender, RoutedEventArgs e)
         {
             if (selectedScript == null) return;
-            var fileName = System.IO.Path.Combine(Environment.CurrentDirectory,
+            var fileName = Path.Combine(Environment.CurrentDirectory,
                 "export","maps",$"{selectedScript.Header.LevelMacroName}.sfmap");
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(fileName));
-            using (var file = File.Create(fileName))
-            {
-#if NET46
-                using (var wrtStream = new StreamWriter(file)) {
-                    using (var wrtJson = new JsonTextWriter(wrtStream)) {
-                        selectedScript.LevelData.Serialize(wrtJson);
-                    }
-                }
-#else
-                using (var writer = new Utf8JsonWriter(file)) {
-                    selectedScript.LevelData.Serialize(writer);
-                }
-#endif
+            var directory = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(directory)) {
+	            Directory.CreateDirectory(directory);
+            }
+           
+            using (var file = File.Create(fileName)) {
+	            selectedScript.LevelData.Serialize(file);
             }
             if (MessageBox.Show($"The map was successfully exported to:\n" +
                 $"{fileName}\n" +

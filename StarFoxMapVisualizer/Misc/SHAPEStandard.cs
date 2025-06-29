@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json;
-#endif
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -21,6 +16,7 @@ using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.COLTAB.DEF;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
+using StarFox.Interop.MISC;
 using static StarFox.Interop.GFX.CAD;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
@@ -225,21 +221,13 @@ namespace StarFoxMapVisualizer.Misc
         {
             var filesCreated = new List<string>();
             var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}.sfshape");
-            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            var directory = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(directory)) {
+	            Directory.CreateDirectory(directory);
+			}
             using (var modelFile = File.Create(fileName))
             {
-#if NET46
-                using (var wrtStream = new StreamWriter(modelFile)) {
-                    using (var wrtJson = new JsonTextWriter(wrtStream)) {
-                        Shape.Serialize(wrtJson);
-                    }
-                }
-#else
-                using (var writer = new Utf8JsonWriter(modelFile)) {
-                    Shape.Serialize(writer);
-                }
-#endif
-
+                JsonImportExport.Serialize(Shape, modelFile);
                 filesCreated.Add(fileName);
             }
             var colorPalPtr = Shape.Header.ColorPalettePtr;
