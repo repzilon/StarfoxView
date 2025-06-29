@@ -243,12 +243,15 @@ namespace StarFoxMapVisualizer.Misc
                 filesCreated.Add(fileName);
             }
             var colorPalPtr = Shape.Header.ColorPalettePtr;
-            fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.sfpal");
+            fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.act");
             if (!File.Exists(fileName))
             {
                 CreateSFPalette(colorPalPtr, out var sfPal, out _);
-                using (var palFile = File.Create(fileName))
-                    await sfPal.SerializeColors(palFile);
+#if NETFRAMEWORK || NETSTANDARD
+				File.WriteAllBytes(fileName, sfPal.ToPhotoshop());
+#else
+				await File.WriteAllBytesAsync(fileName, sfPal.ToPhotoshop());
+#endif
             }
             filesCreated.Add(fileName);
             return filesCreated;
