@@ -44,5 +44,10 @@ namespace StarFox.Interop.ASM.TYP
 				commentLine = commentLine.Replace("  ", " ");
 			CommentText = commentLine;
 		}
+
+		public override string ToString()
+		{
+			return base.ToString() + ": " + this.CommentText;
+		}
 	}
 }

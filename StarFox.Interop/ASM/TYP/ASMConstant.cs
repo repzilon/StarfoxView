@@ -30,7 +30,7 @@ namespace StarFox.Interop.ASM.TYP
 		/// <summary>
 		/// The name of the constant
 		/// </summary>
-		public string Name => DefinitionLine.StructureAsDefineStructure.Name;
+		public string Name => DefinitionLine.StructureAsDefineStructure.Symbol;
 		/// <summary>
 		/// The value of the constant
 		/// </summary>

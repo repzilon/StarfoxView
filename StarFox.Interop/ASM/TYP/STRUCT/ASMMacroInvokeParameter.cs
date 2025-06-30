@@ -19,5 +19,10 @@
             ParameterName = parameterName;
             ParameterContent = parameterContent;
         }
+
+        public override string ToString()
+        {
+	        return $"{ParameterName} = {ParameterContent}";
+        }
     }
 }

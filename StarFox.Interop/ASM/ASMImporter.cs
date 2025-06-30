@@ -56,7 +56,7 @@ namespace StarFox.Interop.ASM
 		{
 			Context.CurrentFilePath = FilePath;
 			var newFile = Context.CurrentFile = new ASMFile(FilePath);
-			Context.CurrentLine = -1;
+			Context.CurrentLine = 0;
 #if NETFRAMEWORK || NETSTANDARD
 			var charSet = Encoding.Default;
 #else
@@ -67,11 +67,12 @@ namespace StarFox.Interop.ASM
 				StreamReader reader = null;
 				try {
 					reader = ImportCore(FilePath, fs, ref charSet, newFile);
-				} catch (EncoderFallbackException) {
+				} catch (DecoderFallbackException) {
 					// Bad encoding detected, reset reading
 					newFile.Chunks.Clear();
 					reader?.Dispose();
 					fs.Position = 0;
+					Context.CurrentLine = 0;
 					// Re-read with the detected encoding
 					reader = ImportCore(FilePath, fs, ref charSet, newFile);
 				} finally {
@@ -86,9 +87,9 @@ namespace StarFox.Interop.ASM
 			var reader = new StreamReader(stream, charSet);
 			while (!reader.EndOfStream) {
 				var chunk = ProcChunk(filePath, Context, reader, ref charSet); // process this line as a new chunk
-				if (chunk == null) // fail out if not processed (unknown chunk syntax, other errors)
-					continue; // the assembly chunk was not useful or an error,
-				newFile.Chunks.Add(chunk); // upon success, add this chunk to the Chunks collection
+				if (chunk != null) {
+					newFile.Chunks.Add(chunk);
+				}
 			}
 			return reader;
 		}
@@ -115,13 +116,18 @@ namespace StarFox.Interop.ASM
 		/// <returns></returns>
 		internal static ASMChunk ProcChunk(string filePath, ASMImporterContext context, StreamReader fs, ref Encoding textEncoding)
 		{
-			long position = fs.GetCharPosition();
-			var header = fs.ReadLine().RemoveEscapes(); // read line
+			// IMPORTANT : returns the byte position, which is needed to seek inside the base FileStream
+			// This is different from character position, and both will drift away with a variable-length
+			// character coding such as UTF-8.
+			long position = fs.GetActualPosition(); 
+
+			var rawLine = fs.ReadLine();
+			var header = rawLine.RemoveEscapes(); // read line
 			if (header.Contains('\uFFFD')) {
-				throw new EncoderFallbackException("Detected character encoding error in " +
+				throw new DecoderFallbackException("Detected character encoding error in " +
 				                                   Path.GetFileName(filePath) + ".");
 			} else if (!textEncoding.Equals(fs.CurrentEncoding)) {
-				throw new EncoderFallbackException("Character set declared in " + Path.GetFileName(filePath) + " is " +
+				throw new DecoderFallbackException("Character set declared in " + Path.GetFileName(filePath) + " is " +
 				                                   textEncoding.WebName + " and does not match " +
 				                                   fs.CurrentEncoding.WebName + " of the file reader.");
 			} else {
@@ -133,14 +139,15 @@ namespace StarFox.Interop.ASM
 			var type = ASMChunk.Conjecture(header); // investigate what it is
 
 			ASMChunk chunk;
+			var lineNo = context.CurrentLine;
 			if (type == ASMChunks.Comment) {
-				chunk = new ASMComment(filePath, position, context.CurrentLine);
+				chunk = new ASMComment(filePath, position, lineNo);
 				chunk.Parse(fs);
 			} else if (type == ASMChunks.Macro) {
-				chunk = new ASMMacro(position, context, context.CurrentLine);
+				chunk = new ASMMacro(position, context, lineNo);
 				chunk.Parse(fs);
 			} else {
-				chunk = new ASMLine(position, context, context.CurrentLine)
+				chunk = new ASMLine(position, context, lineNo)
 				{
 					IsUnknownType = type == ASMChunks.Unknown,
 				};

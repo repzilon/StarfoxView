@@ -115,7 +115,7 @@ namespace StarFox.Interop.ASM.TYP
                 //LABELS w/ a COLON :
                 else if (ASMLabelStructure.TryParse(parseLine, out var lresult))
                     Structure = lresult;
-                //MACRO INVOKATIONS
+                //MACRO INVOCATIONS
                 else
                 {
                     Risky_ParseOutLabels(ref parseLine, imports);
@@ -129,7 +129,14 @@ namespace StarFox.Interop.ASM.TYP
 
         public override string ToString()
         {
-            return Text;
+	        var strOut =  base.ToString() + ": " + this.Text;
+	        var structure = this.Structure;
+	        if (structure != null) {
+		        var strStructType = structure.GetType().Name.Replace("ASM", "").Replace("LineStructure", "");
+		        strOut = strOut.Replace("Line ", "Line+" + strStructType + " ");
+	        }
+
+	        return strOut;
         }
     }
 }

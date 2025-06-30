@@ -12,12 +12,11 @@ Large plans are in order of priority, while everything else is in no particular 
 ## New features
 - [ ] Display a game text translation grid extracted from gametext.asm
 - [ ] Display a grid for the enemy specs shown during the game ending sequence (UltraStarFox source code needs rework to add other languages)
-- [ ] Simplify serialization of .sfpal (use HTML color codes)
-- [ ] Experiment with fastJSON (fast, stable, available on older frameworks)
-- [ ] Interpret Japanese communication messages and its proprietary character set
+- [ ] Experiment with fastJSON (fast, stable, polymorphic, available on older frameworks)
+- [x] Interpret Japanese communication messages and its proprietary character set
 - [ ] Have the menu bar and context menu items do something ==WIP==
 - [ ] Stop asking for bit depth of CGX files when it can be guessed by file contents ==WIP==
-- [ ] Rewrite export to .obj
+- [ ] Rewrite export to .obj without the geometry4Sharp dependency
 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
@@ -33,3 +32,4 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] Include Pepper and Andross to communication mugshots
 - [x] Stop listing duplicate .pcr and .ccr files in workspace (generated files)
 - [x] In Graphics view, export pictures
+- [ ] Correct display of ASM source files

@@ -16,6 +16,9 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
             this.MacroReference = MacroReference;
             this.Parameters = Parameters;
         }
+
+        public string Symbol => this.MacroReference.Name;
+
         /// <summary>
         /// The macro function definition that was called in this expression
         /// </summary>

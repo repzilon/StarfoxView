@@ -10,20 +10,20 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
     {
         public ASMLabelStructure(string name)
         {
-            Name = name;
+            Symbol = name;
         }
         /// <summary>
         /// The name given to this Constant
         /// </summary>
-        public string Name { get; private set; }
+        public string Symbol { get; private set; }
 
-        /// <summary>
-        /// Tries to parse this line as a macro invokation
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="Reference"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public static bool TryParse(string input, out ASMLabelStructure result)
+		/// <summary>
+		/// Tries to parse this line as a macro invocation
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="result"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public static bool TryParse(string input, out ASMLabelStructure result)
         {
             var originalText = input;
             input = input.NormalizeFormatting();

@@ -13,10 +13,12 @@ namespace StarFox.Interop.ASM
 		Line,
 		Constant
 	}
+
 	public interface IASMNamedSymbol
 	{
 		string Name { get; }
 	}
+
 	/// <summary>
 	/// A block of ASM code
 	/// </summary>
@@ -34,12 +36,13 @@ namespace StarFox.Interop.ASM
 		/// <summary>
 		/// Moves the supplied stream to the <see cref="Position"/> property's value
 		/// </summary>
-		internal void InitStream(StreamReader FileStream)
+		internal void InitStream(StreamReader textFile)
 		{
-			FileStream.BaseStream.Seek(Position, SeekOrigin.Begin);
-			FileStream.DiscardBufferedData();
+			textFile.BaseStream.Seek(Position, SeekOrigin.Begin);
+			textFile.DiscardBufferedData();
 		}
-		public abstract void Parse(StreamReader FileStream);
+
+		public abstract void Parse(StreamReader textFile);
 
 		/// <summary>
 		/// Supplied with the first line of a chunk this function will guess what it is.
@@ -56,9 +59,15 @@ namespace StarFox.Interop.ASM
 				return ASMChunks.Macro; // macro spotted
 			return ASMChunks.Line; // probably a line? TODO: add more checking
 		}
+
 		public override bool Equals(object obj)
 		{
 			return (obj is ASMChunk chunk) && (chunk.OriginalFileName == OriginalFileName) && (chunk.Position == Position) && (chunk.Length == Length);
+		}
+
+		public override string ToString()
+		{
+			return $"{this.ChunkType} @L{this.Line} [{this.Position}..+{this.Length}]";
 		}
 	}
 }

@@ -16,6 +16,9 @@ namespace StarFox.Interop.MSG
 			"GAMETEXT.ASM"
 		};
 
+		public TRNFile TranslationTable { get; set; }
+		public bool NeedsCharacterCodingTranslation { get; private set; }
+
 		/// <summary>
 		/// Imports the given file into a <see cref="MSGFile"/> and returns the result
 		/// </summary>
@@ -63,7 +66,7 @@ namespace StarFox.Interop.MSG
 			return msgFile;
 		}
 
-		private static MSGEntry Create(string fileName, ASMMacroInvokeLineStructure macroLine, string person, bool embeddedEnglish, 
+		private MSGEntry Create(string fileName, ASMMacroInvokeLineStructure macroLine, string person, bool embeddedEnglish,
 		int englishIndex, int translationIndex, int soundIndex)
 		{
 			var english = "unknown in english";
@@ -72,6 +75,13 @@ namespace StarFox.Interop.MSG
 			}
 			var second = macroLine.TryGetParameter(translationIndex)?.ParameterContent ?? "blank in " + fileName;
 			var sound = macroLine.TryGetParameter(soundIndex)?.ParameterContent ?? "other";
+
+			var tt = this.TranslationTable;
+			if (MojiZeroTranslator.IsMojibake(second) && (tt != null)) {
+				second = MojiZeroTranslator.Decode(second, tt);
+				this.NeedsCharacterCodingTranslation = true;
+			}
+
 			return new MSGEntry(person, english, second, sound);
 		}
 	}

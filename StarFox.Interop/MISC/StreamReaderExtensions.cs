@@ -6,7 +6,7 @@ namespace StarFox.Interop.MISC
 {
 	public static class StreamReaderExtensions
 	{
-		// Field name may change between .NET versions
+		// Field name may change between .NET implementations
 		private static T InvokeTo<T>(this Type objectType, string name, object instance)
 		{
 			const BindingFlags kPrivateField = BindingFlags.DeclaredOnly | BindingFlags.Public |
@@ -18,23 +18,6 @@ namespace StarFox.Interop.MISC
 			}
 		}
 
-		/// <summary>
-		/// Returns the character position of this buffered stream
-		/// </summary>
-		/// <param name="reader"></param>
-		/// <returns></returns>
-		public static long GetCharPosition(this StreamReader reader)
-		{
-			var typSmr = reader.GetType();
-
-			// https://stackoverflow.com/questions/10189270/tracking-the-position-of-the-line-of-a-streamreader
-			var charpos = typSmr.InvokeTo<int>("charPos", reader);
-			var charlen = typSmr.InvokeTo<int>("charLen", reader);
-
-			return reader.BaseStream.Position - charlen + charpos;
-		}
-
-		[Obsolete]
 		public static long GetActualPosition(this StreamReader reader)
 		{
 			var typSmr = reader.GetType();

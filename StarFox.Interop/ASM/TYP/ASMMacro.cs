@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.ASM.TYP
@@ -83,10 +85,10 @@ namespace StarFox.Interop.ASM.TYP
 			{
 				var paramStart = headerLine.IndexOf("macro ", StringComparison.OrdinalIgnoreCase); // find where parameters start
 				var parameterText = headerLine.Substring(paramStart + 6); // take all text past macro
-				var parameters = parameterText.Split(','); // split by commas
-				Parameters = parameters.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray(); // take all non-empty parameter names
+				Parameters = parameterText.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries); // split by commas
 			}
-			var lines = new ASMChunk[0];
+
+			var lines = new List<ASMChunk>();
 			Encoding charSet = FileStream.CurrentEncoding;
 			while (!FileStream.EndOfStream) {
 				long currentPosition = FileStream.GetActualPosition(); // store position
@@ -95,18 +97,29 @@ namespace StarFox.Interop.ASM.TYP
 				FileStream.BaseStream.Seek(currentPosition, SeekOrigin.Begin); // move it back to where it was to complete the PEEK
 				FileStream.DiscardBufferedData();
 				var module = ASMImporter.ProcChunk(OriginalFileName, context, FileStream, ref charSet); // check each line to see what it is
-				Array.Resize(ref lines, lines.Length + 1);
-				lines[lines.Length - 1] = module;
-				if (line.ToLower().Contains("endm")) // end macro spotted
+				lines.Add(module);
+				if (line.Trim().Equals("endm", StringComparison.OrdinalIgnoreCase)) // end macro spotted
 					break;
 			}
-			Lines = lines;
+			Lines = lines.ToArray();
 			Length = runningLength;
+
+			// Look for positional parameters in lines
+			if (Parameters.Length < 1) {
+				var lstPositionals = new List<string>();
+				foreach (ASMLine al in lines) {
+					var colMatches = Regex.Matches(al.Text, @"\\([0-9]+)");
+					// ReSharper disable once RedundantEnumerableCastCall (wrong advice)
+					lstPositionals.AddRange(colMatches.OfType<Match>().Select(m => m.Value));
+				}
+				lstPositionals.Sort(); // does a textual sort, which will be wrong for over 9 positional parameters
+				Parameters = lstPositionals.Distinct().ToArray();
+			}
 		}
 
 		public override string ToString()
 		{
-			return $"MACRO: {Name}, P: {Parameters.Length}";
+			return base.ToString() + $": {Name}({Parameters.Length} args) {{ {Lines.Length} lines }}";
 		}
 	}
 }

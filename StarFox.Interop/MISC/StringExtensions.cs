@@ -24,5 +24,16 @@
 		{
 			return NormalizeFormatting(input, true);
 		}
+
+		/// <summary>
+		/// When you need one character but returned as a string, unlike the indexer.
+		/// </summary>
+		/// <param name="text">The full string</param>
+		/// <param name="i">Zero-based index of the character in text.</param>
+		/// <returns>A one-character string</returns>
+		internal static string CharAt(this string text, int i)
+		{
+			return text.Substring(i, 1);
+		}
 	}
 }

@@ -34,6 +34,7 @@ namespace StarFoxMapVisualizer.Misc
 		internal static readonly BRRImporter BRRImport = new BRRImporter();
 		internal static readonly SPCImporter SPCImport = new SPCImporter();
 		internal static readonly MSpritesImporter DEFSPRImport = new MSpritesImporter();
+		private static readonly TRNImporter TRNImport = new TRNImporter();
 
 		/// <summary>
 		/// Includes a <see cref="SFCodeProjectFileTypes.Assembly"/>, <see cref="SFCodeProjectFileTypes.Include"/> or
@@ -75,7 +76,7 @@ namespace StarFoxMapVisualizer.Misc
 		{
 			File = null;
 			var results = AppResources.ImportedProject.SearchFile(FileName, IgnoreHyphens);
-			if (results.Count() == 0) return false;
+			if (!results.Any()) return false;
 			if (results.Count() > 1) // ambiguous
 				return false;
 			File = new FileInfo(results.First().FilePath);
@@ -94,6 +95,7 @@ namespace StarFoxMapVisualizer.Misc
 			BSPImport.SetImports(AppResources.Includes.ToArray());
 			MSGImport.SetImports(AppResources.Includes.ToArray());
 			DEFSPRImport.SetImports(AppResources.Includes.ToArray());
+			TRNImport.SetImports(AppResources.Includes.ToArray());
 		}
 		/// <summary>
 		/// Performs the Auto-Include function, which will ask the importer what includes it needs
@@ -158,7 +160,7 @@ namespace StarFoxMapVisualizer.Misc
 				var msg = string.Join(Environment.NewLine, result.Groups);
 				MessageBox.Show(msg, "Success!", MessageBoxButton.OKCancel);
 				if (!AppResources.ImportedProject.Palettes.Any()) {
-					if (!SearchProjectForFile("night.col", out var file)) return false;
+					if (!SearchProjectForFile(DefaultPalette, out var file)) return false;
 					await IncludeFile<ASMFile>(file);
 				}
 			}
@@ -243,12 +245,19 @@ namespace StarFoxMapVisualizer.Misc
 			if (!MAPImport.MapContextsSet)
 				await MAPImport.ProcessLevelContexts();
 			var rObj = await MAPImport.ImportAsync(File.FullName);
-			var errors = MAPImport.ErrorOut.ToString();
-			if (!string.IsNullOrWhiteSpace(errors))
-				MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
-					"Errors Occured when Importing this File");
+			ShowPossibleErrors(MAPImport, File);
 			return rObj;
 		}
+
+		private static void ShowPossibleErrors<T>(CodeImporter<T> importer, FileInfo file) where T : IImporterObject
+		{
+			var errors = importer.ErrorOut.ToString();
+			if (!string.IsNullOrWhiteSpace(errors)) {
+				MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
+									"Errors Occured when Importing " + file.Name);
+			}
+		}
+
 		/// <summary>
 		/// Opens a <see cref="MSGFile"/> and returns a reference to it
 		/// </summary>
@@ -256,15 +265,31 @@ namespace StarFoxMapVisualizer.Misc
 		/// <returns></returns>
 		public static async Task<ASMFile> OpenMSGFile(FileInfo File)
 		{
+			// Try to auto-include MOJI_0.TRN
+			var trn = AppResources.OpenFiles.Values.FirstOrDefault(x => x is TRNFile) as TRNFile;
+			if (trn == null) {
+				var hit = AppResources.ImportedProject.SearchFile("MOJI_0.TRN").FirstOrDefault();
+				if (hit != null) {
+					trn = await OpenTRNFile(new FileInfo(hit.FilePath));
+				}
+			}
+
 			//MSG IMPORT LOGIC
 			if (!await HandleImportMessages(File, MSGImport)) return default;
+			MSGImport.TranslationTable = trn ?? AppResources.Includes.OfType<TRNFile>().LastOrDefault();
 			var rObj = await MSGImport.ImportAsync(File.FullName);
-			var errors = MSGImport.ErrorOut.ToString();
-			if (!string.IsNullOrWhiteSpace(errors))
-				MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
-					"Errors Occured when Importing this File");
+			ShowPossibleErrors(MSGImport, File);
 			return rObj;
 		}
+
+		public static async Task<TRNFile> OpenTRNFile(FileInfo File)
+		{
+			if (!await HandleImportMessages(File, TRNImport)) return default;
+			var rObj = await TRNImport.ImportAsync(File.FullName);
+			ShowPossibleErrors(TRNImport, File);
+			return rObj;
+		}
+
 		/// <summary>
 		/// Will import an *.ASM file into the project's OpenFiles collection and return the parsed result.
 		/// <para>NOTE: This function WILL call a dialog to have the user select which kind of file this is.
@@ -295,28 +320,23 @@ namespace StarFoxMapVisualizer.Misc
 					if (!importMenu.ShowDialog() ?? true) return default; // USER CANCEL
 					selectFileType = importMenu.FileType;
 				} else selectFileType = ContextualFileType.Value;
-				switch (selectFileType) {
-					default: return default;
-					case SFFileType.ASMFileTypes.ASM:
-						goto general;
-					case SFFileType.ASMFileTypes.MAP:
-						asmfile = await OpenMAPFile(File);
-						break;
-					case SFFileType.ASMFileTypes.BSP:
-						asmfile = await OpenBSPFile(File);
-						break;
-					case SFFileType.ASMFileTypes.MSG:
-						asmfile = await OpenMSGFile(File);
-						break;
-					case SFFileType.ASMFileTypes.DEFSPR:
-						asmfile = await OpenDEFSPRFile(File);
-						break;
+
+				if (selectFileType == SFFileType.ASMFileTypes.ASM) {
+					asmfile = await ASMImport.ImportAsync(File.FullName);
+				} else if (selectFileType == SFFileType.ASMFileTypes.MAP) {
+					asmfile = await OpenMAPFile(File);
+				} else if (selectFileType == SFFileType.ASMFileTypes.BSP) {
+					asmfile = await OpenBSPFile(File);
+				} else if (selectFileType == SFFileType.ASMFileTypes.MSG) {
+					asmfile = await OpenMSGFile(File);
+				} else if (selectFileType == SFFileType.ASMFileTypes.DEFSPR) {
+					asmfile = await OpenDEFSPRFile(File);
+				} else if (selectFileType == SFFileType.ASMFileTypes.TRN) {
+					asmfile = await OpenTRNFile(File);
+				} else {
+					return default;
 				}
-				goto import;
 			}
-		general:
-			asmfile = await ASMImport.ImportAsync(File.FullName);
-		import:
 			if (asmfile == default) return default;
 			if (!AppResources.OpenFiles.ContainsKey(File.FullName))
 				AppResources.OpenFiles.Add(File.FullName, asmfile);
@@ -363,10 +383,7 @@ namespace StarFoxMapVisualizer.Misc
 			}
 			if (!await HandleImportMessages(file, DEFSPRImport)) return default;
 			var rObj = await DEFSPRImport.ImportAsync(file.FullName);
-			var errors = DEFSPRImport.ErrorOut.ToString();
-			if (!string.IsNullOrWhiteSpace(errors))
-				MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
-					"Errors Occured when Importing this File");
+			ShowPossibleErrors(DEFSPRImport, file);
 			if (!AppResources.OpenFiles.ContainsKey(file.FullName))
 				AppResources.OpenFiles.Add(file.FullName, rObj);
 			return rObj;

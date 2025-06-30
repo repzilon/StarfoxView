@@ -2,6 +2,6 @@
 {
     public interface IASMLineStructure
     {
-
+	    string Symbol { get; }
     }
 }

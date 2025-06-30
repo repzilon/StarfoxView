@@ -11,7 +11,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
     {
         public ASMDefineLineStructure(string name, string value)
         {
-            Name = name;
+            Symbol = name;
             Value = value;
         }
         /// <summary>
@@ -22,7 +22,7 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         /// <summary>
         /// The name given to this Constant
         /// </summary>
-        public string Name { get; private set; }
+        public string Symbol { get; private set; }
         /// <summary>
         /// The text found at the callsite
         /// </summary>

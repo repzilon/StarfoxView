@@ -384,7 +384,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                         if (structure.Constant != default && !symbolMap.ContainsKey(structure.Constant))
                             symbolMap.Add(structure.Constant, null);
                         yield return new HighlightDesc(
-                                    structure.Name,
+                                    structure.Symbol,
                                     FindResource("DefineColor") as Brush ?? Brushes.Red,
                                     structure.Constant);
                         yield return new HighlightDesc(

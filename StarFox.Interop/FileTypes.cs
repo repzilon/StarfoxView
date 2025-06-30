@@ -27,6 +27,10 @@
             /// 3D MSprites Definition
             /// </summary>
             DEFSPR,
+            /// <summary>
+            /// Table translating plain text characters in messages communications to tiles numbers for the Moji font
+            /// </summary>
+            TRN
         }
 
         /// <summary>
@@ -51,9 +55,9 @@
         public static string GetSummary(ASMFileTypes Type)
         {
             var karSummaries = new string[] {
-                "Just Assembly", "Map-Script File", "Compiled 3D Models", "Communications", "3D Textures (MSprites)"
+                "Just Assembly", "Map-Script File", "Compiled 3D Models", "Communications", "3D Textures (MSprites)", "Character Tile Map"
             };
-            return (Type >= ASMFileTypes.ASM) && (Type <= ASMFileTypes.DEFSPR) ? karSummaries[(int)Type] : "Not found";
+            return (Type >= ASMFileTypes.ASM) && (Type <= ASMFileTypes.TRN) ? karSummaries[(int)Type] : "Not found";
         }
 
         public static string GetSummary(BINFileTypes Type)

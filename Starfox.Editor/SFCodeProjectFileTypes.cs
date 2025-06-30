@@ -52,7 +52,9 @@ namespace Starfox.Editor
                 return SFCodeProjectFileTypes.CGX;
             else if (path.EndsWith("SCR"))
                 return SFCodeProjectFileTypes.SCR;
-            else if (path.EndsWith(SFOptimizerNode.SF_OPTIM_Extension))
+            else if (path.EndsWith("TRN"))
+	            return SFCodeProjectFileTypes.Include;
+			else if (path.EndsWith(SFOptimizerNode.SF_OPTIM_Extension))
                 return SFCodeProjectFileTypes.SF_EDIT_OPTIM;
             return SFCodeProjectFileTypes.Unknown;
         }
