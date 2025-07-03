@@ -264,7 +264,7 @@ namespace StarFox.Interop.BSP
         internal void PushBSP(int ID, string FacesPtr, string JumpPtr)
         {
             if (CurrentShape == null) throw new NullReferenceException("There is no current shape to add this to.");
-            CurrentShape.BSPEntries.Add(ID, new BSPEntry(ID, FacesPtr, JumpPtr));
+            CurrentShape.BSPEntries.Add(ID.ToString(), new BSPEntry(ID, FacesPtr, JumpPtr));
         }
     }
     /// <summary>

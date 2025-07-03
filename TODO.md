@@ -12,7 +12,7 @@ Large plans are in order of priority, while everything else is in no particular 
 ## New features
 - [ ] Display a game text translation grid extracted from gametext.asm
 - [ ] Display a grid for the enemy specs shown during the game ending sequence (UltraStarFox source code needs rework to add other languages)
-- [ ] Experiment with fastJSON (fast, stable, polymorphic, available on older frameworks, but handles dictionaries poorly)
+- [x] Experiment with fastJSON (fast, stable, polymorphic, available on older frameworks, but handles dictionaries poorly)
 - [x] Interpret Japanese communication messages and its proprietary character set
 - [ ] Have the menu bar and context menu items do something ==WIP==
 - [x] Stop asking for bit depth of CGX files when it can be guessed by file contents

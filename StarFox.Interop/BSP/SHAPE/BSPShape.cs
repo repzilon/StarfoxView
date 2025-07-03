@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using StarFox.Interop.GFX;
 
 namespace StarFox.Interop.BSP.SHAPE
@@ -210,7 +211,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <summary>
         /// In BSP-Enabled geometry, this is the BSP table.
         /// </summary>
-        public Dictionary<int, BSPEntry> BSPEntries { get; set; } = new Dictionary<int, BSPEntry>();
+        public Dictionary<string, BSPEntry> BSPEntries { get; set; } = new Dictionary<string, BSPEntry>();
         /// <summary>
         /// The set of points associated with this shape
         /// <para>Points are handled based on FRAME, this collection should be accessed using: <see cref=""/></para>
@@ -219,26 +220,44 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <summary>
         /// The keyframes associated with this model, in chronological order
         /// </summary>
-        public Dictionary<int, string> Frames { get; set; } = new Dictionary<int, string>();
+        public Dictionary<string, string> Frames { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// A set of faces that reference points with this shape.
         /// </summary>
-        public HashSet<BSPFace> Faces { get; set; } = new HashSet<BSPFace>();
-        /// <summary>
-        /// A list of all Colgroups used on this shape.
-        /// See <see cref="SFPalette.ReferencedPaletteNames"/> for a list of all possible col groups
-        /// </summary>
-        public HashSet<string> UsingColGroups { get; } = new HashSet<string>();
-        /// <summary>
-        /// A list of all Textures used on this shape.
-        /// See <see cref="SFPalette.ReferencedTextures"/> for a list of all possible textures
-        /// </summary>
-        public HashSet<string> UsingTextures { get; } = new HashSet<string>();
+        [XmlIgnore] public HashSet<BSPFace> Faces { get; private set; } = new HashSet<BSPFace>();
+		/// <summary>
+		/// A list of all Colgroups used on this shape.
+		/// See <see cref="SFPalette.ReferencedPaletteNames"/> for a list of all possible col groups
+		/// </summary>
+		[XmlIgnore] public HashSet<string> UsingColGroups { get; private set; } = new HashSet<string>();
+		/// <summary>
+		/// A list of all Textures used on this shape.
+		/// See <see cref="SFPalette.ReferencedTextures"/> for a list of all possible textures
+		/// </summary>
+		[XmlIgnore] public HashSet<string> UsingTextures { get; private set; } = new HashSet<string>();
 
-        /// <summary>
-        /// Creates a blank shape
-        /// </summary>
-        private BSPShape() {
+		public List<BSPFace> FaceList
+		{
+			get { return this.Faces.ToList(); }
+			set { this.Faces = new HashSet<BSPFace>(value); }
+		}
+
+		public List<string> ColGroupList
+		{
+			get { return this.UsingColGroups.ToList(); }
+			set { this.UsingColGroups = new HashSet<string>(value); }
+		}
+
+		public List<string> TextureList
+		{
+			get { return this.UsingTextures.ToList(); }
+			set { this.UsingTextures = new HashSet<string>(value); }
+		}
+
+		/// <summary>
+		/// Creates a blank shape
+		/// </summary>
+		private BSPShape() {
 
         }
 
@@ -254,7 +273,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// </summary>
         /// <param name="Frame">The index of the frame</param>
         /// <returns></returns>
-        public BSPFrame GetFrame(int Frame = 0) => FrameData[Frames[Frame]];
+        public BSPFrame GetFrame(int Frame = 0) => FrameData[Frames[Frame.ToString()]];
         public IEnumerable<BSPPoint> GetPoints(int Frame = -1)
         {
             var returnList = new List<BSPPoint>(Points);
@@ -320,7 +339,7 @@ namespace StarFox.Interop.BSP.SHAPE
             if (foundPoint != default) return foundPoint;
             foreach (var frame in Frames.Keys)
             {
-                foundPoint = Search(frame);
+                foundPoint = Search(Int32.Parse(frame));
                 if (foundPoint != default) return foundPoint;
             }
             throw new Exception($"The PointIndex {PointIndex} could not be found on the entire model.");
@@ -340,7 +359,7 @@ namespace StarFox.Interop.BSP.SHAPE
                     Name = KeyframeName,
                     Points = Data
                 });
-            Frames.Add(currentIndex, KeyframeName);
+            Frames.Add(currentIndex.ToString(), KeyframeName);
             return true;
         }
 
@@ -351,7 +370,7 @@ namespace StarFox.Interop.BSP.SHAPE
 
         public void CopyData(BSPShape Other)
         {
-            Frames = new Dictionary<int, string>(Other.Frames);
+            Frames = new Dictionary<string, string>(Other.Frames);
             FrameData = new Dictionary<string, BSPFrame>(Other.FrameData);
             GlobalFrame = new BSPFrame(Other.GlobalFrame);
             Faces = new HashSet<BSPFace>(Other.Faces);

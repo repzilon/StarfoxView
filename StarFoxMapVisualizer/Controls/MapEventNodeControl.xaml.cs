@@ -48,7 +48,7 @@ namespace StarFoxMapVisualizer.Controls
 
             if (MapEvent is MAPUnknownEvent unknown)
             {
-                foreach (var param in unknown.Parameters)
+                foreach (var param in unknown.MacroParameters)
                     ComponentsStack.Children.Add(new HeaderedContentControl()
                     {
                         Header = param.ParameterName?.ToUpper() ?? "PARAM",
