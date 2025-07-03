@@ -504,14 +504,16 @@ namespace StarFoxMapVisualizer.Controls
 
         private void ChronologySlider_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            var control = ((PanAndZoomCanvas)CurrentState.StateObject.ContentControl);
-            control.LocationChanged -= CanvasMoved;
-            double value = CurrentState.StateObject.LevelWidth * ChronologySlider.Value;
-            control.SetCanvasLocation(new Point(value, 0));
-            control.LocationChanged += CanvasMoved;
-        }
+			if (CurrentState != null) {
+				var control = ((PanAndZoomCanvas)CurrentState.StateObject.ContentControl);
+				control.LocationChanged -= CanvasMoved;
+				double value = CurrentState.StateObject.LevelWidth * ChronologySlider.Value;
+				control.SetCanvasLocation(new Point(value, 0));
+				control.LocationChanged += CanvasMoved;
+			}
+		}
 
-        private void CanvasMoved(object sender, Point e)
+		private void CanvasMoved(object sender, Point e)
         {
             var control = ((PanAndZoomCanvas)sender);
             ChronologySlider.Scroll -= ChronologySlider_Scroll;

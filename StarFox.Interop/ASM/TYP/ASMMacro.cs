@@ -107,7 +107,7 @@ namespace StarFox.Interop.ASM.TYP
 			// Look for positional parameters in lines
 			if (Parameters.Length < 1) {
 				var lstPositionals = new List<string>();
-				foreach (ASMLine al in lines) {
+				foreach (var al in lines.OfType<ASMLine>()) {
 					var colMatches = Regex.Matches(al.Text, @"\\([0-9]+)");
 					// ReSharper disable once RedundantEnumerableCastCall (wrong advice)
 					lstPositionals.AddRange(colMatches.OfType<Match>().Select(m => m.Value));
