@@ -22,7 +22,7 @@ Large plans are in order of priority, while everything else is in no particular 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
 - [ ] Replace the optimizers' message box wagon with a single dialog
-- [ ] Handle English<->foreign language mapping with the newest message format
+- [x] Handle English<->foreign language mapping with the newest message format
 - [x] Replace auto-import message box with the notification banner
 - [x] Correct the dialog and menu background color that is too light, making text unreadable
 - [ ] Add a Collect garbage button and memory stats to the About box
