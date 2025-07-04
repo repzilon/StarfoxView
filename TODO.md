@@ -25,7 +25,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] Handle English<->foreign language mapping with the newest message format
 - [x] Replace auto-import message box with the notification banner
 - [x] Correct the dialog and menu background color that is too light, making text unreadable
-- [ ] Add a Collect garbage button and memory stats to the About box
+- [x] Add a Collect garbage button and memory stats to the About box
 - [x] In Messages view, have taller lists so we scroll less vertically
 - [x] In Messages view, put correct message number (the one from the end of the line inside the message source file)
 - [x] In Messages view, fit a bit more text in each entry of the lists

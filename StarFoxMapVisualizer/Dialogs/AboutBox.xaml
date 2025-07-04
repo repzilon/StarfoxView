@@ -23,9 +23,15 @@
                 <Hyperlink x:Name="GithubLink" Click="GithubLink_Click">Check me out on GitHub!</Hyperlink>
                 </TextBlock>
             </DockPanel>
-            <Border Style="{x:Null}" Padding="10,2" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowColor}" DockPanel.Dock="Bottom" MouseLeftButtonUp="Button_Click" HorizontalAlignment="Right">
-                <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Thanks!</TextBlock>
-            </Border>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5" >
+                <Border Style="{x:Null}" Padding="10,2" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowColor}" DockPanel.Dock="Right" MouseLeftButtonUp="Button_Click" HorizontalAlignment="Right">
+                    <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Thanks!</TextBlock>
+                </Border>
+                <Border Style="{x:Null}" Padding="10,2" Margin="0,0,5,0" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowBackgroundColor}" DockPanel.Dock="Right" HorizontalAlignment="Right" MouseLeftButtonUp="GC_MouseLeftButtonUp">
+                    <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Run GC</TextBlock>
+                </Border>
+                <TextBlock x:Name="lblMemory" VerticalAlignment="Center"></TextBlock>
+            </DockPanel>
         </DockPanel>
     </Grid>
 </Window>
