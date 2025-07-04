@@ -3,6 +3,13 @@ using static StarFox.Interop.GFX.CAD;
 
 namespace StarFox.Interop.GFX.DAT
 {
+	public enum CgxLoadingStrategy : byte
+	{
+		Standard,
+		GuessDepth,
+		AskDepth
+	}
+
 	/// <summary>
 	/// An interface for *.CGX files
 	/// </summary>
@@ -15,12 +22,15 @@ namespace StarFox.Interop.GFX.DAT
 		/// </summary>
 		/// <param name="dat">The file data to use as a source</param>
 		/// <param name="originalFilePath"></param>
-		internal FXCGXFile(byte[] dat, string originalFilePath) : base(dat)
+		internal FXCGXFile(byte[] dat, string originalFilePath, CgxLoadingStrategy strategy) : base(dat)
 		{
 			OriginalFilePath = originalFilePath;
+			LoadingStrategy = strategy;
 		}
 
 		public string OriginalFilePath { get; }
+
+		public CgxLoadingStrategy LoadingStrategy { get; }
 
 		public override string ToString()
 		{

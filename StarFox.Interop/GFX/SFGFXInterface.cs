@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
+using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.GFX
 {
@@ -71,6 +72,15 @@ namespace StarFox.Interop.GFX
 			}
 		}
 
+		private static async Task<FXCGXFile> ImportCGX(string FileName, CAD.BitDepthFormats BitDepth, bool wasGuessing)
+		{
+			using (var fs = File.OpenRead(FileName)) {
+				var baseData = CAD.CGX.GetRAWCGXDataArray(fs, BitDepth);
+				return baseData == null ? null : new FXCGXFile(baseData, FileName,
+				 wasGuessing ? CgxLoadingStrategy.GuessDepth : CgxLoadingStrategy.AskDepth);
+			}
+		}
+
 		/// <summary>
 		/// Opens a raw *.CGX file -- as in has no metadata.
 		/// </summary>
@@ -79,40 +89,27 @@ namespace StarFox.Interop.GFX
 		/// <returns></returns>
 		public static async Task<FXCGXFile> ImportCGX(string FileName, CAD.BitDepthFormats BitDepth)
 		{
-			using (var fs = File.OpenRead(FileName)) {
-				var baseData = CAD.CGX.GetRAWCGXDataArray(fs, BitDepth);
-				return baseData == null ? null : new FXCGXFile(baseData, FileName);
-			}
-		}
-
-		private static bool NotNulByte(byte value)
-		{
-			return value != 0;
-		}
-
-		private static byte[] TrimEnd(/*this*/ byte[] array)
-		{
-			var lastNonNul = Array.FindLastIndex(array, NotNulByte);
-			if (lastNonNul >= 0) {
-				Array.Resize(ref array, lastNonNul + 1);
-			}
-			return array;
+			return await ImportCGX(FileName, BitDepth, false);
 		}
 
 		/// <summary>
 		/// Imports a truncated CGX, guessing its bit depth.
 		/// </summary>
 		/// <param name="filePath"></param>
+		/// <param name="high">Minimum size for which a file is considered 4 bpp</param>
+		/// <param name="low">Maximum size for which a file is considered 2 bpp</param>
 		/// <param name="rawCgx"></param>
 		/// <returns></returns>
 		/// <remarks>
 		/// This method supports TryImportFoxCGX and should not be made public.
 		/// </remarks>
-		private static async Task<FXCGXFile> ImportTruncatedCGX(string filePath, byte[] rawCgx)
+		private static async Task<FXCGXFile> ImportTruncatedCGX(string filePath, int high, int low, byte[] rawCgx)
 		{
 			FXCGXFile fxGFX = null;
-			if (rawCgx.Length == 6144) {
-				fxGFX = await SFGFXInterface.ImportCGX(filePath, CAD.BitDepthFormats.BPP_4);
+			if (rawCgx.Length > high) {
+				fxGFX = await ImportCGX(filePath, CAD.BitDepthFormats.BPP_4, true);
+			} else if (rawCgx.Length < low) {
+				fxGFX = await ImportCGX(filePath, CAD.BitDepthFormats.BPP_2, true);
 			}
 			return fxGFX;
 		}
@@ -121,7 +118,7 @@ namespace StarFox.Interop.GFX
 		/// Tries to import a truncated CGX files found in StarFox source code, guessing
 		/// its bit depth from its size.
 		/// </summary>
-		/// <param name="fileMeta">Full path to the CGX file</param>
+		/// <param name="filePath">Full path to the CGX file</param>
 		/// <returns></returns>
 		public static async Task<FXCGXFile> TryImportFoxCGX(string filePath)
 		{
@@ -131,12 +128,19 @@ namespace StarFox.Interop.GFX
 #else
 			var bytarCgxRaw = await File.ReadAllBytesAsync(filePath);
 #endif
-			fxGFX = await ImportTruncatedCGX(filePath, bytarCgxRaw);
+			fxGFX = await ImportTruncatedCGX(filePath, 4096, 1056, bytarCgxRaw);
 
 			// Even truncated by file format standard, some files have trailing NUL bytes
 			if (fxGFX == null) {
-				bytarCgxRaw = TrimEnd(bytarCgxRaw);
-				fxGFX = await ImportTruncatedCGX(filePath, bytarCgxRaw);
+				fxGFX = await ImportTruncatedCGX(filePath, 2036, 576, Utility.TrimEnd(bytarCgxRaw));
+			}
+			// This is getting weird, smaller remaining files have higher color depth
+			if (fxGFX == null) {
+				if (bytarCgxRaw.Length < 2048) {
+					fxGFX = await ImportCGX(filePath, CAD.BitDepthFormats.BPP_4, true);
+				} else if (bytarCgxRaw.Length > 2048) {
+					fxGFX = await ImportCGX(filePath, CAD.BitDepthFormats.BPP_2, true);
+				} // else length == 2048 and we cannot guess, because some are 2 bpp and others are 4 bpp.
 			}
 
 			return fxGFX;
@@ -151,7 +155,7 @@ namespace StarFox.Interop.GFX
 		{
 			using (var fs = File.OpenRead(FileName)) {
 				var baseData = CAD.CGX.GetROMCGXDataArray(fs);
-				return baseData == null ? null : new FXCGXFile(baseData, FileName);
+				return baseData == null ? null : new FXCGXFile(baseData, FileName, CgxLoadingStrategy.Standard);
 			}
 		}
 
@@ -208,14 +212,12 @@ namespace StarFox.Interop.GFX
 			{
 				Bitmap newBmp = new Bitmap(ViewRect.Width, ViewRect.Height);
 				/*
-				for(int x = ViewRect.X; x < Math.Min(ViewRect.Width + ViewRect.X, Src.Width); x++)
-				{
-					for (int y = ViewRect.Y; y < Math.Min(ViewRect.Height + ViewRect.Y, Src.Height); y++)
-					{
+				for (int x = ViewRect.X; x < Math.Min(ViewRect.Width + ViewRect.X, Src.Width); x++) {
+					for (int y = ViewRect.Y; y < Math.Min(ViewRect.Height + ViewRect.Y, Src.Height); y++) {
 						var color = Src.GetPixel(x, y);
 						newBmp.SetPixel(x - ViewRect.X, y - ViewRect.Y, color);
 					}
-				}*/
+				}// */
 				using (Graphics grD = Graphics.FromImage(newBmp)) {
 					grD.DrawImage(Src, new Rectangle(0, 0, ViewRect.Width, ViewRect.Height), ViewRect, GraphicsUnit.Pixel);
 				}

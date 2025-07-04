@@ -113,6 +113,20 @@ namespace StarFox.Interop.MISC
 		{
 			return Enum.GetValues(typeof(T)).Cast<T>().ToArray();
 		}
+
+		private static bool NotNulByte(byte value)
+		{
+			return value != 0;
+		}
+
+		public static byte[] TrimEnd(/*this*/ byte[] array)
+		{
+			var lastNonNul = Array.FindLastIndex(array, NotNulByte);
+			if (lastNonNul >= 0) {
+				Array.Resize(ref array, lastNonNul + 1);
+			}
+			return array;
+		}
 		#endregion
 	}
 }
