@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using Microsoft.Win32;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.BSP;
@@ -236,9 +235,9 @@ namespace StarFoxMapVisualizer.Misc
             {
                 CreateSFPalette(colorPalPtr, out var sfPal, out _);
 #if NETFRAMEWORK || NETSTANDARD
-				File.WriteAllBytes(fileName, sfPal.ToPhotoshop());
+				File.WriteAllBytes(fileName, sfPal.GetPalette().ToPhotoshop());
 #else
-				await File.WriteAllBytesAsync(fileName, sfPal.ToPhotoshop());
+				await File.WriteAllBytesAsync(fileName, sfPal.GetPalette().ToPhotoshop());
 #endif
             }
             filesCreated.Add(fileName);
@@ -570,15 +569,8 @@ namespace StarFoxMapVisualizer.Misc
 
         internal static BSPIOWriteResult ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup Group, SFPalette Palette, out string FilePath, int Frame = 0)
         {
-            var saveDialog = new SaveFileDialog()
-            {
-                Title = "Save 3D Object File",
-                AddExtension = true,
-                Filter = BSPExporter.FILE_EXTENSION.ToUpper() + " Files|*" + BSPExporter.FILE_EXTENSION,
-                CheckPathExists = true,
-                FileName = currentShape.Header.Name,
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
-            };
+	        var saveDialog = FILEStandard.InitSaveFileDialog("Save 3D Object File", currentShape.Header.Name);
+	        saveDialog.Filter = BSPExporter.FILE_EXTENSION.ToUpper() + " Files|*" + BSPExporter.FILE_EXTENSION;
             FilePath = null;
             if (!saveDialog.ShowDialog() ?? true)
                 return BSPIOWriteResult.Cancelled;

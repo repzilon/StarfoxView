@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
 using StarFoxMapVisualizer.Misc;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -70,18 +69,9 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 						}
 					}
 				}
-				
-				var fileDialog = new SaveFileDialog()
-				{
-					AddExtension = true,
-					CreatePrompt = false,
-					CheckFileExists = false,
-					CheckPathExists = true,
-					InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName,
-					Title = "Export image",
-					FileName = (strImagePath != null ? Path.GetFileNameWithoutExtension(strImagePath) : "Untitled") + ".png",
-					OverwritePrompt = true
-				};
+
+				var fileDialog = FILEStandard.InitSaveFileDialog("Export image",
+					(strImagePath != null ? Path.GetFileNameWithoutExtension(strImagePath) : "Untitled") + ".png");
 				var filters = new FileDialogFilterBuilder(false);
 				filters.Add("Portable Network Graphics", "png");
 				filters.Add("Graphic Interchange Format", "gif");

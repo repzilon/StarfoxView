@@ -90,23 +90,6 @@ namespace StarFox.Interop.GFX
 			return bmp;
 		}
 
-		public byte[] ToPhotoshop()
-		{
-			if (Colors == null) return null;
-
-			var c = Colors.Length;
-			var bytarAct = new byte[checked(c * 3)];
-			var n = 0;
-			for (var i = 0; i < c; i++, n += 3) {
-				var color = Colors[i];
-				bytarAct[n] = color.R;
-				bytarAct[n + 1] = color.G;
-				bytarAct[n + 2] = color.B;
-			}
-
-			return bytarAct;
-		}
-
 		/// <summary>
 		/// Gets the palette, this is only compatible with 8BPP mode
 		/// </summary>

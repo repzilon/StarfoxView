@@ -470,5 +470,20 @@ namespace StarFoxMapVisualizer.Misc
 				return script;
 			return default;
 		}
+
+		internal static SaveFileDialog InitSaveFileDialog(string title, string defaultFileName)
+		{
+			return new SaveFileDialog()
+			{
+				AddExtension = false,
+				CreatePrompt = false,
+				CheckFileExists = false,
+				CheckPathExists = true,
+				InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName,
+				Title = title,
+				FileName = defaultFileName,
+				OverwritePrompt = true
+			};
+		}
 	}
 }

@@ -394,17 +394,8 @@ namespace StarFoxMapVisualizer.Controls2
             var sample = SelectedSample;
             if (sample == default) return;
             var freq = GetSampleRate();
-            var fileDialog = new SaveFileDialog()
-            { 
-	            AddExtension= false,
-                CreatePrompt = false,
-                CheckFileExists= false,
-                CheckPathExists = true,
-                InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName,
-                Title = $"Save {sample.Name} at {freq}Hz to",
-                FileName = (SelectedSample.Name ?? "Untitled") + ".wav",
-                OverwritePrompt = true
-			};
+            var fileDialog = FILEStandard.InitSaveFileDialog($"Save {sample.Name} at {freq}Hz to",
+	            (SelectedSample.Name ?? "Untitled") + ".wav");
             fileDialog.Filter = BuildSoundExportFilters(false);
 
 			if (fileDialog.ShowDialog() == true) {

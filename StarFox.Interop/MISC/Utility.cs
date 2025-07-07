@@ -1,10 +1,7 @@
-﻿//render activated? requires adding support for System.Drawing.Common which really isn't necessary at this moment
-//#define RENDER
+﻿//#define RENDER
 
 using System;
-#if RENDER
 using System.Drawing;
-#endif
 using System.Linq;
 
 // ************************************
@@ -54,6 +51,24 @@ namespace StarFox.Interop.MISC
 			}
 			return bytes;
 		}
+
+		public static byte[] ToPhotoshop(this Color[] Colors)
+		{
+			if (Colors == null) return null;
+
+			var c = Colors.Length;
+			var bytarAct = new byte[checked(c * 3)];
+			var n = 0;
+			for (var i = 0; i < c; i++, n += 3) {
+				var color = Colors[i];
+				bytarAct[n] = color.R;
+				bytarAct[n + 1] = color.G;
+				bytarAct[n + 2] = color.B;
+			}
+
+			return bytarAct;
+		}
+
 #if RENDER
 		//Get Rectangle for Cropping
 		public static Rectangle GetBoundingRect(Bitmap[] imgs)

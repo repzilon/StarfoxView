@@ -20,7 +20,7 @@
             <TextBlock Margin="10,0" x:Name="InformationBlock" VerticalAlignment="Center">
                 Colors: <Run Name="ColorsBlock">0</Run>
             </TextBlock>
-            <Button>Export</Button>
+            <Button Name="ExportButton" Click="ExportButton_Click">Export</Button>
             <Button Name="CopyButton" Click="CopyButton_Click" Width="Auto" Padding="10,0" Margin="10,0">Copy to Clipboard</Button>
             <Button Name="OK" Click="OK_Click" IsDefault="True">OK</Button>
         </StackPanel>
