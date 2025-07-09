@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -6,13 +7,14 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using StarFoxMapVisualizer.Misc;
+using Color = System.Windows.Media.Color;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
 {
 	/// <summary>
 	/// Interaction logic for CopyableImage.xaml
 	/// </summary>
-	public partial class CopyableImage : Image
+	public partial class CopyableImage
 	{
 		public CopyableImage()
 		{
@@ -47,8 +49,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
 		private void ExportItem_Click(object sender, RoutedEventArgs e)
 		{
-			var image = Source as BitmapImage;
-			if (image != null) {
+			if (Source is BitmapImage image) {
 				var ctlGFX = GetAncestor(this, 4) as GFXControl;
 				string strImagePath = null;
 				bool blnSaveFullPalette = false;
@@ -59,14 +60,11 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					ctlGFX = GetAncestor(this, 6) as GFXControl;
 					if (ctlGFX != null) { // GFXControl is an ancestor of the palette swatches 
 						var lvi = ctlGFX.PaletteSelection.SelectedItem as ListViewItem;
-						if ((lvi != null) && (lvi.Tag is PaletteTuple)) {
-							strImagePath = ((PaletteTuple)lvi.Tag).Name;
+						if (lvi?.Tag is PaletteTuple tuple) {
+							strImagePath = tuple.Name;
 						}
-					} else {
-						var flsImage = image.StreamSource as FileStream;
-						if (flsImage != null) {
-							strImagePath = flsImage.Name;
-						}
+					} else if (image.StreamSource is FileStream flsImage) {
+						strImagePath = flsImage.Name;
 					}
 				}
 
@@ -95,9 +93,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					if (blnSaveFullPalette) {
 						// Setting the palette to the image encoder does not work.
 						// Convert the image to indexed color, right before encoding it.
-						var lstColors = ctlGFX.SelectedPalette.GetPalette()
-							.Select(x => Color.FromArgb(x.A, x.R, x.G, x.B)).ToList();
-						frame = BitmapFrame.Create(new FormatConvertedBitmap(image,
+						var lstColors = ctlGFX.SelectedPalette.GetPalette().Select(ToWPFColor).ToList();
+						frame = BitmapFrame.Create(new FormatConvertedBitmap(new CroppedBitmap(image, image.FindImageRectangle(2)),
 							PixelFormats.Indexed8, new BitmapPalette(lstColors), 0));
 					} else {
 						frame = BitmapFrame.Create(image);
@@ -109,6 +106,11 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					}
 				}
 			}
+		}
+
+		private static Color ToWPFColor(System.Drawing.Color x)
+		{
+			return Color.FromArgb(x.A, x.R, x.G, x.B);
 		}
 	}
 }
