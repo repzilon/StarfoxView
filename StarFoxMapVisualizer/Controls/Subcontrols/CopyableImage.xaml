@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StarFoxMapVisualizer.Controls.Subcontrols"
-             mc:Ignorable="d" RenderOptions.BitmapScalingMode="NearestNeighbor">
+             mc:Ignorable="d" RenderOptions.BitmapScalingMode="NearestNeighbor" ContextMenuOpening="Image_ContextMenuOpening">
     <Image.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Copy as Image" Name="CopyItem" Click="CopyImage_Click"/>
             <MenuItem Header="Export as Image" Name="ExportItem" Click="ExportItem_Click"/>
+            <MenuItem Header="Export Tile Mapping to .sfscreen" Name="ExportTileMap" Click="ExportTileMap_OnClick"></MenuItem>
         </ContextMenu>
     </Image.ContextMenu>
 </Image>

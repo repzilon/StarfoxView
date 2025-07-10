@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using StarFox.Interop.GFX.DAT;
+using StarFox.Interop.MISC;
 using StarFoxMapVisualizer.Misc;
 using Color = System.Windows.Media.Color;
 
@@ -111,6 +112,44 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private static Color ToWPFColor(System.Drawing.Color x)
 		{
 			return Color.FromArgb(x.A, x.R, x.G, x.B);
+		}
+
+		private void ExportTileMap_OnClick(object sender, RoutedEventArgs e)
+		{
+			if (Source is BitmapImage) {
+				var ctlGFX = GetAncestor(this, 4) as GFXControl;
+				string strImagePath = null;
+				if (ctlGFX != null) {
+					// GFXControl is an ancestor of the image on canvas
+					strImagePath = ctlGFX.SelectedGraphic;
+				}
+
+				if (strImagePath != null) {
+					var fileDialog = FILEStandard.InitSaveFileDialog("Export tile mapping",
+						(strImagePath != null ? Path.GetFileNameWithoutExtension(strImagePath) : "Untitled") + ".sfscreen");
+					var filters = new FileDialogFilterBuilder(false);
+					filters.Add("SNES tile mapping in JSON", "sfscreen");
+					fileDialog.Filter = filters.ToString();
+					if (fileDialog.ShowDialog() == true) {
+						using (var fileStream = new FileStream(fileDialog.FileName, FileMode.Create)) {
+							JsonImportExport.Serialize(AppResources.OpenFiles[strImagePath] as FXSCRFile, fileStream);
+						}
+					}
+				}
+			}
+		}
+
+		private void Image_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+		{
+			FXSCRFile scr = null;
+			var ctlGFX = GetAncestor(this, 4) as GFXControl;
+			if (ctlGFX != null) { // GFXControl is an ancestor of the image on canvas
+				var strImagePath = ctlGFX.SelectedGraphic;
+				if (strImagePath != null && AppResources.OpenFiles.TryGetValue(strImagePath, out var imported)) {
+					scr = imported as FXSCRFile;
+				}
+			}
+			this.ExportTileMap.Visibility = (scr != null) ? Visibility.Visible : Visibility.Collapsed;
 		}
 	}
 }

@@ -30,15 +30,15 @@ namespace StarFox.Interop.GFX
 
         public class Extra
         {
-            public string magic;   //"NAK1989 S-CG-CAD"
-            public string ver;     //"VerX.XX "
-            public string date;    //"YYMMDD  " / "YYMMDD F"
+	        public string Magic { get; set; }   //"NAK1989 S-CG-CAD"
+	        public string Version { get; set; } //"VerX.XX "
+	        public string Date { get; set; }    //"YYMMDD  " / "YYMMDD F"
 
-            public Extra(string ext)
+	        public Extra(string ext)
             {
-                magic = ext.Substring(0, 0x10);
-                ver = ext.Substring(0x10, 8);
-                date = ext.Substring(0x18, 8);
+                Magic = ext.Substring(0, 0x10);
+                Version = ext.Substring(0x10, 8);
+                Date = ext.Substring(0x18, 8);
             }
         }
 
@@ -453,7 +453,7 @@ namespace StarFox.Interop.GFX
             protected byte unk1;
             protected byte unk2;
 
-            bool[][] clear; //Clear Code (4 screens of 32x32, false = invisible tile, true = visible tile)
+            protected bool[][] clear; //Clear Code (4 screens of 32x32, false = invisible tile, true = visible tile)
 
             public SCR(byte[] dat)
             {

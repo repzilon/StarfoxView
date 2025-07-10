@@ -8,6 +8,12 @@ using System.Text.Json;
 
 namespace StarFox.Interop.MISC
 {
+	/// <summary>
+	/// Methods to serialize and deserialize JSON, hopefully independent of the JSON library.
+	/// </summary>
+	/// <remarks>
+	/// System.Text.Json serializes public get-set properties, and none of the fields, public or not.
+	/// </remarks>
 	public static class JsonImportExport
 	{
 		public static string ToString<T>(T toSerialize)
