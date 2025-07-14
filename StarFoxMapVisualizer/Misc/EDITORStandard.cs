@@ -354,7 +354,17 @@ namespace StarFoxMapVisualizer.Misc
         internal static async Task ShowNotification(string Text, Action Callback, TimeSpan? Lifespan = default)
         {
             var notif = await Notification.CreateAsync(Text, Lifespan ?? TimeSpan.FromSeconds(2.5), Callback);
-            (Application.Current.MainWindow as MainWindow).PushNotification(notif);
+            (Application.Current.MainWindow as MainWindow)?.PushNotification(notif);
         }
-    }
+
+        internal static async Task ShowNotification(string Text)
+        {
+	        await ShowNotification(Text, Nop);
+        }
+
+        private static void Nop()
+        {
+	        // do nothing
+        }
+	}
 }

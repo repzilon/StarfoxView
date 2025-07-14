@@ -137,6 +137,8 @@
                     <MenuItem Header="Open Project Folder" Click="OpenProjectFolderItem_Click" />
                     <MenuItem Header="Close Project" Click="CloseProjectMenuItem_Click" />
                     <Separator/>
+                    <MenuItem Header="Convert .sfscreen file" Name="ConvertSfscreenItem" Click="ConvertSfscreenItem_OnClick" />
+                    <Separator/>
                     <MenuItem Header="Exit" Name="ExitItem" Click="ExitItem_Click" />
                 </MenuItem>
                 <MenuItem Header="View" Style="{StaticResource MenuItemBaseStyle}">

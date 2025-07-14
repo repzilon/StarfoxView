@@ -122,7 +122,7 @@ namespace StarFoxMapVisualizer.Misc
 
 				if (autoIncluded.Any()) {
 					await EDITORStandard.ShowNotification($"Auto-Include included these files to the project:\n" +
-								$" {string.Join(", ", autoIncluded)}", Nop);
+								$" {string.Join(", ", autoIncluded)}");
 				}
 				//** END AUTO INCLUDE
 			}
@@ -135,11 +135,6 @@ namespace StarFoxMapVisualizer.Misc
 					return false;
 			}
 			return true;
-		}
-
-		private static void Nop()
-		{
-			// do nothing
 		}
 
 		/// <summary>

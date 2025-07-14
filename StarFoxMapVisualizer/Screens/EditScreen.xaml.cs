@@ -873,5 +873,10 @@ namespace StarFoxMapVisualizer.Screens
 		{
 			OpenExternal.Folder(AppResources.ImportedProject.WorkspaceDirectory.FullName, true);
 		}
-	}
+
+		private void ConvertSfscreenItem_OnClick(object Sender, RoutedEventArgs E)
+		{
+			GFXStandard.ConvertFromSfscreen();
+		}
+    }
 }

@@ -232,5 +232,18 @@ namespace StarFox.Interop.GFX
 				return Clip(bmp, new Rectangle(Sprite.X, Sprite.Y, Sprite.Width, Sprite.Height));
 			}
 		}
+
+		/// <summary>
+		/// Converts a .sfscreen file (a JSON representation of a .SCR file) back to its native binary format.
+		/// </summary>
+		/// <param name="sfscreenFilePath">Path to .sfscreen file</param>
+		/// <param name="binaryFilePath">Path to the destination file</param>
+		public static void ConvertSfscreenToSCR(string sfscreenFilePath, string binaryFilePath)
+		{
+			var fxSCR = JsonImportExport.LoadTo<FXSCRFile>(sfscreenFilePath);
+			using (var fs = File.OpenWrite(binaryFilePath)) {
+				fxSCR.WriteTo(fs);
+			}
+		}
 	}
 }

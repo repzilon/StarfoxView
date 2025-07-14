@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.DAT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
@@ -257,5 +258,34 @@ namespace StarFoxMapVisualizer.Misc
             }
             else return (FXSCRFile)AppResources.OpenFiles[File.FullName];
         }
+
+        internal static async Task ConvertFromSfscreen()
+        {
+	        var ofd = new OpenFileDialog
+	        {
+		        Multiselect = false,
+		        CheckFileExists = true,
+		        CheckPathExists = true,
+		        Title = "Select file to convert",
+		        ValidateNames = true,
+		        InitialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName
+	        };
+	        var filter = new FileDialogFilterBuilder(false);
+	        filter.Add("Super Famicom screen JSON representation", ".sfscreen");
+	        filter.IncludeAllFiles = true;
+	        ofd.Filter = filter.ToString();
+	        if (ofd.ShowDialog() == true) {
+		        var sfd = FILEStandard.InitSaveFileDialog("Export as SCR to",
+			        Path.ChangeExtension(ofd.SafeFileName, ".SCR"));
+		        filter = new FileDialogFilterBuilder(false);
+		        filter.Add("SG-CAD Super Famicom/Super NES SCR format", ".SCR");
+		        sfd.Filter = filter.ToString();
+		        if (sfd.ShowDialog() == true) {
+			        SFGFXInterface.ConvertSfscreenToSCR(ofd.FileName, sfd.FileName);
+			        await EDITORStandard.ShowNotification(
+				        $"Converted {ofd.SafeFileName} to {sfd.SafeFileName} successfully.");
+		        }
+	        }
+		}
     }
 }

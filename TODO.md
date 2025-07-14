@@ -18,7 +18,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] Stop asking for bit depth of CGX files when it can be guessed by file contents
 - [ ] Rewrite export to .obj without the geometry4Sharp dependency
 - [ ] Replace RichTextBox-based assembly code display with AvalonEdit
-- [ ] Export to JSON and import JSON .scr files ==WIP==
+- [x] Export to JSON and import JSON .scr files
 
 ## Smaller tasks
 - [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json

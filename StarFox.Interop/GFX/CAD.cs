@@ -34,6 +34,11 @@ namespace StarFox.Interop.GFX
 	        public string Version { get; set; } //"VerX.XX "
 	        public string Date { get; set; }    //"YYMMDD  " / "YYMMDD F"
 
+	        /// <summary>
+            /// For deserialization only
+            /// </summary>
+	        public Extra() { }
+
 	        public Extra(string ext)
             {
                 Magic = ext.Substring(0, 0x10);
@@ -455,16 +460,28 @@ namespace StarFox.Interop.GFX
 
             protected bool[][] clear; //Clear Code (4 screens of 32x32, false = invisible tile, true = visible tile)
 
-            public SCR(byte[] dat)
+            /// <summary>
+            /// Mainly for deserialization
+            /// </summary>
+            protected SCR()
             {
-                cell = new byte[4][];
+	            cell = new byte[4][];
                 clear = new bool[4][];
-                for (int i = 0; i < 4; i++)
-                {
+            }
+
+            public SCR(byte[] dat) : this()
+            {
+                for (int i = 0; i < 4; i++) {
                     cell[i] = Utility.Subarray(dat, i * 0x800, 0x800);
                     byte[] tmp = new byte[0x80];
-                    for (int j = 0; j < 0x80; j++)
-                        tmp[j] = dat[0x2100 + ((i & 2) * 0x80) + ((i & 1) * 4) + (j % 4) + ((j / 4) * 8)];
+                    for (int j = 0; j < 0x80; j++) {
+	                    tmp[j] = dat[0x2100 + ((i & 2) * 0x80) + ((i & 1) * 4) + (j % 4) + ((j / 4) * 8)];
+#if DEBUG
+                        System.Diagnostics.Trace.WriteLine(String.Format(
+		                    "i={0}, j={1,3}; tmp[j] = dat[{2}]; tmp[j] = dat[0x{2:x}]; tmp[j] = {3}", i, j,
+		                    0x2100 + ((i & 2) * 0x80) + ((i & 1) * 4) + (j % 4) + ((j / 4) * 8), tmp[j]));
+#endif
+                    }
                     clear[i] = Utility.ToBitStreamReverse(tmp, 0x400);
                 }
                 ext = new Extra(System.Text.Encoding.ASCII.GetString(Utility.Subarray(dat, 0x2000, 0x20)));
@@ -580,7 +597,7 @@ namespace StarFox.Interop.GFX
             internal static byte[] GetRAWSCRDataArray(Stream file, byte scr_mode = 0)
             {
                 byte[] dat = new byte[0x2300];
-                int maxlen = 0x2000;
+                const int maxlen = 0x2000;
 
                 //Generate File
                 file.Read(dat, 0, Math.Min(maxlen, (int)file.Length));
