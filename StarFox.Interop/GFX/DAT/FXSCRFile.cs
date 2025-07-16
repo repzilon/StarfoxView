@@ -7,6 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using StarFox.Interop.MISC;
 using static StarFox.Interop.GFX.CAD;
+#if NET46
+using Newtonsoft.Json;
+#else
+using System.Text.Json.Serialization;
+#endif
 
 namespace StarFox.Interop.GFX.DAT
 {
@@ -18,10 +23,7 @@ namespace StarFox.Interop.GFX.DAT
 		/// <summary>
 		/// For deserialization only
 		/// </summary>
-		public FXSCRFile() : base()
-		{
-
-		}
+		public FXSCRFile() { }
 
 		/// <summary>
 		/// Creates a new <see cref="FXCGXFile"/> file with the given file data.
@@ -34,6 +36,7 @@ namespace StarFox.Interop.GFX.DAT
 			OriginalFilePath = originalFilePath;
 		}
 
+		[JsonIgnore]
 		public string OriginalFilePath { get; }
 
 		public bool ForMode7

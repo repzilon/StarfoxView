@@ -12,7 +12,7 @@ namespace StarFox.Interop.MISC
 	/// Methods to serialize and deserialize JSON, hopefully independent of the JSON library.
 	/// </summary>
 	/// <remarks>
-	/// System.Text.Json serializes public get-set properties, and none of the fields, public or not.
+	/// By default, System.Text.Json serializes public get-set properties, and none of the fields, public or not.
 	/// </remarks>
 	public static class JsonImportExport
 	{
