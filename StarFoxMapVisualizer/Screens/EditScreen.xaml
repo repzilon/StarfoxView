@@ -116,7 +116,7 @@
             </Setter>
         </Style>
     </Page.Resources>
-    
+
     <Grid ClipToBounds="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="250"/>

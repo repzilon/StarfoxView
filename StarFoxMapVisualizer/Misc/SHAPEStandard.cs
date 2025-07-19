@@ -245,7 +245,7 @@ namespace StarFoxMapVisualizer.Misc
         }
         /// <summary>
         /// This uses an SFOptimizer in the node that stores Shapes to map ShapeName to the File it appears in.
-        /// <para/>This will look up the shape by it's name as it appears in it's header.
+        /// <para/>This will look up the shape by its name as it appears in its header.
         /// </summary>
         /// <returns></returns>
         public static async Task<IEnumerable<BSPShape>> GetShapesByHeaderNameOrDefault(string HeaderName)
@@ -262,7 +262,7 @@ namespace StarFoxMapVisualizer.Misc
                 AppResources.OpenFiles.Add(path, file); // Cache it for later, if needed
             //FIND all shapes whose name matches the provided parameter
             var hits = file.Shapes.Where(x => x.Header.Name.ToLower() == HeaderName.ToLower());
-            //Find all shapes that don't point to another shape -- as in they're blank
+            //Find all shapes that don't point to another shape -- as in they are blank
             var hitsWithoutDataPointer = hits.Where(x => !x.Header.HasDataPointer);
             //If there are none, then pick the first one that does have a data pointer
             //and load the shape it points to

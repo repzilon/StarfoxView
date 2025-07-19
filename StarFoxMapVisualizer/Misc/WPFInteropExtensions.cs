@@ -8,7 +8,7 @@ namespace StarFoxMapVisualizer.Misc
     internal static class WPFInteropExtensions
     {
         /// <summary>
-        /// Takes a bitmap and converts it to an image that can be handled by WPF ImageBrush
+        /// Takes a GDI+ bitmap and converts it to an image that can be handled by WPF ImageBrush
         /// </summary>
         /// <param name="src">A bitmap image</param>
         /// <returns>The image as a BitmapImage for WPF</returns>

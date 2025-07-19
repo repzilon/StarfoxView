@@ -75,13 +75,13 @@ namespace StarFoxMapVisualizer.Controls
         public GFXControl()
         {
             InitializeComponent();
-            DragImage= new CopyableImage();
+            DragImage = new CopyableImage();
 
             GraphicDragView.Children.Add(DragImage);
             Loaded += OnLoad;
         }
 
-        private void OnLoad(object sender, RoutedEventArgs e)
+		private void OnLoad(object sender, RoutedEventArgs e)
         {
             ModalMissingCGXDialog.Visibility = Visibility.Collapsed;
             RefreshFiles();
@@ -89,7 +89,7 @@ namespace StarFoxMapVisualizer.Controls
 
         public async void RefreshFiles()
         {
-            TabItem GetTab(IImporterObject Object, Brush Background = default)
+            TabItem MakeTab(IImporterObject Object, Brush Background = default)
             {
                 if (!stateMap.TryGetValue(Object.OriginalFilePath, out var state))
                 {
@@ -132,7 +132,7 @@ namespace StarFoxMapVisualizer.Controls
                 var CGXFiles = AppResources.OpenFiles.Values.OfType<FXCGXFile>();
                 foreach (var cgx in CGXFiles)
                 {
-                    var item = GetTab(cgx);
+                    var item = MakeTab(cgx);
                     if (SelectedGraphic != null && cgx.OriginalFilePath == SelectedGraphic)
                         FileSelectorTabViewer.SelectedItem = item;
                 }
@@ -142,7 +142,7 @@ namespace StarFoxMapVisualizer.Controls
                 var SCRFiles = AppResources.OpenFiles.Values.OfType<FXSCRFile>();
                 foreach (var scr in SCRFiles)
                 {
-                    var item = GetTab(scr, Brushes.DarkRed);
+                    var item = MakeTab(scr, Brushes.DarkRed);
                     if (SelectedScreen != null && scr.OriginalFilePath == SelectedScreen)
                         FileSelectorTabViewer.SelectedItem = item;
                 }
