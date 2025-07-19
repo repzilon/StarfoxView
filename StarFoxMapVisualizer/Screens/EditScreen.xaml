@@ -69,7 +69,7 @@
                 <Setter.Value>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <Image Margin="0,0,10,0" Source="/Resources/Image/palette.png" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                            <Image Margin="0,0,10,0" Source="/Resources/Image/palette.png" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="25"/>
                             <TextBlock Text="{Binding}"/>
                         </StackPanel>
                     </DataTemplate>
