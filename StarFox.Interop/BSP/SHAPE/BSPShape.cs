@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using StarFox.Interop.GFX;
-using StarFox.Interop.MISC;
 
 namespace StarFox.Interop.BSP.SHAPE
 {
@@ -61,7 +59,6 @@ namespace StarFox.Interop.BSP.SHAPE
     /// <summary>
     /// Represents a reference to a <see cref="BSPPoint"/> in the same shape
     /// </summary>
-    [Serializable]
     public class BSPPointRef
     {
         /// <summary>
@@ -82,7 +79,6 @@ namespace StarFox.Interop.BSP.SHAPE
     /// <summary>
     /// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
     /// </summary>
-    [Serializable]
     public class BSPFace
     {
         public int Color { get; set; }
@@ -114,7 +110,6 @@ namespace StarFox.Interop.BSP.SHAPE
     /// <summary>
     /// Represents a frame of animation in a Starfox Shape.
     /// </summary>
-    [Serializable]
     public class BSPFrame
     {
         /// <summary>
@@ -175,7 +170,6 @@ namespace StarFox.Interop.BSP.SHAPE
     /// <summary>
     /// Represents a 3D Shape in Starfox
     /// </summary>
-    [Serializable]
     public class BSPShape
     {
         /// <summary>

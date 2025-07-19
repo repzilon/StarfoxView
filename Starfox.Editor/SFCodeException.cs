@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Starfox.Editor
 {
@@ -8,9 +9,7 @@ namespace Starfox.Editor
         public SFCodeException() { }
         public SFCodeException(string message) : base(message) { }
         public SFCodeException(string message, Exception inner) : base(message, inner) { }
-        protected SFCodeException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        protected SFCodeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 
     public class SFCodeOptimizerNotFoundException : SFCodeException
@@ -18,7 +17,6 @@ namespace Starfox.Editor
         public SFCodeOptimizerNotFoundException(SFOptimizerTypeSpecifiers OptimizerType) : base(
             $"The {OptimizerType} optimizer was not found in the Code Project.")
         {
-
         }
     }
 }

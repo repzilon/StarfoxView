@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Starfox.Editor.Settings;
 
 namespace Starfox.Editor
@@ -9,10 +8,10 @@ namespace Starfox.Editor
     /// A serializable <see cref="SFCodeProject"/> that can be saved to disk that saves
     /// Settings, Special Paths, etc. without runtime information like Open files and Includes
     /// </summary>
-    [Serializable] public class SFCodeProjectState
+    public class SFCodeProjectState
     {
         /// <summary>
-        /// Gets whether or not this project has a Shapes Directory set yet
+        /// Gets whether this project has a Shapes Directory set yet
         /// </summary>
         public bool ShapesDirectoryPathSet => ShapesDirectoryPath != default;
         /// <summary>

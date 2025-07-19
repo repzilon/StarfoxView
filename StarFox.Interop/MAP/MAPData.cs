@@ -14,7 +14,7 @@ namespace StarFox.Interop.MAP
 	/// </summary>
 	public class MAPData
 	{
-		[Serializable] public class MAPRegionContext
+		public class MAPRegionContext
 		{
 			/// <param name="labelName"> The name of the inline label for this region </param>
 			/// <param name="asmChunkIndex"> The index of chunk the Inline Label appears at </param>
@@ -102,7 +102,6 @@ namespace StarFox.Interop.MAP
 			return newMap;
 		}
 
-		[Serializable]
 		private class Intermediary
 		{
 			public Dictionary<int, int> EventsByDelay { get; set; } = new Dictionary<int, int>();

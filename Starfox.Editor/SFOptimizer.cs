@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using StarFox.Interop.MISC;
@@ -25,7 +24,6 @@ namespace Starfox.Editor
     /// <summary>
     /// The serializable data structure used to store the information contained in this optimizer
     /// </summary>
-    [Serializable]
     public class SFOptimizerDataStruct
     {
         public SFOptimizerDataStruct(SFOptimizerTypeSpecifiers typeSpecifier, string directoryPath,
