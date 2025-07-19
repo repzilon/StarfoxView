@@ -6,6 +6,7 @@ using System;
 using System.Drawing;
 #endif
 using System.IO;
+using System.Text;
 using StarFox.Interop.MISC;
 
 // ********************************
@@ -100,7 +101,7 @@ namespace StarFox.Interop.GFX
                 }
 
                 //Get Extra
-                ext = new Extra(System.Text.Encoding.ASCII.GetString(Utility.Subarray(dat, off_hdr, 0x20)));
+                ext = new Extra(Encoding.ASCII.GetString(Utility.Subarray(dat, off_hdr, 0x20)));
                 col_bank = dat[off_hdr + 0x21];
                 col_half = dat[off_hdr + 0x22];
                 col_cell = dat[off_hdr + 0x23];
@@ -266,9 +267,7 @@ namespace StarFox.Interop.GFX
 
                 //Generate File
                 file.Read(dat, 0, Math.Min(maxlen, (int)file.Length));
-                System.Text.Encoding.ASCII.GetBytes("NAK1989 S-CG-CAD").CopyTo(dat, maxlen);
-                System.Text.Encoding.ASCII.GetBytes("Ver0.00 ").CopyTo(dat, maxlen + 0x10);
-                System.Text.Encoding.ASCII.GetBytes("010101  ").CopyTo(dat, maxlen + 0x18);
+                Encoding.ASCII.GetBytes("NAK1989 S-CG-CADVer0.00 010101  ").CopyTo(dat, maxlen);
                 return dat;
             }
 
@@ -296,7 +295,7 @@ namespace StarFox.Interop.GFX
                 file.Read(cgx_t, 0, (int)file.Length);
 
                 //Check Footer Info
-                string footer_string = System.Text.Encoding.ASCII.GetString(Utility.Subarray(cgx_t, off_hdr, 0x10));
+                string footer_string = Encoding.ASCII.GetString(Utility.Subarray(cgx_t, off_hdr, 0x10));
                 if (!footer_string.Equals("NAK1989 S-CG-CAD"))
                     return null;
                 return cgx_t;
@@ -325,7 +324,7 @@ namespace StarFox.Interop.GFX
             public COL(byte[] dat1, byte[] dat2)
             {
                 col = Render.PaletteFromByteArray(dat1);
-                ext = new Extra(System.Text.Encoding.ASCII.GetString(Utility.Subarray(dat2, 0, 0x20)));
+                ext = new Extra(Encoding.ASCII.GetString(Utility.Subarray(dat2, 0, 0x20)));
                 unk = Utility.Subarray(dat2, 0x100, 0x100);
                 swap = false;
             }
@@ -421,7 +420,7 @@ namespace StarFox.Interop.GFX
                     file.Read(palftr, 0, 512);
 
                     //Check Footer Info
-                    string footer_string = System.Text.Encoding.ASCII.GetString(Utility.Subarray(palftr, 0, 0x10));
+                    string footer_string = Encoding.ASCII.GetString(Utility.Subarray(palftr, 0, 0x10));
                     if (!footer_string.Equals("NAK1989 S-CG-CAD"))
                         return null;
 
@@ -484,7 +483,7 @@ namespace StarFox.Interop.GFX
                     }
                     clear[i] = Utility.ToBitStreamReverse(tmp, 0x400);
                 }
-                ext = new Extra(System.Text.Encoding.ASCII.GetString(Utility.Subarray(dat, 0x2000, 0x20)));
+                ext = new Extra(Encoding.ASCII.GetString(Utility.Subarray(dat, 0x2000, 0x20)));
                 mode7 = dat[0x2041] != 0;
                 scr_mode = dat[0x2042];
                 chr_bank = dat[0x2043];
@@ -583,7 +582,7 @@ namespace StarFox.Interop.GFX
                 file.Read(scr_t, 0, (int)file.Length);
 
                 //Check Footer Info
-                string footer_string = System.Text.Encoding.ASCII.GetString(Utility.Subarray(scr_t, 0x2000, 0x10));
+                string footer_string = Encoding.ASCII.GetString(Utility.Subarray(scr_t, 0x2000, 0x10));
                 if (!footer_string.Equals("NAK1989 S-CG-CAD"))
                     return null;
                 return scr_t;
@@ -601,10 +600,8 @@ namespace StarFox.Interop.GFX
 
                 //Generate File
                 file.Read(dat, 0, Math.Min(maxlen, (int)file.Length));
-                System.Text.Encoding.ASCII.GetBytes("NAK1989 S-CG-CAD").CopyTo(dat, maxlen);
-                System.Text.Encoding.ASCII.GetBytes("Ver0.00 ").CopyTo(dat, maxlen + 0x10);
-                System.Text.Encoding.ASCII.GetBytes("010101  ").CopyTo(dat, maxlen + 0x18);
-                dat[0x2042] = scr_mode;
+                Encoding.ASCII.GetBytes("NAK1989 S-CG-CADVer0.00 010101  ").CopyTo(dat, maxlen);
+				dat[0x2042] = scr_mode;
                 Utility.Subarray(new byte[] { 0xFF }, 0, 0x200).CopyTo(dat, 0x2100);
 
                 return dat;
@@ -671,7 +668,7 @@ namespace StarFox.Interop.GFX
 
             public OBJ(byte[] dat)
             {
-                ext = new Extra(System.Text.Encoding.ASCII.GetString(Utility.Subarray(dat, 0x3000, 0x20)));
+                ext = new Extra(Encoding.ASCII.GetString(Utility.Subarray(dat, 0x3000, 0x20)));
                 unk0 = dat[0x3050];
                 unk1 = dat[0x3051];
                 unk2 = dat[0x3052];
@@ -800,7 +797,7 @@ namespace StarFox.Interop.GFX
                 file.Read(obj_t, 0, (int)file.Length);
 
                 //Check Footer Info
-                string footer_string = System.Text.Encoding.ASCII.GetString(Utility.Subarray(obj_t, 0x3000, 0x10));
+                string footer_string = Encoding.ASCII.GetString(Utility.Subarray(obj_t, 0x3000, 0x10));
                 if (!footer_string.Equals("NAK1989 S-CG-CAD"))
                     return null;
 

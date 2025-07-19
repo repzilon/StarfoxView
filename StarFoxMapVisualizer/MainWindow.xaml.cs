@@ -25,7 +25,7 @@ namespace StarFoxMapVisualizer
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Title = AppResources.GetTitleLabel;
-            await EDITORStandard.ShowNotification("Welcome to SFView!", delegate { }, TimeSpan.FromSeconds(5));
+            await EDITORStandard.ShowNotification("Welcome to SFView!");
             return;
         }
 

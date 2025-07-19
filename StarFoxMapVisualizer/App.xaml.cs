@@ -1,20 +1,22 @@
 ﻿using System.Windows;
+using System.Windows.Threading;
+using StarFoxMapVisualizer.Dialogs;
 
 namespace StarFoxMapVisualizer
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-        //ERROR HANDLER ONLY AVAILABLE IN RELEASE BUILD
-#if RELEASE
+	/// <summary>
+	/// Interaction logic for App.xaml
+	/// </summary>
+	public partial class App : Application
+	{
+		//ERROR HANDLER ONLY AVAILABLE IN RELEASE BUILD
+#if !DEBUG
         public App()
         {
             DispatcherUnhandledException += RootError;
         }
 
-        private void RootError(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void RootError(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             CrashWindow window = new CrashWindow(e.Exception)
             {
@@ -28,6 +30,6 @@ namespace StarFoxMapVisualizer
             //IGNORE
             e.Handled = true;
         }
-        #endif
-    }
+#endif
+	}
 }

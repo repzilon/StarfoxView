@@ -258,10 +258,11 @@ namespace StarFoxMapVisualizer.Misc
             var path = Path.Combine(Path.GetDirectoryName(shapeOptim.FilePath), FileName);
             //Open the file
             var file = await FILEStandard.OpenBSPFile(new FileInfo(path));
-            if (file != null && !AppResources.OpenFiles.ContainsKey(path))
-                AppResources.OpenFiles.Add(path, file); // Cache it for later, if needed
+            if (file != null)
+                AppResources.OpenFiles.TryAdd(path, file);
+            // Cache it for later, if needed
             //FIND all shapes whose name matches the provided parameter
-            var hits = file.Shapes.Where(x => x.Header.Name.ToLower() == HeaderName.ToLower());
+            var hits = file.Shapes.Where(x => string.Equals(x.Header.Name, HeaderName, StringComparison.CurrentCultureIgnoreCase));
             //Find all shapes that don't point to another shape -- as in they are blank
             var hitsWithoutDataPointer = hits.Where(x => !x.Header.HasDataPointer);
             //If there are none, then pick the first one that does have a data pointer
@@ -333,7 +334,7 @@ namespace StarFoxMapVisualizer.Misc
                     CreateSFPalette("id_0_c", out var palette, out var group);
                     return MakeBSPShapeMeshGeometry(Shape, in group, in palette, Frame, MaterialAnimationFrame, TexturesActivated);
                 }
-                else throw ex;
+                else throw;
             }
         }
 

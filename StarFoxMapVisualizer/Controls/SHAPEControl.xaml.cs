@@ -229,10 +229,7 @@ namespace StarFoxMapVisualizer.Controls
                 if (SelectedFrame >= currentShape.Frames.Count)
                     SelectedFrame = 0;
             }
-            Dispatcher.Invoke(delegate
-            {
-                Show();
-            });
+            Dispatcher.Invoke(Show);
         }
         /// <summary>
         /// Start animating this object -- for shapes with frames, this is used. This is also used for COLANIMs

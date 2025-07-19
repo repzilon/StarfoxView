@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
@@ -12,7 +13,8 @@ namespace StarFox.Interop.MISC
             Imports = Imports.DistinctBy(x => x.OriginalFilePath);
             return MatchMacro(Imports.SelectMany(x => x.Chunks.OfType<ASMMacro>()), SymbolName);
         }
-        public static ASMMacro MatchMacro(IEnumerable<ASMMacro> SymbolNameList, string SymbolName)
+
+        private static ASMMacro MatchMacro(IEnumerable<ASMMacro> SymbolNameList, string SymbolName)
         {
             var macroNames = SymbolNameList.Select(x => x.Name.ToLower());
             var block = SymbolName;
@@ -20,7 +22,7 @@ namespace StarFox.Interop.MISC
             if (macroNames.Contains(block.ToLower())) // macro found
             {
                 var macroName = block;
-                return macros.Where(x => x.Name.ToLower() == macroName.ToLower()).FirstOrDefault();
+                return macros.FirstOrDefault(x => string.Equals(x.Name, macroName, StringComparison.InvariantCultureIgnoreCase));
             }
             return null;
         }
