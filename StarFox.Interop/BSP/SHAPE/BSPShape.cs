@@ -10,6 +10,7 @@ namespace StarFox.Interop.BSP.SHAPE
     /// A point in 3D space found in an ASM BSP file.
     /// <para><code>pb X,Y,Z</code></para>
     /// </summary>
+    [Obsolete("X, Y, Z triplet is common, but Index cannot be removed.")]
     public class BSPPoint
     {
         public int Index { get; set; }
@@ -35,10 +36,12 @@ namespace StarFox.Interop.BSP.SHAPE
             return $"X: {X,3}, Y: {Y,3}, Z: {Z,3}";
         }
     }
-    /// <summary>
-    /// A rudimentary Vector 3 class that only deals in integers (SF Source Code Compatibility)
-    /// </summary>
-    public struct BSPVec3
+
+	/// <summary>
+	/// A rudimentary Vector 3 class that only deals in integers (SF Source Code Compatibility)
+	/// </summary>
+	[Obsolete("X, Y, Z triplet is common.")]
+	public struct BSPVec3
     {
         /// <summary>
         /// X component
@@ -57,10 +60,12 @@ namespace StarFox.Interop.BSP.SHAPE
             return $"BSPVec3 - X: {X}, Y: {Y}, Z: {Z}";
         }
     }
-    /// <summary>
-    /// Represents a reference to a <see cref="BSPPoint"/> in the same shape
-    /// </summary>
-    public class BSPPointRef
+
+	/// <summary>
+	/// Represents a reference to a <see cref="BSPPoint"/> in the same shape
+	/// </summary>
+	[Obsolete("Redundant. Arrays of it should be replaced with Dictionary<int,int> with Position as key.")]
+	public class BSPPointRef
     {
         /// <summary>
         /// The position this reference falls in the Face macro invocation callsite.
@@ -77,10 +82,12 @@ namespace StarFox.Interop.BSP.SHAPE
             return $"BSPPointReference - LinePosition: {Position}, Point: {PointIndex}";
         }
     }
-    /// <summary>
-    /// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
-    /// </summary>
-    public class BSPFace
+
+	/// <summary>
+	/// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
+	/// </summary>
+	// TODO : Could we merge Index and Normal to use BSPPoint instead?
+	public class BSPFace
     {
         public int Color { get; set; }
         public int Index { get; set; }
@@ -207,7 +214,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <summary>
         /// True if this model has BSP Entries added to it's <see cref="BSPEntries"/> collection.
         /// </summary>
-        public bool HasBSPProperties => BSPEntries.Count > 0;
+        private bool HasBSPProperties => BSPEntries.Count > 0;
         /// <summary>
         /// In BSP-Enabled geometry, this is the BSP table.
         /// </summary>
