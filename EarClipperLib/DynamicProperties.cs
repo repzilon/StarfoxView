@@ -10,8 +10,8 @@ namespace EarClipperLib
 
     internal class DynamicProperties
     {
-        private Dictionary<PropertyConstants, object> _properties = new Dictionary<PropertyConstants, object>();
-        public int Count { get { return _properties.Count; } }
+        private readonly Dictionary<PropertyConstants, object> _properties = new Dictionary<PropertyConstants, object>();
+        public int Count => _properties.Count;
 
         internal void AddProperty(PropertyConstants key, object value)
         {
