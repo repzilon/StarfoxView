@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "geometry4Sharp_netstandard"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CgxDepth", "CgxDepth\CgxDepth.csproj", "{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.SolverFoundation", "..\MicrosoftSolverFoundationReloaded\src\Microsoft.SolverFoundation\Microsoft.SolverFoundation.csproj", "{BD7A44E7-6745-8DAD-8C93-5B2AA4BDBE9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7A44E7-6745-8DAD-8C93-5B2AA4BDBE9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7A44E7-6745-8DAD-8C93-5B2AA4BDBE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7A44E7-6745-8DAD-8C93-5B2AA4BDBE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7A44E7-6745-8DAD-8C93-5B2AA4BDBE9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
