@@ -26,6 +26,6 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MicrosoftSolverFoundationReloaded\src\Microsoft.SolverFoundation\Microsoft.SolverFoundation.csproj" />
+    <ProjectReference Include="..\..\MicrosoftSolverFoundationReloaded\src\Microsoft.SolverFoundation\Microsoft.SolverFoundation.EarSlim.csproj" />
   </ItemGroup>
 </Project>
