@@ -17,11 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarFox.Interop.Audio", "St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF.UI.Extensions", "WPF.UI.Extensions\WPF.UI.Extensions.csproj", "{90DE3893-69EE-4B05-9750-2DE56F43B1D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "geometry4Sharp_netstandard", "..\geometry4Sharp\geometry4Sharp_netstandard.csproj", "{A2763F22-C1D9-4199-B173-26BB71FB13D4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CgxDepth", "CgxDepth\CgxDepth.csproj", "{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.SolverFoundation.EarSlim", "..\MicrosoftSolverFoundationReloaded\src\Microsoft.SolverFoundation\Microsoft.SolverFoundation.EarSlim.csproj", "{A34056AA-AC39-F9CD-A73D-817689B72CE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "geometry4Sharp_netstandard_mesh", "..\geometry4Sharp\geometry4Sharp_netstandard_mesh.csproj", "{8058DC1B-7E7B-100F-5AB4-A260C5BCB64E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +57,6 @@ Global
 		{90DE3893-69EE-4B05-9750-2DE56F43B1D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90DE3893-69EE-4B05-9750-2DE56F43B1D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90DE3893-69EE-4B05-9750-2DE56F43B1D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2763F22-C1D9-4199-B173-26BB71FB13D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2763F22-C1D9-4199-B173-26BB71FB13D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2763F22-C1D9-4199-B173-26BB71FB13D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2763F22-C1D9-4199-B173-26BB71FB13D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4FB6F46-0674-49A6-BF8C-7835D45C2BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,6 +65,10 @@ Global
 		{A34056AA-AC39-F9CD-A73D-817689B72CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A34056AA-AC39-F9CD-A73D-817689B72CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A34056AA-AC39-F9CD-A73D-817689B72CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8058DC1B-7E7B-100F-5AB4-A260C5BCB64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8058DC1B-7E7B-100F-5AB4-A260C5BCB64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8058DC1B-7E7B-100F-5AB4-A260C5BCB64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8058DC1B-7E7B-100F-5AB4-A260C5BCB64E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
