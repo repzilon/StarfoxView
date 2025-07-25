@@ -220,7 +220,7 @@ namespace StarFoxMapVisualizer.Misc
 			}
 
 			var filesCreated = new List<string>();
-			var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}.{fileExtension}");
+			var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}{fileExtension}");
 			var directory = Path.GetDirectoryName(fileName);
 			if (!Directory.Exists(directory)) {
 				Directory.CreateDirectory(directory);
