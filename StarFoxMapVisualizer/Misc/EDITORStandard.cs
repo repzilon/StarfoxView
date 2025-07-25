@@ -171,20 +171,20 @@ namespace StarFoxMapVisualizer.Misc
 
 			FILEStandard.ReadyImporters();  //GET IMPORTS SET
 			foreach (var file in FilesSelected.Select(x => new FileInfo(x))) {	// ITERATE OVER DIR FILES
-				try {
-					var bspFile = await FILEStandard.OpenBSPFile(file); // IMPORT THE BSP
-					foreach (var shape in bspFile.Shapes) {	// FIND ALL SHAPES
+				var bspFile = await FILEStandard.OpenBSPFile(file); // IMPORT THE BSP
+				foreach (var shape in bspFile.Shapes) { // FIND ALL SHAPES
+					try {
 						var files = await SHAPEStandard.ExportShape(shape, kFormat); // USE STANDARD EXPORT FUN
 						var c = files.Count;
 						for (var i = 0; i < c; i++) {
-							exportedFiles.AppendLine(files[i]);	// EXPORTED FILES
+							exportedFiles.AppendLine(files[i]); // EXPORTED FILES
 						}
 						if (c > 0) {
-							exportedBSPs.AppendLine(files[0]);	// BSP ONLY
+							exportedBSPs.AppendLine(files[0]);  // BSP ONLY
 						}
+					} catch (Exception ex) {
+						errorBuilder.AppendLine($"The shape {shape.Header.Name} in file {file.FullName} could not be exported.\n***\n{ex}\n***"); // ERROR INFO
 					}
-				} catch (Exception ex) {
-					errorBuilder.AppendLine($"The file: {file.FullName} could not be exported.\n***\n{ex}\n***"); // ERROR INFO
 				}
 			}
 			//CREATE THE MANIFEST FILE

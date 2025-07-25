@@ -195,7 +195,7 @@ namespace StarFoxMapVisualizer.Misc
 				RenderCache.Clear();
 			RenderCachePalette = PaletteName;
 			if (RenderCache.TryGetValue(Sprite, out var render)) return render;
-			string defAsmName = "DEFSPR.ASM";
+			const string defAsmName = "DEFSPR.ASM";
 			if (PaletteName == null) PaletteName = DefaultMSpritePalette;
 			var rendering = await BaseRenderMSprite(PaletteName, defAsmName);
 			//Try to render the sprite
@@ -207,26 +207,28 @@ namespace StarFoxMapVisualizer.Misc
 		}
 
 		/// <summary>
-		/// Will export the given shape to the <see cref="DefaultShapeExtractionDirectory"/> set before invokation
+		/// Will export the given shape to the <see cref="DefaultShapeExtractionDirectory"/> set before invocation
 		/// <para>Returns: Any files created using this function, such as a palette or *.sfshape</para>
 		/// </summary>
-		/// <param name="Shape">The shape to export</param>
-		/// <param name="fileExtension">Export format: ,sfshape or .obj</param>
+		/// <param name="shape">The shape to export</param>
+		/// <param name="fileExtension">Export format: .sfshape or .obj. Warning: case-sensitive</param>
 		/// <returns></returns>
-		internal static async Task<IReadOnlyList<string>> ExportShape(BSPShape Shape, string fileExtension)
+		internal static async Task<IReadOnlyList<string>> ExportShape(BSPShape shape, string fileExtension)
 		{
 			if ((fileExtension != ".sfshape") && (fileExtension != BSPExporter.FILE_EXTENSION)) {
 				throw new ArgumentOutOfRangeException(nameof(fileExtension), "Supported export formats are .sfshape and .obj");
 			}
 
 			var filesCreated = new List<string>();
-			var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{Shape.Header.Name}{fileExtension}");
+			var header = shape.Header;
+			var strAsmTitle = Path.GetFileNameWithoutExtension(header.Base.OriginalFileName);
+			var fileName = Path.Combine(DefaultShapeExtractionDirectory, $"{strAsmTitle}__{header.Name}{fileExtension}");
 			var directory = Path.GetDirectoryName(fileName);
 			if (!Directory.Exists(directory)) {
 				Directory.CreateDirectory(directory);
 			}
 
-			var colorPalPtr = Shape.Header.ColorPalettePtr;
+			var colorPalPtr = header.ColorPalettePtr;
 			var strPaletteFile = Path.Combine(DefaultShapeExtractionDirectory, $"{colorPalPtr}.act");
 			SFPalette sfPal = null;
 			COLGroup group = null;
@@ -235,11 +237,11 @@ namespace StarFoxMapVisualizer.Misc
 			}
 
 			if (fileExtension == BSPExporter.FILE_EXTENSION) {
-				BSPExporter.ExportShape(fileName, Shape, group, sfPal, 0,
+				BSPExporter.ExportShape(fileName, shape, group, sfPal, 0,
 				 ProjectColorTable, GetPaltByFileName("BLUE.COL"), BSPExportOptions.Default);
 			} else {
 				using (var modelFile = File.Create(fileName)) {
-					JsonImportExport.Serialize(Shape, modelFile);
+					JsonImportExport.Serialize(shape, modelFile);
 				}
 			}
 			filesCreated.Add(fileName);
