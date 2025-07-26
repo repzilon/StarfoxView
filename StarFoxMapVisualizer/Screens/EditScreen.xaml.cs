@@ -740,9 +740,11 @@ namespace StarFoxMapVisualizer.Screens
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ExportAll3DButton_Click(object sender, RoutedEventArgs e) => await EDITORStandard.Editor_ExportAll3DShapes();
+        private async void ExportAll3DButton_Click(object sender, RoutedEventArgs e) => await EDITORStandard.Editor_ExportAll3DShapes(".sfshape");
 
-        private async Task SFOptimRefreshBase(SFOptimizerTypeSpecifiers Type, string Noun)
+        private async void ExportAll3DObjButton_Click(object sender, RoutedEventArgs e) => await EDITORStandard.Editor_ExportAll3DShapes(".obj");
+
+		private async Task SFOptimRefreshBase(SFOptimizerTypeSpecifiers Type, string Noun)
         {
             _ = await EDITORStandard.Editor_RefreshMap(Type);
             UpdateInterface(true); // files updated!

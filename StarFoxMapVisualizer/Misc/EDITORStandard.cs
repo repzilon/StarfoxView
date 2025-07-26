@@ -149,13 +149,13 @@ namespace StarFoxMapVisualizer.Misc
 		/// <summary>
 		/// Prompts the user to export all 3D models and will export them
 		/// </summary>
-		public static async Task Editor_ExportAll3DShapes()
+		/// <param name="format">.sfshape or .obj (case-sensitive)</param>
+		public static async Task Editor_ExportAll3DShapes(string format)
 		{
-			const string kFormat = ".obj"; // .sfshape or .obj (case-sensitive)
 			// EXPORT 3D FUNCTION -- I MADE HISTORY HERE TODAY. 11:53PM 03/31/2023 JEREMY GLAZEBROOK.
 			// I MADE A GUI PROGRAM THAT EXTRACTED STARFOX SHAPES SUCCESSFULLY AND DUMPED THEM ALL IN READABLE FORMAT.
 			var r = MessageBox.Show($"Welcome to the Export 3D Assets Wizard!\n" +
-				$"This tool will do the following: Export all 3D assets from the selected directory to *{kFormat} files and palettes.\n" +
+				$"This tool will do the following: Export all 3D assets from the selected directory to *{format} files and palettes.\n" +
 				$"It will dump them to the exports/models directory.\n" +
 				$"You will get a manifest of all files dumped with their model names as well.\n" +
 				$"Happy hacking! - Love Bisquick <3", "Export 3D Assets Wizard", MessageBoxButton.OKCancel); // WELCOME MSG
@@ -174,7 +174,7 @@ namespace StarFoxMapVisualizer.Misc
 				var bspFile = await FILEStandard.OpenBSPFile(file); // IMPORT THE BSP
 				foreach (var shape in bspFile.Shapes) { // FIND ALL SHAPES
 					try {
-						var files = await SHAPEStandard.ExportShape(shape, kFormat); // USE STANDARD EXPORT FUN
+						var files = await SHAPEStandard.ExportShape(shape, format); // USE STANDARD EXPORT FUN
 						var c = files.Count;
 						for (var i = 0; i < c; i++) {
 							exportedFiles.AppendLine(files[i]); // EXPORTED FILES
