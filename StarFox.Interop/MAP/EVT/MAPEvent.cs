@@ -12,7 +12,29 @@ namespace StarFox.Interop.MAP.EVT
 	/// </summary>
 	public class MAPUnknownEvent : MAPEvent
 	{
-		public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+		[XmlIgnore] public ASMMacroInvokeParameter[] MacroParameters { get; protected set; }
+
+		public Dictionary<string, string> Parameters
+		{
+			get {
+				var c = this.MacroParameters.Length;
+				var dic = new Dictionary<string, string>(c);
+				for (int i = 0; i < c; i++) {
+					var mip = this.MacroParameters[i];
+					dic.Add(mip.ParameterName, mip.ParameterContent);
+				}
+				return dic;
+			}
+			set {
+				var miparValue = new ASMMacroInvokeParameter[value.Count];
+				int i = 0;
+				foreach (var kvp in value) {
+					miparValue[i] = new ASMMacroInvokeParameter(kvp.Value, kvp.Key);
+					i++;
+				}
+				this.MacroParameters = miparValue;
+			}
+		}
 
 		protected override string[] CompatibleMacros { get; } = { };
 
@@ -24,7 +46,7 @@ namespace StarFox.Interop.MAP.EVT
 		{
 			Callsite = Line;
 			EventName = Line.StructureAsMacroInvokeStructure.MacroReference.Name;
-			Parameters = new Dictionary<string, string>(Line.StructureAsMacroInvokeStructure.Parameters);
+			MacroParameters = Line.StructureAsMacroInvokeStructure.Parameters;
 		}
 	}
 
@@ -173,7 +195,7 @@ namespace StarFox.Interop.MAP.EVT
 		/// </summary>
 		/// <param name="content"></param>
 		/// <returns></returns>
-		protected static int TryParseOrDefault(string content)
+		protected int TryParseOrDefault(string content)
 		{
 			if (string.IsNullOrEmpty(content)) return 0;
 			if (int.TryParse(content, out int result)) { return result; }

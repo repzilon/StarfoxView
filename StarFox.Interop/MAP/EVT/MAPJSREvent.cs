@@ -26,7 +26,7 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            SubroutineName = structure.TryGetParameter(0).Value;
+            SubroutineName = structure.TryGetParameter(0)?.ParameterContent;
             CtrlOptCode = MAPCtrlVars.ctrlmapjsr;
             //END
         }

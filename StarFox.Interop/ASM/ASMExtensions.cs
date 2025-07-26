@@ -39,21 +39,29 @@ namespace StarFox.Interop.ASM
         /// </summary>
         /// <returns></returns>
         public static int TryParseOrDefault(this ASMConstant Const) => TryParseOrDefault(Const.Value);
-
+        /// <summary>
+        /// See: <see cref="TryParseOrDefault"/>
+        /// </summary>
+        /// <returns></returns>
+        public static int TryParseHexOrDefault(this ASMConstant Const) => TryParseHexOrDefault(Const.Value);
         /// <summary>
         /// Will attempt to parse the content of this parameter as an integer.
         /// <para>If the content contains a $, it is assumed to be hex.</para>
         /// </summary>
         /// <returns></returns>
-        public static int TryParseOrDefault(this KeyValuePair<string,string> Param) => TryParseOrDefault(Param.Value);
-
+        public static int TryParseOrDefault(this ASMMacroInvokeParameter Param) => TryParseOrDefault(Param.ParameterContent);
+        /// <summary>
+        /// See: <see cref="TryParseOrDefault"/>
+        /// </summary>
+        /// <returns></returns>
+        public static int TryParseHexOrDefault(this ASMMacroInvokeParameter Param) => TryParseHexOrDefault(Param.ParameterContent);
         /// <summary>
         /// Will check if the inputted string references a Constant. If it does, it will dereference the constant then return the value.
         /// </summary>
         /// <param name="Value"></param>
         /// <param name="IncludedConstants">All constants to check through</param>
         /// <returns></returns>
-        private static int TryParseOrDefault(in string Value, in IEnumerable<ASMConstant> IncludedConstants)
+        public static int TryParseOrDefault(in string Value, in IEnumerable<ASMConstant> IncludedConstants)
         {
             if (string.IsNullOrWhiteSpace(Value)) return 0;
             string fValue = Value;
@@ -165,7 +173,7 @@ namespace StarFox.Interop.ASM
         /// See: <see cref="TryParseOrDefault"/>
         /// </summary>
         /// <returns></returns>
-        private static int TryParseHexOrDefault(in string Value)
+        public static int TryParseHexOrDefault(in string Value)
         {
             var content = Value;
             if (string.IsNullOrEmpty(content)) return 0;

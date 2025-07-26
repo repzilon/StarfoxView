@@ -421,11 +421,11 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                         foreach (var param in structure.Parameters)
                         {
                             index++;
-                            yield return new HighlightDesc(param.Value,
+                            yield return new HighlightDesc(param.ParameterContent,
                                 FindResource("MacroInvokeParameterColor") as Brush ?? Brushes.Pink,
                                 null)
                             {
-                                TooltipText = $"Parameter {index}: {param.Key}"
+                                TooltipText = $"Parameter {index}: {param.ParameterName}"
                             };
                         }
                         yield break;
@@ -437,7 +437,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
                 if (macroNames.Contains(block.ToLower())) // macro found
                 {
                     var macroName = block;
-                    var sourceMacroData = macros.FirstOrDefault(x => x.Name == macroName);
+                    var sourceMacroData = macros.Where(x => x.Name == macroName).FirstOrDefault();
                     if (sourceMacroData != null)
                     {
                         if (!symbolMap.ContainsKey(sourceMacroData))

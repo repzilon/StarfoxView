@@ -156,7 +156,7 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
                     case "sprbank":
                         {
                             bankIndex = file.Banks.Count;
-                            string name = macro.TryGetParameter(0).Value ?? "";
+                            string name = macro.TryGetParameter(0)?.ParameterContent ?? "";
                             if (file.Banks.TryGetValue(name, out var bank))
                             {
                                 currentBank = bank;
@@ -175,7 +175,7 @@ namespace StarFox.Interop.GFX.DAT.MSPRITES
                     //sprite in the low bank of default size (4 chars -- 8 pixels wide)
                     case "defspr":
                         {
-                            string name = macro.TryGetParameter(0).Value ?? "";
+                            string name = macro.TryGetParameter(0)?.ParameterContent ?? "";
                             if (string.IsNullOrWhiteSpace(name)) break;
                             defspr(name, highBank, sizeChars, yInc);
                         }

@@ -37,13 +37,13 @@ namespace StarFox.Interop.BSP.SHAPE
             //found the macro needed (face)
             Result = new BSPFace()
             {
-                Color = Structure.TryGetParameter(0).TryParseOrDefault(),
-                Index = Structure.TryGetParameter(1).TryParseOrDefault(),
+                Color = Structure.TryGetParameter(0)?.TryParseOrDefault() ?? 0,
+                Index = Structure.TryGetParameter(1)?.TryParseOrDefault() ?? 0,
                 Normal = new BSPVec3()
                 {
-                    X = Structure.TryGetParameter(2).TryParseOrDefault(),
-                    Y = Structure.TryGetParameter(3).TryParseOrDefault(),
-                    Z = Structure.TryGetParameter(4).TryParseOrDefault(),
+                    X = Structure.TryGetParameter(2)?.TryParseOrDefault() ?? 0,
+                    Y = Structure.TryGetParameter(3)?.TryParseOrDefault() ?? 0,
+                    Z = Structure.TryGetParameter(4)?.TryParseOrDefault() ?? 0,
                 }
             };
             int startIndex = 5;

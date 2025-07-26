@@ -27,9 +27,9 @@ namespace StarFox.Interop.MSG
 			foreach (var macroLine in codePointToTileNumber.MacroInvokeLines) {
 				if (String.Equals(macroLine.MacroReference.Name, kCompatibleMacroName,
 						StringComparison.OrdinalIgnoreCase)) {
-					var c = macroLine.Parameters.Count;
+					var c = macroLine.Parameters.Length;
 					for (var i = 0; i < c; i++) {
-						var tile = macroLine.TryGetParameter(i).Value.Trim();
+						var tile = macroLine.TryGetParameter(i).ParameterContent.Trim();
 						byte number = tile.StartsWith('$') ?
 						 Byte.Parse(tile.Substring(1), NumberStyles.HexNumber, ciInvariant) :
 						 Byte.Parse(tile, NumberStyles.None, ciInvariant);

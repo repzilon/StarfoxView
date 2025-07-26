@@ -28,8 +28,8 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            LoopMacroName = structure.TryGetParameter(0).Value; // parameter 0 is Inline Label
-            LoopAmount = TryParseOrDefault(structure.TryGetParameter(1).Value); // parameter 1 is Amount of Loops
+            LoopMacroName = structure.TryGetParameter(0)?.ParameterContent; // parameter 0 is Inline Label
+            LoopAmount = TryParseOrDefault(structure.TryGetParameter(1)?.ParameterContent); // parameter 1 is Amount of Loops
             if (LoopAmount < 0) throw new InvalidDataException("MapLoop event has negative loops, which is undefined. \n " + ToString());
         }
     }

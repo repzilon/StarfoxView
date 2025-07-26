@@ -174,25 +174,25 @@ namespace StarFox.Interop.BSP.SHAPE
             //found the macro needed (shape header)
             ASMExtensions.BeginConstantsContext(Includes);
             //---- CONST CONTEXT START
-            var pptr = Structure.TryGetParameter(0).Value ?? ""; // name of the point ptr
-            var bank = Structure.TryGetParameter(1).TryParseOrDefault();
-            var fptr = Structure.TryGetParameter(2).Value ?? ""; // name of the face ptr
-            var type = Structure.TryGetParameter(3).TryParseOrDefault();
-            var zsort = Structure.TryGetParameter(4).TryParseOrDefault();
-            var height = Structure.TryGetParameter(5).TryParseOrDefault();
-            var view = Structure.TryGetParameter(6).TryParseOrDefault();
-            var shift = Structure.TryGetParameter(7).TryParseOrDefault();
-            var radius = Structure.TryGetParameter(8).TryParseOrDefault();
-            var xmax = Structure.TryGetParameter(9).TryParseOrDefault();
-            var ymax = Structure.TryGetParameter(0x0A).TryParseOrDefault();
-            var zmax = Structure.TryGetParameter(0x0B).TryParseOrDefault();
-            var size = Structure.TryGetParameter(0x0C).TryParseOrDefault();
-            var cptr = Structure.TryGetParameter(0x0D).Value ?? ""; // name of the color ptr
-            var shadow = Structure.TryGetParameter(0x0E).TryParseOrDefault();
-            var simple1 = Structure.TryGetParameter(0x0F).Value ?? "0";
-            var simple2 = Structure.TryGetParameter(0x10).Value ?? "0";
-            var simple3 = Structure.TryGetParameter(0x11).Value ?? "0";
-            var name = Structure.TryGetParameter(0x12).Value ?? ""; // name of the object
+            var pptr = Structure.TryGetParameter(0)?.ParameterContent ?? ""; // name of the point ptr
+            var bank = Structure.TryGetParameter(1)?.TryParseOrDefault() ?? 0;
+            var fptr = Structure.TryGetParameter(2)?.ParameterContent ?? ""; // name of the face ptr
+            var type = Structure.TryGetParameter(3)?.TryParseOrDefault() ?? 0;
+            var zsort = Structure.TryGetParameter(4)?.TryParseOrDefault() ?? 0;
+            var height = Structure.TryGetParameter(5)?.TryParseOrDefault() ?? 0;
+            var view = Structure.TryGetParameter(6)?.TryParseOrDefault() ?? 0;
+            var shift = Structure.TryGetParameter(7)?.TryParseOrDefault() ?? 0;
+            var radius = Structure.TryGetParameter(8)?.TryParseOrDefault() ?? 0;
+            var xmax = Structure.TryGetParameter(9)?.TryParseOrDefault() ?? 0;
+            var ymax = Structure.TryGetParameter(0x0A)?.TryParseOrDefault() ?? 0;
+            var zmax = Structure.TryGetParameter(0x0B)?.TryParseOrDefault() ?? 0;
+            var size = Structure.TryGetParameter(0x0C)?.TryParseOrDefault() ?? 0;
+            var cptr = Structure.TryGetParameter(0x0D)?.ParameterContent ?? ""; // name of the color ptr
+            var shadow = Structure.TryGetParameter(0x0E)?.TryParseOrDefault() ?? 0;
+            var simple1 = Structure.TryGetParameter(0x0F)?.ParameterContent ?? "0";
+            var simple2 = Structure.TryGetParameter(0x10)?.ParameterContent ?? "0";
+            var simple3 = Structure.TryGetParameter(0x11)?.ParameterContent ?? "0";
+            var name = Structure.TryGetParameter(0x12)?.ParameterContent ?? ""; // name of the object
             //---- END
             ASMExtensions.EndConstantsContext();
             header = new BSPShapeHeader(pptr, bank, fptr, type, zsort, height, view, shift,

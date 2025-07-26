@@ -43,10 +43,10 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            Background = structure.TryGetParameter(0).Value;
+            Background = structure.TryGetParameter(0)?.ParameterContent;
 
             //BEGIN 65c816 -> C#
-            var NARG = structure.Parameters.Count;
+            var NARG = structure.Parameters.Length;
             var TIMEARGS = new Dictionary<string, int>()
             {
                 { "c_SLOW", 1234 },
@@ -54,11 +54,16 @@ namespace StarFox.Interop.MAP.EVT
                 { "c_WITHTIME", 1234 },
                 { "c_TAKEYOURTIMEABOUTIT", 1234 }
             };
-            var param2 = structure.TryGetParameter(1).Value ?? "";
+            var param2 = structure.TryGetParameter(1)?.ParameterContent ?? "";
             if (((NARG - 2) & (NARG - 3)) == 0) {
                 if (TIMEARGS.TryGetValue($"c_{param2}", out var TimeValue) && (TimeValue - 1234) == 0) {
-	                CtrlOptCode = MAPCtrlVars.ctrlsetbgslow;
-	                TimingParameter1 = NARG - 3 == 0 ? structure.TryGetParameter(2).TryParseOrDefault() : 7;
+                    CtrlOptCode = MAPCtrlVars.ctrlsetbgslow;
+                    if (NARG - 3 == 0) {
+                        TimingParameter1 = structure.TryGetParameter(2)?.TryParseOrDefault() ?? 0;
+                    }
+                    else {
+                        TimingParameter1 = 7;
+                    }
                 }
                 else {
                     throw new Exception($"Illegal Parameter: {Background}");

@@ -21,7 +21,7 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            Delay = TryParseOrDefault(structure.TryGetParameter(0).Value);
+            Delay = TryParseOrDefault(structure.TryGetParameter(0)?.ParameterContent);
             //COMPATIBILITY WITH STARFOX**
             if (Delay != 0)
             {
