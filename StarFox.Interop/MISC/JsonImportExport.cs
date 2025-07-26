@@ -9,12 +9,13 @@ namespace StarFox.Interop.MISC
 	/// </summary>
 	/// <remarks>
 	/// By default, System.Text.Json serializes public get-set properties, and none of the fields, public or not.
+	/// Same for fastJSON.
 	/// </remarks>
 	public static class JsonImportExport
 	{
 		public static string ToString<T>(T toSerialize)
 		{
-			return JSON.ToJSON(toSerialize);
+			return JSON.ToNiceJSON(toSerialize);
 		}
 
 		public static T LoadTo<T>(string fromFilePath)
