@@ -12,7 +12,7 @@ Large plans are in order of priority, while everything else is in no particular 
 ## New features
 - [ ] Display a game text translation grid extracted from gametext.asm
 - [ ] Display a grid for the enemy specs shown during the game ending sequence (UltraStarFox source code needs rework to add other languages)
-- [x] Experiment with fastJSON (fast, stable, polymorphic, available on older frameworks, but handles dictionaries poorly)
+- [x] Switch to fastJSON (fast, stable, polymorphic, available on older frameworks, but handles dictionaries poorly)
 - [x] Interpret Japanese communication messages and its proprietary character set
 - [ ] Have the menu bar and context menu items do something ==WIP==
 - [x] Stop asking for bit depth of CGX files when it can be guessed by file contents
@@ -21,7 +21,6 @@ Large plans are in order of priority, while everything else is in no particular 
 - [x] Export to JSON and import JSON .scr files
 
 ## Smaller tasks
-- [ ] Test JSON serialization under .NET Framework 4.6 that uses Newtonsoft.Json
 - [ ] Replace the optimizers' message box wagon with a single dialog
 - [x] Handle English<->foreign language mapping with the newest message format
 - [x] Replace auto-import message box with the notification banner
