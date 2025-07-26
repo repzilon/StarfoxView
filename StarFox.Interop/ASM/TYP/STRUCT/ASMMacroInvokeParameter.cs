@@ -1,4 +1,6 @@
-﻿namespace StarFox.Interop.ASM.TYP.STRUCT
+﻿using System;
+
+namespace StarFox.Interop.ASM.TYP.STRUCT
 {
     /// <summary>
     /// Provides an interface for a parameter called in a MacroInvokeExpression

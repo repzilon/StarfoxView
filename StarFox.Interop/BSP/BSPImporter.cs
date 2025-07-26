@@ -264,7 +264,7 @@ namespace StarFox.Interop.BSP
         internal void PushBSP(int ID, string FacesPtr, string JumpPtr)
         {
             if (CurrentShape == null) throw new NullReferenceException("There is no current shape to add this to.");
-            CurrentShape.BSPEntries.Add(ID, new BSPEntry(ID, FacesPtr, JumpPtr));
+            CurrentShape.BSPEntries.Add(ID.ToString(), new BSPEntry(ID, FacesPtr, JumpPtr));
         }
     }
     /// <summary>
@@ -345,29 +345,22 @@ namespace StarFox.Interop.BSP
         {
             if (BSPFaceStructureConverter.TryParse(in line, out var Face))
             { // this line is a face call
-                if (Face.PointIndices.Length > 3)
+                if (Face.PointIndicesByLinePosition.Count > 3)
                 { // make into a TRI instead of an any sided shape
-                    var points = Face.PointIndices.Select(x => Context.CurrentShape.FindPoint(x.PointIndex)).ToArray();
+                    var points = Face.PointIndicesByLinePosition.Select(x => Context.CurrentShape.FindPoint(x.Value)).ToArray();
                     bool result = BSPTriangulate.EarClipTriangulationAlgorithm(points, Face.Normal, out var newVerts);
-                    if (!result)
-                    {
+                    if (!result) {
                         result = BSPTriangulate.EarClipTriangulationAlgorithm(points.Reverse(), Face.Normal, out newVerts);
-                        if (!result)
-                        {
-                            Context.ErrorList.AppendLine($"*****TRIANGULATION FAILURE! {Context.CurrentShape.Header.Name}*****");
-                        }
                     }
-                    BSPPointRef[] refs = new BSPPointRef[newVerts.Count];
-                    for (int i = 0; i < newVerts.Count; i++)
-                    {
-                        var point = newVerts[i];
-                        refs[i] = new BSPPointRef()
-                        {
-                            PointIndex = point.Index,
-                            Position = i
-                        };
+                    if (!result) {
+	                    Context.ErrorList.AppendLine($"*****TRIANGULATION FAILURE! {Context.CurrentShape.Header.Name}*****");
                     }
-                    Face.PointIndices = refs;
+
+					var dicPoints = new Dictionary<string, int>();
+                    for (var i = 0; i < newVerts.Count; i++) {
+                        dicPoints.Add(i.ToString(), newVerts[i].Index);
+                    }
+                    Face.PointIndicesByLinePosition = dicPoints;
                 }
                 Context.CurrentShape.Faces.Add(Face);
                 return true;

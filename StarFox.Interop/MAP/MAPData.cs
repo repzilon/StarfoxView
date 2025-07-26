@@ -52,7 +52,7 @@ namespace StarFox.Interop.MAP
 		/// The events that make up this level script
 		/// <para>This is also sometimes referred to as a ZDepth Table</para>
 		/// </summary>
-		public HashSet<MAPEvent> Events { get; set; } = new HashSet<MAPEvent>();
+		public HashSet<MAPEvent> Events { get; private set; } = new HashSet<MAPEvent>();
 		/// <summary>
 		/// Get only events that have attached shape data
 		/// </summary>
@@ -61,7 +61,7 @@ namespace StarFox.Interop.MAP
 		/// All the events of this MAPScript, in order, with accompanying DELAY calculated based on the previous events.
 		/// <para>KEY is the index of the event in the <see cref="Events"/> property.</para>
 		/// </summary>
-		public Dictionary<int, int> EventsByDelay { get; set; } = new Dictionary<int, int>();
+		public Dictionary<int, int> EventsByDelay { get; } = new Dictionary<int, int>();
 		/// <summary>
 		/// Maps have labels that can be used in loops to create repeated sections of levels without
 		/// copy/pasting, for example.
@@ -77,10 +77,7 @@ namespace StarFox.Interop.MAP
 		/// <returns></returns>
 		public static MAPData Combine(MAPData ParentMap, MAPData MergeChild)
 		{
-			MAPData newMap = new MAPData()
-			{
-
-			};
+			MAPData newMap = new MAPData();
 			if (ParentMap.Events.Count != ParentMap.EventsByDelay.Count)
 				throw new InvalidDataException("PARENT Events and EventsByDelay are not the same!!!");
 			if (MergeChild.Events.Count != MergeChild.EventsByDelay.Count)
@@ -102,9 +99,12 @@ namespace StarFox.Interop.MAP
 			return newMap;
 		}
 
+		/// <summary>
+		/// Data serialized in JSON to a .sfmap file
+		/// </summary>
 		private class Intermediary
 		{
-			public Dictionary<int, int> EventsByDelay { get; set; } = new Dictionary<int, int>();
+			public Dictionary<string, int> EventsByDelay { get; set; } = new Dictionary<string, int>();
 			public List<MAPEvent> MapEvents { get; set; } = new List<MAPEvent>();
 		}
 
@@ -114,11 +114,11 @@ namespace StarFox.Interop.MAP
 		/// <param name="destination"></param>
 		public void Serialize(Stream destination)
 		{
-			var inter = new Intermediary()
-			{
-				EventsByDelay = EventsByDelay,
-				MapEvents = Events.ToList()
-			};
+			var inter = new Intermediary();
+			inter.MapEvents = Events.ToList();
+			foreach (var kvp in EventsByDelay) {
+				inter.EventsByDelay.Add(kvp.Key.ToString(), kvp.Value);
+			}
 			JsonImportExport.Serialize(inter, destination);
 		}
 
@@ -126,11 +126,12 @@ namespace StarFox.Interop.MAP
 		{
 			var inter = await JsonImportExport.LoadTo<Intermediary>(Json);
 			if (inter == null) throw new Exception("Couldn't create the intermediary!");
-			return new MAPData()
-			{
-				EventsByDelay = inter.EventsByDelay,
-				Events = new HashSet<MAPEvent>(inter.MapEvents)
-			};
+			var map = new MAPData();
+			map.Events = new HashSet<MAPEvent>(inter.MapEvents);
+			foreach (var kvp in inter.EventsByDelay) {
+				map.EventsByDelay.Add(Int32.Parse(kvp.Key), kvp.Value);
+			}
+			return map;
 		}
 	}
 }

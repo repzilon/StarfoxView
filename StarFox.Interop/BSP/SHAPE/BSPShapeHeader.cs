@@ -1,9 +1,5 @@
 ﻿using System.Linq;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json.Serialization;
-#endif
+using System.Xml.Serialization;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 
@@ -14,7 +10,7 @@ namespace StarFox.Interop.BSP.SHAPE
         /// <summary>
         /// The line this has been parsed from
         /// </summary>
-        [JsonIgnore]
+        [XmlIgnore] // for fastJSON too
         public ASMLine Base { get; set; }
         /// <summary>
         /// The macro function used to create this shape header

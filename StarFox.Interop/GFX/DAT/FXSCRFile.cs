@@ -5,13 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using StarFox.Interop.MISC;
 using static StarFox.Interop.GFX.CAD;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json.Serialization;
-#endif
 
 namespace StarFox.Interop.GFX.DAT
 {
@@ -36,7 +32,7 @@ namespace StarFox.Interop.GFX.DAT
 			OriginalFilePath = originalFilePath;
 		}
 
-		[JsonIgnore]
+		[XmlIgnore]
 		public string OriginalFilePath { get; }
 
 		public bool ForMode7

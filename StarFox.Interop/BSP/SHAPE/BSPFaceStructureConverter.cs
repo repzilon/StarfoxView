@@ -48,15 +48,10 @@ namespace StarFox.Interop.BSP.SHAPE
             };
             int startIndex = 5;
             int faces = Structure.Parameters.Count() - startIndex;
-            var verts = Result.PointIndices = new BSPPointRef[faces];
             for(int i = 0; i < faces; i++)
             {
-                verts[i] = new BSPPointRef()
-                {
-                    PointIndex = Structure.TryGetParameter(i + startIndex)?.TryParseOrDefault() ?? 0,
-                    Position = i
-                };
-            }
+                Result.PointIndicesByLinePosition.Add(i.ToString(), Structure.TryGetParameter(i + startIndex).TryParseOrDefault());
+			}
             //END CONTEXT
             ASMExtensions.EndConstantsContext();
             return true;

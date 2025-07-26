@@ -1,10 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-#if NET46
-using Newtonsoft.Json;
-#else
-using System.Text.Json.Serialization;
-#endif
+using System.Xml.Serialization;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
 
@@ -15,25 +12,41 @@ namespace StarFox.Interop.MAP.EVT
 	/// </summary>
 	public class MAPUnknownEvent : MAPEvent
 	{
-		public ASMMacroInvokeParameter[] Parameters { get; protected set; }
-		protected override string[] CompatibleMacros { get; } =
-		{
+		[XmlIgnore] public ASMMacroInvokeParameter[] MacroParameters { get; protected set; }
 
-		};
-		public MAPUnknownEvent() : base()
+		public Dictionary<string, string> Parameters
 		{
-
+			get {
+				var c = this.MacroParameters.Length;
+				var dic = new Dictionary<string, string>(c);
+				for (int i = 0; i < c; i++) {
+					var mip = this.MacroParameters[i];
+					dic.Add(mip.ParameterName, mip.ParameterContent);
+				}
+				return dic;
+			}
+			set {
+				var miparValue = new ASMMacroInvokeParameter[value.Count];
+				int i = 0;
+				foreach (var kvp in value) {
+					miparValue[i] = new ASMMacroInvokeParameter(kvp.Value, kvp.Key);
+					i++;
+				}
+				this.MacroParameters = miparValue;
+			}
 		}
-		public MAPUnknownEvent(ASMLine Line) : base(Line)
-		{
 
-		}
+		protected override string[] CompatibleMacros { get; } = { };
+
+		public MAPUnknownEvent() { }
+
+		public MAPUnknownEvent(ASMLine Line) : base(Line) {}
 
 		protected override void Parse(ASMLine Line)
 		{
 			Callsite = Line;
 			EventName = Line.StructureAsMacroInvokeStructure.MacroReference.Name;
-			Parameters = Line.StructureAsMacroInvokeStructure.Parameters;
+			MacroParameters = Line.StructureAsMacroInvokeStructure.Parameters;
 		}
 	}
 
@@ -119,18 +132,6 @@ namespace StarFox.Interop.MAP.EVT
 	/// <summary>
 	/// A base-class for all events in a map script
 	/// </summary>
-#if NET48 || NETSTANDARD2_0 || NET6_0
-    [JsonDerivedType(typeof(MAPAlVarEvent), nameof(MAPAlVarEvent))]
-    [JsonDerivedType(typeof(MAPEndEvent), nameof(MAPEndEvent))]
-    [JsonDerivedType(typeof(MAPUnknownEvent), nameof(MAPUnknownEvent))]
-    [JsonDerivedType(typeof(MAPInitLevelEvent), nameof(MAPInitLevelEvent))]
-    [JsonDerivedType(typeof(MAPJSREvent), nameof(MAPJSREvent))]
-    [JsonDerivedType(typeof(MAPLoopEvent), nameof(MAPLoopEvent))]
-    [JsonDerivedType(typeof(MAPObjectEvent), nameof(MAPObjectEvent))]
-    [JsonDerivedType(typeof(MAPPathObjectEvent), nameof(MAPPathObjectEvent))]
-    [JsonDerivedType(typeof(MAPSetBG), nameof(MAPSetBG))]
-    [JsonDerivedType(typeof(MAPWaitEvent), nameof(MAPWaitEvent))]
-#endif
 	public abstract class MAPEvent
 	{
 		/// <summary>
@@ -139,7 +140,7 @@ namespace StarFox.Interop.MAP.EVT
 		public int LevelDelay { get; set; }
 		public MAPCtrlVars CtrlOptCode = MAPCtrlVars.None;
 		public virtual string EventName { get; set; }
-		[JsonIgnore]
+		[XmlIgnore]
 		public ASMLine Callsite { get; set; }
 		/// <summary>
 		/// Overriden in inheritors -- the list of macros that are compatible with this type of MAPEvent
