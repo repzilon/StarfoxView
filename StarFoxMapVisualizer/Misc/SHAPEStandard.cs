@@ -305,7 +305,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <returns></returns>
         public static bool PushLine(ref MeshGeometry3D geometry, BSPShape Shape, in BSPFace Face, int Frame)
         { // Pushes a line to the mesh geometry provided to this function
-            var ModelPoints = Face.PointIndices.Select(x => Shape.GetPointOrDefault(x.PointIndex, Frame)).Where(y => y != default).ToArray();
+            var ModelPoints = Face.PointIndicesByLinePosition.Select(x => Shape.GetPointOrDefault(x.Value, Frame)).Where(y => y != default).ToArray();
             if (ModelPoints.Length != 2) return false; // not a line!!
             return PushLine(ref geometry, new Point3D(ModelPoints[0].X, ModelPoints[0].Y, ModelPoints[0].Z),
                 new Point3D(ModelPoints[1].X, ModelPoints[1].Y, ModelPoints[1].Z));
@@ -521,7 +521,9 @@ namespace StarFoxMapVisualizer.Misc
                     Geometry = geom,
                 };
                 models.Add(model);
-                var remainder = face.PointIndices.Count() % 3; // used for debugging, check to make sure this is a TRI
+#if DEBUG
+                var remainder = face.PointIndicesByLinePosition.Count % 3; // used for debugging, check to make sure this is a TRI
+#endif
                 var vector3 = new Vector3D()
                 {
                     X = face.Normal.X,
@@ -530,16 +532,17 @@ namespace StarFoxMapVisualizer.Misc
                 }; // calculate the normal
                 vector3.Normalize(); // normalize the vector is important considering Starfox is all integral numbers
                 geom.Normals.Add(vector3);
-                if (face.PointIndices.Count() < 3) // STRAY! ( a line )
+                if (face.PointIndicesByLinePosition.Count < 3) // STRAY! ( a line )
                 {
                     PushLine(ref geom, shape, in face, Frame); // push a line to the geom
                     continue;
                 }
-                var orderedIndicies = face.PointIndices.OrderBy(x => x.Position).ToArray();
-                for (int i = 0; i < face.PointIndices.Count(); i++)
+
+                var orderedIndicies = face.PointIndicesByLinePosition.OrderBy(x => Int32.Parse(x.Key)).ToArray();
+                for (int i = 0; i < face.PointIndicesByLinePosition.Count; i++)
                 {
                     var pointRefd = orderedIndicies[i]; // get the PointReference
-                    var point = shape.GetPointOrDefault(pointRefd.PointIndex, Frame); // find the referenced point itself
+                    var point = shape.GetPointOrDefault(pointRefd.Value, Frame); // find the referenced point itself
                     if (point == null) break; // shit, we didn't find it.
                     geom.Positions.Add(new Point3D(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer
                     geom.TriangleIndices.Add(i); // add the index

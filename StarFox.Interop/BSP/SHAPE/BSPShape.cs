@@ -62,28 +62,6 @@ namespace StarFox.Interop.BSP.SHAPE
     }
 
 	/// <summary>
-	/// Represents a reference to a <see cref="BSPPoint"/> in the same shape
-	/// </summary>
-	[Obsolete("Redundant. Arrays of it should be replaced with Dictionary<int,int> with Position as key.")]
-	public class BSPPointRef
-    {
-        /// <summary>
-        /// The position this reference falls in the Face macro invocation callsite.
-        /// <para>Effectively, which vert this one is, in the order they were called in the source code.</para>
-        /// </summary>
-        public int Position { get; set; }
-        /// <summary>
-        /// The index of the referenced point. Must be defined in the same shape.
-        /// </summary>
-        public int PointIndex { get; set; }
-
-        public override string ToString()
-        {
-            return $"BSPPointReference - LinePosition: {Position}, Point: {PointIndex}";
-        }
-    }
-
-	/// <summary>
 	/// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
 	/// </summary>
 	// TODO : Could we merge Index and Normal to use BSPPoint instead?
@@ -92,26 +70,29 @@ namespace StarFox.Interop.BSP.SHAPE
         public int Color { get; set; }
         public int Index { get; set; }
         public BSPVec3 Normal { get; set; }
+
         /// <summary>
         /// The indices of the <see cref="BSPPoint"/> used in this face, in order.
         /// </summary>
-        public BSPPointRef[] PointIndices { get; set; }
+        public Dictionary<string, int> PointIndicesByLinePosition { get; set; } = new Dictionary<string, int>();
 
         public BSPFace()
         {
 
         }
-        public BSPFace(int color, int index, BSPVec3 normal, BSPPointRef[] pointIndices) : this()
+        public BSPFace(int color, int index, BSPVec3 normal, KeyValuePair<int,int>[] pointIndices) : this()
         {
             Color = color;
             Index = index;
             Normal = normal;
-            PointIndices = pointIndices;
+            foreach (var kvp in pointIndices) {
+	            PointIndicesByLinePosition.Add(kvp.Key.ToString(), kvp.Value);
+            }
         }
 
         public override string ToString()
         {
-            return $"BSPFace - Color: {Color}, Index: {Index}, Normal: {Normal}, Indices: {string.Join<BSPPointRef>(",", PointIndices)}";
+            return $"BSPFace - Color: {Color}, Index: {Index}, Normal: {Normal}, Indices: {String.Join(",", PointIndicesByLinePosition)}";
         }
     }
 

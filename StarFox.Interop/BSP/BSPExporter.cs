@@ -150,9 +150,9 @@ namespace StarFox.Interop.BSP
                  */
                 foreach (var face in Shape.Faces)
                 {
-                    if (face.PointIndices.Length % 3 != 0) // must be triangulated shape?
+                    if (face.PointIndicesByLinePosition.Count % 3 != 0) // must be triangulated shape?
                     {
-                        if (face.PointIndices.Length == 2 && Options.ProcessLines)
+                        if (face.PointIndicesByLinePosition.Count == 2 && Options.ProcessLines)
                         {
                             if (pass != 1) continue; // lines are not being processed on this pass
                             PushLine(vertices, indices, Shape, face, Frame);
@@ -162,11 +162,11 @@ namespace StarFox.Interop.BSP
                     if (pass != 2) continue; // not processing tris in this pass
 
                     //order the indices in order that they appear in the code (as if they're not already?)
-                    var orderedIndicies = face.PointIndices.OrderBy(x => x.Position).ToArray();
-                    for (int i = 0; i < face.PointIndices.Count(); i++)
+                    var orderedIndicies = face.PointIndicesByLinePosition.OrderBy(x => Int32.Parse(x.Key)).ToArray();
+                    for (int i = 0; i < face.PointIndicesByLinePosition.Count; i++)
                     {
                         var pointRefd = orderedIndicies[i]; // get the PointReference
-                        var point = Shape.GetPointOrDefault(pointRefd.PointIndex, Frame); // find the referenced point itself
+                        var point = Shape.GetPointOrDefault(pointRefd.Value, Frame); // find the referenced point itself
                         if (point == null)
                             throw new InvalidDataException($"Point {pointRefd} is referenced yet not present on {Shape.Header.Name}"); // uh, we didn't find it.
                         vertices.Add(new Vector3d(point.X, point.Y, point.Z)); // sweet found it, push it to our Vertex Buffer
@@ -198,15 +198,15 @@ namespace StarFox.Interop.BSP
                  */
                 foreach (var face in Shape.Faces)
                 {
-                    int count = face.PointIndices.Count();
-                    if (face.PointIndices.Count() == 2)
+                    int count = face.PointIndicesByLinePosition.Count;
+                    if (face.PointIndicesByLinePosition.Count == 2)
                     {
                         if (!Options.ProcessLines)
                             continue;
                         if (pass != 1) continue; // not processing lines right now
                         count = 4;
                     }
-                    else if (face.PointIndices.Length % 3 != 0) continue; // not a line or tri at this point
+                    else if (face.PointIndicesByLinePosition.Count % 3 != 0) continue; // not a line or tri at this point
                     else if (pass != 2) continue; // not a tri pass yet found a tri
                     for (int i = 0; i < count; i++)
                     {
@@ -245,7 +245,7 @@ namespace StarFox.Interop.BSP
         /// <returns></returns>
         static bool PushLine(List<Vector3d> Verticies, List<int> Indices, BSPShape Shape, in BSPFace Face, int Frame)
         { // Pushes a line to the mesh geometry provided to this function
-            var ModelPoints = Face.PointIndices.Select(x => Shape.GetPointOrDefault(x.PointIndex, Frame)).Where(y => y != default).ToArray();
+            var ModelPoints = Face.PointIndicesByLinePosition.Select(x => Shape.GetPointOrDefault(x.Value, Frame)).Where(y => y != default).ToArray();
             if (ModelPoints.Length != 2) return false; // not a line!!
             return PushLine(Verticies, Indices, new Vector3d(ModelPoints[0].X, ModelPoints[0].Y, ModelPoints[0].Z),
                 new Vector3d(ModelPoints[1].X, ModelPoints[1].Y, ModelPoints[1].Z));
