@@ -36,9 +36,9 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            Background = structure.TryGetParameter(0)?.ParameterContent;
-            FadeStyle = structure.TryGetParameter(1)?.ParameterContent;
-            WipeStyle = structure.TryGetParameter(2)?.ParameterContent;
+            Background = structure.TryGetParameter(0).Value;
+            FadeStyle = structure.TryGetParameter(1).Value;
+            WipeStyle = structure.TryGetParameter(2).Value;
         }
     }
 }

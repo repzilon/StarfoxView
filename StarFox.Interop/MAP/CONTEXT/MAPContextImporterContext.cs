@@ -59,7 +59,7 @@ namespace StarFox.Interop.MAP.CONTEXT
             Definition.M_MaxY = stratequ[noun + "_MmaxY"];
         }
         /// <summary>
-        /// Reads the contents of the line to check for whether or not any recognizable information is given.
+        /// Reads the contents of the line to check for whether any recognizable information is given.
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
@@ -68,9 +68,9 @@ namespace StarFox.Interop.MAP.CONTEXT
             if (CurrentDefinition == null) return false;
             if (!line.HasStructureApplied) return false;
             if (!(line.Structure is ASMMacroInvokeLineStructure macroInvokation)) return false;
-            string paramStr(int index) => macroInvokation.TryGetParameter(index)?.ParameterContent;
+            string paramStr(int index) => macroInvokation.TryGetParameter(index).Value;
             string[] paramsStr = macroInvokation.Parameters.
-                Select(x => x?.ParameterContent).Where(y => !string.IsNullOrWhiteSpace(y)).ToArray();
+                Select(x => x.Value).Where(y => !string.IsNullOrWhiteSpace(y)).ToArray();
             string param1str = paramStr(0);
             string macroName = macroInvokation.MacroReference.Name.ToLower();
             if (!BGINITIALIZED && macroName != "init_bg") return false; // if the bg isn't initialized this could be unsafe code.
@@ -102,31 +102,31 @@ namespace StarFox.Interop.MAP.CONTEXT
                 case "bg2xscroll":
                 case "bg2hoff":
                     {
-                        var hoff = macroInvokation.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
+                        var hoff = macroInvokation.TryGetParameter(0).TryParseOrDefault() ;
                         CurrentDefinition.BG2.HorizontalOffset = hoff;
                     }
                     return true;
                 case "bg2yscroll":
                     {
-                        var vofs = macroInvokation.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
+                        var vofs = macroInvokation.TryGetParameter(0).TryParseOrDefault();
                         CurrentDefinition.BG2.VerticalOffset = vofs;
                     }
                     return true;
                 case "bg3xscroll":
                     {
-                        var hoff = macroInvokation.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
+                        var hoff = macroInvokation.TryGetParameter(0).TryParseOrDefault();
                         CurrentDefinition.BG3.HorizontalOffset = hoff;
                     }
                     return true;
                 case "bg3yscroll":
                     {
-                        var vofs = macroInvokation.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
+                        var vofs = macroInvokation.TryGetParameter(0).TryParseOrDefault();
                         CurrentDefinition.BG3.VerticalOffset = vofs;
                     }
                     return true;
                 case "setbg3vofs":
                     {
-                        var vofs = macroInvokation.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
+                        var vofs = macroInvokation.TryGetParameter(0).TryParseOrDefault();
                         CurrentDefinition.BG3.VerticalOffset = vofs*100;
                     }
                     return true;
@@ -170,25 +170,25 @@ namespace StarFox.Interop.MAP.CONTEXT
         }
         private void SetChr(ASMMacroInvokeLineStructure BGChrLine)
         {
-            var bgName = BGChrLine.TryGetParameter(0)?.ParameterContent;
+            var bgName = BGChrLine.TryGetParameter(0).Value;
             if(bgName == null) return;
             CurrentDefinition.BG2.BGChrFile = bgName;
         }
         private void SetScr(ASMMacroInvokeLineStructure BGScrLine)
         {
-            var bgName = BGScrLine.TryGetParameter(0)?.ParameterContent;
+            var bgName = BGScrLine.TryGetParameter(0).Value;
             if (bgName == null) return;
             CurrentDefinition.BG2.BGScrFile = bgName;
         }
         private void SetChr3(ASMMacroInvokeLineStructure BGChrLine)
         {
-            var bgName = BGChrLine.TryGetParameter(0)?.ParameterContent;
+            var bgName = BGChrLine.TryGetParameter(0).Value;
             if (bgName == null) return;
             CurrentDefinition.BG3.BGChrFile = bgName;
         }
         private void SetScr3(ASMMacroInvokeLineStructure BGScrLine)
         {
-            var bgName = BGScrLine.TryGetParameter(0)?.ParameterContent;
+            var bgName = BGScrLine.TryGetParameter(0).Value;
             if (bgName == null) return;
             CurrentDefinition.BG3.BGScrFile = bgName;
         }

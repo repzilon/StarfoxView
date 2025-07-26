@@ -429,19 +429,20 @@ namespace StarFox.Interop.BSP
                             {
                                 //***BSP
                                 case "bspinit": // indicates we're defining a BSP Region
-                                    asmContext.BeginBSPRegion(macroInvoke.TryGetParameter(0).ParameterContent);
+                                    asmContext.BeginBSPRegion(macroInvoke.TryGetParameter(0).Value);
                                     continue;
                                 case "bsp":
+                                    // FIXME : Unreachable code
                                     continue;
                                     asmContext.PushBSP(
                                         macroInvoke.TryGetParameter(0).TryParseOrDefault(),
-                                        macroInvoke.TryGetParameter(1).ParameterContent,
-                                        macroInvoke.TryGetParameter(2).ParameterContent
-                                    );
+                                        macroInvoke.TryGetParameter(1).Value,
+                                        macroInvoke.TryGetParameter(2).Value
+									);
                                     continue;
                                 //**END BSP
                                 case "frames": // indicates we're changing to frames
-                                    asmContext.BeginFramesRegion(macroInvoke.TryGetParameter(0)?.TryParseOrDefault() ?? 0);
+                                    asmContext.BeginFramesRegion(macroInvoke.TryGetParameter(0).TryParseOrDefault());
                                     continue;
                                 case "pointsxw": // points width 2
                                     asmContext.BeginPointsRegion(BSPImporterContext.PointsModes.PointsXw);
@@ -456,11 +457,11 @@ namespace StarFox.Interop.BSP
                                     asmContext.BeginPointsRegion(BSPImporterContext.PointsModes.Pointsb);
                                     continue;
                                 case "jump": // move from this frame to the next
-                                    asmContext.currentFrameEndLabel = macroInvoke.TryGetParameter(0)?.ParameterContent;
+                                    asmContext.currentFrameEndLabel = macroInvoke.TryGetParameter(0).Value;
                                     asmContext.ReturnFromFrameDataRegion();
                                     continue;
-                                case "jumptab": // define new frame at the specifed inline label
-                                    var name = macroInvoke.TryGetParameter(0)?.ParameterContent;
+                                case "jumptab": // define new frame at the specified inline label
+                                    var name = macroInvoke.TryGetParameter(0).Value;
                                     asmContext.BeginFrameDataDefine(name);
                                     break;
                                 case "fend": // lock faces
@@ -485,9 +486,9 @@ namespace StarFox.Interop.BSP
                                     yFactor = 2;
                                     goto case "pb";
                                 case "pb": // point definition
-                                    var x = macroInvoke.TryGetParameter(0)?.TryParseOrDefault() ?? 0; //x
-                                    var y = macroInvoke.TryGetParameter(1)?.TryParseOrDefault() ?? 0; //y
-                                    var z = macroInvoke.TryGetParameter(2)?.TryParseOrDefault() ?? 0; //z
+                                    var x = macroInvoke.TryGetParameter(0).TryParseOrDefault(); //x
+                                    var y = macroInvoke.TryGetParameter(1).TryParseOrDefault(); //y
+                                    var z = macroInvoke.TryGetParameter(2).TryParseOrDefault(); //z
                                     asmContext.PushPoint(mode, x, (int)(y*yFactor), z, pbDivisor);
                                     break;
                             }
@@ -522,7 +523,7 @@ namespace StarFox.Interop.BSP
                 if (chunk.StructureAsMacroInvokeStructure == default) continue;
                 if (chunk.StructureAsMacroInvokeStructure.MacroReference.Name.ToLower() !=
                     "shapehdr") continue;
-                var sName = chunk.StructureAsMacroInvokeStructure.Parameters.Last().ParameterContent;
+                var sName = chunk.StructureAsMacroInvokeStructure.Parameters.Last().Value;
                 var fooSName = sName;
                 int tries = 1;
                 while (!Target.ShapeHeaderEntries.Add(fooSName))

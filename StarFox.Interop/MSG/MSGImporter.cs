@@ -47,12 +47,12 @@ namespace StarFox.Interop.MSG
 			int n = 0;
 			foreach (var macroLine in msgFile.MacroInvokeLines) {
 				if (String.Equals(macroLine.MacroReference.Name, kCompatibleMacroName, StringComparison.OrdinalIgnoreCase)) {
-					var person = macroLine.TryGetParameter(0)?.ParameterContent ?? "nobody";
+					var person = macroLine.TryGetParameter(0).Value ?? "nobody";
 					MSGEntry entry;
 					n++;
 					if (Utility.AnyOf(person, "white", "yellow", "red", "blue")) { // person is in fact color
-						person = macroLine.TryGetParameter(1)?.ParameterContent ?? "nobody";
-						if (macroLine.Parameters.Length == 5) {
+						person = macroLine.TryGetParameter(1).Value ?? "nobody";
+						if (macroLine.Parameters.Count == 5) {
 							entry = Create(fileName, macroLine, person, true, 2, 3, 4, n);
 							msgFile.FlagAs(MessageFileVersion.ColoredEnglishAside_02);
 						} else {
@@ -79,13 +79,13 @@ namespace StarFox.Interop.MSG
 		{
 			var english = "unknown in english";
 			if (embeddedEnglish) {
-				english = macroLine.TryGetParameter(englishIndex)?.ParameterContent ?? "blank in english";
+				english = macroLine.TryGetParameter(englishIndex).Value ?? "blank in english";
 			} else if (EnglishExternalFile != null) {
 				english = EnglishExternalFile.Entries[rowIndex].English;
 			}
 
-			var second = macroLine.TryGetParameter(translationIndex)?.ParameterContent ?? "blank in " + fileName;
-			var sound = macroLine.TryGetParameter(soundIndex)?.ParameterContent ?? "other";
+			var second = macroLine.TryGetParameter(translationIndex).Value ?? "blank in " + fileName;
+			var sound = macroLine.TryGetParameter(soundIndex).Value ?? "other";
 
 			var tt = this.TranslationTable;
 			if (MojiZeroTranslator.IsMojibake(second) && (tt != null)) {

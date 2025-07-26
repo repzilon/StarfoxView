@@ -26,9 +26,9 @@ namespace StarFox.Interop.GFX.COLTAB.DEF
         /// <returns></returns>
         public static COLDefinition Parse(ASMMacroInvokeLineStructure MacroExpression)
         {
-            var param1Int = MacroExpression.TryGetParameter(0)?.TryParseOrDefault() ?? 0;
-            var param2Int = MacroExpression.TryGetParameter(1)?.TryParseOrDefault() ?? 0;
-            var param1Cnt = MacroExpression.TryGetParameter(0)?.ParameterContent ?? "";
+            var param1Int = MacroExpression.TryGetParameter(0).TryParseOrDefault();
+            var param2Int = MacroExpression.TryGetParameter(1).TryParseOrDefault();
+            var param1Cnt = MacroExpression.TryGetParameter(0).Value ?? "";
             switch (MacroExpression.MacroReference.Name.ToUpper())
             {
                 // A 'diffuse' material, as in it is reactive to lighting angle

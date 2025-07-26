@@ -11,10 +11,12 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
     /// </summary>
     public class ASMMacroInvokeLineStructure : IASMLineStructure
     {
-        public ASMMacroInvokeLineStructure(ASMMacro MacroReference, params ASMMacroInvokeParameter[] Parameters)
+        public ASMMacroInvokeLineStructure(ASMMacro MacroReference, params KeyValuePair<string,string>[] parameters)
         {
             this.MacroReference = MacroReference;
-            this.Parameters = Parameters;
+            foreach (var kvp in parameters) {
+                this.Parameters.Add(kvp.Key, kvp.Value);
+            }
         }
 
         public string Symbol => this.MacroReference.Name;
@@ -23,16 +25,19 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         /// The macro function definition that was called in this expression
         /// </summary>
         public ASMMacro MacroReference { get; }
+
         /// <summary>
         /// The parameters passed if applicable
         /// </summary>
-        public ASMMacroInvokeParameter[] Parameters { get; }
+        public SortedList<string, string> Parameters { get; set; } = new SortedList<string, string>();
+
         /// <summary>
         /// Tries to find the given parameter by index.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public ASMMacroInvokeParameter TryGetParameter(int index) => Parameters.ElementAtOrDefault(index);
+        public KeyValuePair<string, string> TryGetParameter(int index) => Parameters.ElementAtOrDefault(index);
+
         enum ParseModes
         {
             REG,
@@ -98,28 +103,26 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
         /// <exception cref="NotImplementedException"></exception>
         public static bool TryParse(string input, out ASMMacroInvokeLineStructure result, params ASMFile[] Reference)
         {
-            var originalText = input;
             input = input.Trim();
             var blocks = input.Split(' ');
             result = default;
             if (blocks.Length <= 0) return false;
             var macro = SymbolOperations.MatchMacro(Reference, blocks[0]);
             if (macro == default) return false;
-            ASMMacroInvokeParameter[] parameters = { };
+            var parameters = new KeyValuePair<string, string>[0];
             if (blocks.Length > 1) // parameters?
             {
                 var paramText = input.Substring(input.IndexOf(' ') + 1);
                 var strParameters = ParseParameters(paramText);
                 int i = -1;
-                parameters = new ASMMacroInvokeParameter[strParameters.Count];
+                parameters = new KeyValuePair<string, string>[strParameters.Count];
                 foreach(var param in strParameters)
                 {
                     i++;
                     string paramName = default;
                     if (macro.Parameters.Length > i)
                         paramName = macro.Parameters[i];
-                    var p = new ASMMacroInvokeParameter(param, paramName);
-                    parameters[i] = p;
+                    parameters[i] = new KeyValuePair<string, string>(param, paramName);
                 }
             }
             result = new ASMMacroInvokeLineStructure(macro, parameters);

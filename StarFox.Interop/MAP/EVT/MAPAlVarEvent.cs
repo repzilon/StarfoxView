@@ -28,8 +28,8 @@ namespace StarFox.Interop.MAP.EVT
             var structure = Line.StructureAsMacroInvokeStructure;
             if (structure == null) return;
             EventName = structure.MacroReference.Name;
-            Name = structure.TryGetParameter(0)?.ParameterContent ?? ""; // parameter 0 is name
-            Value = structure.TryGetParameter(1)?.ParameterContent ?? ""; // parameter 0 is name
+            Name = structure.TryGetParameter(0).Value ?? ""; // parameter 0 is name
+            Value = structure.TryGetParameter(1).Value ?? ""; // parameter 0 is name
         }
     }
 }

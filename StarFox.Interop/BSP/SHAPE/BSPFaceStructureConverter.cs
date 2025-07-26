@@ -37,13 +37,13 @@ namespace StarFox.Interop.BSP.SHAPE
             //found the macro needed (face)
             Result = new BSPFace()
             {
-                Color = Structure.TryGetParameter(0)?.TryParseOrDefault() ?? 0,
-                Index = Structure.TryGetParameter(1)?.TryParseOrDefault() ?? 0,
+                Color = Structure.TryGetParameter(0).TryParseOrDefault(),
+                Index = Structure.TryGetParameter(1).TryParseOrDefault(),
                 Normal = new BSPVec3()
                 {
-                    X = Structure.TryGetParameter(2)?.TryParseOrDefault() ?? 0,
-                    Y = Structure.TryGetParameter(3)?.TryParseOrDefault() ?? 0,
-                    Z = Structure.TryGetParameter(4)?.TryParseOrDefault() ?? 0,
+                    X = Structure.TryGetParameter(2).TryParseOrDefault(),
+                    Y = Structure.TryGetParameter(3).TryParseOrDefault(),
+                    Z = Structure.TryGetParameter(4).TryParseOrDefault(),
                 }
             };
             int startIndex = 5;
@@ -53,7 +53,7 @@ namespace StarFox.Interop.BSP.SHAPE
             {
                 verts[i] = new BSPPointRef()
                 {
-                    PointIndex = Structure.TryGetParameter(i + startIndex)?.TryParseOrDefault() ?? 0,
+                    PointIndex = Structure.TryGetParameter(i + startIndex).TryParseOrDefault(),
                     Position = i
                 };
             }

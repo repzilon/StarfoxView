@@ -48,11 +48,11 @@ namespace StarFoxMapVisualizer.Controls
 
             if (MapEvent is MAPUnknownEvent unknown)
             {
-                foreach (var param in unknown.MacroParameters)
+                foreach (var param in unknown.Parameters)
                     ComponentsStack.Children.Add(new HeaderedContentControl()
                     {
-                        Header = param.ParameterName?.ToUpper() ?? "PARAM",
-                        Content = param.ParameterContent,
+                        Header = param.Key.ToUpper(),
+                        Content = param.Value,
                     });
                 BorderBrush = Brushes.Red;
                 return;
