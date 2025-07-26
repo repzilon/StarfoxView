@@ -5,7 +5,6 @@ namespace StarFox.Interop.ASM.TYP.STRUCT
     /// <summary>
     /// Provides an interface for a parameter called in a MacroInvokeExpression
     /// </summary>
-    [Obsolete("It is only a key-value pair holder. Replace collections with Dictionary<string, string>.")]
     public class ASMMacroInvokeParameter
     {
         /// <summary>

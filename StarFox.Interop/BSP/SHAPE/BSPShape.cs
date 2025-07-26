@@ -10,7 +10,6 @@ namespace StarFox.Interop.BSP.SHAPE
     /// A point in 3D space found in an ASM BSP file.
     /// <para><code>pb X,Y,Z</code></para>
     /// </summary>
-    [Obsolete("X, Y, Z triplet is common, but Index cannot be removed.")]
     public class BSPPoint
     {
         public int Index { get; set; }
@@ -40,7 +39,6 @@ namespace StarFox.Interop.BSP.SHAPE
 	/// <summary>
 	/// A rudimentary Vector 3 class that only deals in integers (SF Source Code Compatibility)
 	/// </summary>
-	[Obsolete("X, Y, Z triplet is common.")]
 	public struct BSPVec3
     {
         /// <summary>
@@ -64,7 +62,6 @@ namespace StarFox.Interop.BSP.SHAPE
 	/// <summary>
 	/// A face on a 3D shape. These can be any amount of vertices, dependent on the implementation in the source code.
 	/// </summary>
-	// TODO : Could we merge Index and Normal to use BSPPoint instead?
 	public class BSPFace
     {
         public int Color { get; set; }
