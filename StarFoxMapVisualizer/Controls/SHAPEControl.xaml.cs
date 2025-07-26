@@ -702,8 +702,8 @@ namespace StarFoxMapVisualizer.Controls
 
         private async void ExportSFShapeButton_Click(object sender, RoutedEventArgs e)
         {
-            var files = await SHAPEStandard.ExportShapeToSfShape(currentShape);
-            if (MessageBox.Show($"{files.Count()} file(s) were successfully exported to:\n" +
+            var files = await SHAPEStandard.ExportShape(currentShape, ".sfshape");
+            if (MessageBox.Show($"{files.Count} file(s) were successfully exported to:\n" +
                 $"{SHAPEStandard.DefaultShapeExtractionDirectory}\n" +
                 $"Do you want to copy its location to the clipboard?", "Complete",
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)

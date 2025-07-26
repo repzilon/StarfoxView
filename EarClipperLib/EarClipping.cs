@@ -32,9 +32,9 @@ namespace EarClipperLib
             if (holes != null)
             {
                 _holes = new List<Polygon>();
-                for (int i = 0; i < holes.Count; i++)
+                for (var i = 0; i < holes.Count; i++)
                 {
-                    Polygon p = new Polygon();
+                    var p = new Polygon();
                     LinkAndAddToList(p, holes[i]);
                     _holes.Add(p);
                 }
@@ -45,7 +45,7 @@ namespace EarClipperLib
         // calculating normal using Newell's method
         private void CalcNormal(List<Vector3m> points)
         {
-            Vector3m normal = Vector3m.Zero();
+            var normal = Vector3m.Zero();
             for (var i = 0; i < points.Count; i++)
             {
                 var j = (i + 1) % (points.Count);
@@ -59,9 +59,9 @@ namespace EarClipperLib
         private static void LinkAndAddToList(Polygon polygon, List<Vector3m> points)
         {
             ConnectionEdge prev = null, first = null;
-            Dictionary<Vector3m, Vector3m> pointsHashSet = new Dictionary<Vector3m, Vector3m>();
-            int pointCount = 0;
-            for (int i = 0; i < points.Count; i++)
+            var pointsHashSet = new Dictionary<Vector3m, Vector3m>();
+            var pointCount = 0;
+            for (var i = 0; i < points.Count; i++)
             {
                 // we don't wanna have duplicates
                 Vector3m p0;
@@ -73,11 +73,11 @@ namespace EarClipperLib
                 {
                     p0 = points[i];
                     pointsHashSet.Add(p0, p0);
-                    List<ConnectionEdge> list = new List<ConnectionEdge>();
+                    var list = new List<ConnectionEdge>();
                     p0.DynamicProperties.AddProperty(PropertyConstants.IncidentEdges, list);
                     pointCount++;
                 }
-                ConnectionEdge current = new ConnectionEdge(p0, polygon);
+                var current = new ConnectionEdge(p0, polygon);
 
                 first = (i == 0) ? current : first; // remember first
 
@@ -103,14 +103,14 @@ namespace EarClipperLib
                 ProcessHoles();
             }
 
-            List<ConnectionEdge> nonConvexPoints = FindNonConvexPoints(_mainPointList);
+            var nonConvexPoints = FindNonConvexPoints(_mainPointList);
 
             if (nonConvexPoints.Count == _mainPointList.PointCount)
                 throw new ArgumentException("The triangle input is not valid");
 
             while (_mainPointList.PointCount > 2)
             {
-                bool guard = false;
+                var guard = false;
                 foreach (var cur in _mainPointList.GetPolygonCirculator())
                 {
                     if (!IsConvex(cur))
@@ -127,13 +127,13 @@ namespace EarClipperLib
                         // Check if prev and next are still nonconvex. If not, then remove from non convex list
                         if (IsConvex(cur.Prev))
                         {
-                            int index = nonConvexPoints.FindIndex(x => x == cur.Prev);
+                            var index = nonConvexPoints.FindIndex(x => x == cur.Prev);
                             if (index >= 0)
                                 nonConvexPoints.RemoveAt(index);
                         }
                         if (IsConvex(cur.Next))
                         {
-                            int index = nonConvexPoints.FindIndex(x => x == cur.Next);
+                            var index = nonConvexPoints.FindIndex(x => x == cur.Next);
                             if (index >= 0)
                                 nonConvexPoints.RemoveAt(index);
                         }
@@ -163,15 +163,15 @@ namespace EarClipperLib
 
         private bool IsConvex(ConnectionEdge curPoint)
         {
-            int orientation = Misc.GetOrientation(curPoint.Prev.Origin, curPoint.Origin, curPoint.Next.Origin, Normal);
+            var orientation = Misc.GetOrientation(curPoint.Prev.Origin, curPoint.Origin, curPoint.Next.Origin, Normal);
             return orientation == 1;
         }
 
         private void ProcessHoles()
         {
-            for (int h = 0; h < _holes.Count; h++)
+            for (var h = 0; h < _holes.Count; h++)
             {
-                List<Polygon> polygons = new List<Polygon>();
+                var polygons = new List<Polygon>();
                 polygons.Add(_mainPointList);
                 polygons.AddRange(_holes);
                 ConnectionEdge M, P;
@@ -252,7 +252,7 @@ namespace EarClipperLib
                 P = I.Origin.Next;
             }
 
-            List<ConnectionEdge> nonConvexPoints = FindNonConvexPoints(polygons[I.PolyIndex]);
+            var nonConvexPoints = FindNonConvexPoints(polygons[I.PolyIndex]);
 
 
             nonConvexPoints.Remove(P);
@@ -260,7 +260,7 @@ namespace EarClipperLib
             var m = M.Origin;
             var i = I.I;
             var p = P.Origin;
-            List<ConnectionEdge> candidates = new List<ConnectionEdge>();
+            var candidates = new List<ConnectionEdge>();
 
             // invert i and p if triangle is oriented CW
             if (Misc.GetOrientation(m, i, p, Normal) == -1)
@@ -304,8 +304,8 @@ namespace EarClipperLib
 
         private Candidate FindPointI(ConnectionEdge M, List<Polygon> polygons, int holeIndex, Vector3m direction)
         {
-            Candidate candidate = new Candidate();
-            for (int i = 0; i < polygons.Count; i++)
+            var candidate = new Candidate();
+            for (var i = 0; i < polygons.Count; i++)
             {
                 if (i == holeIndex) // Don't test the hole with itself
                     continue;
@@ -345,8 +345,8 @@ namespace EarClipperLib
         {
             Rational maximum = 0;
             ConnectionEdge maxEdge = null;
-            Vector3m v0 = testHole.Start.Origin;
-            Vector3m v1 = testHole.Start.Next.Origin;
+            var v0 = testHole.Start.Origin;
+            var v1 = testHole.Start.Next.Origin;
             foreach (var connectionEdge in testHole.GetPolygonCirculator())
             {
                 // we take the first two points as a reference line
@@ -380,7 +380,7 @@ namespace EarClipperLib
 
         private List<ConnectionEdge> FindNonConvexPoints(Polygon p)
         {
-            List<ConnectionEdge> resultList = new List<ConnectionEdge>();
+            var resultList = new List<ConnectionEdge>();
             foreach (var connectionEdge in p.GetPolygonCirculator())
             {
                 if (Misc.GetOrientation(connectionEdge.Prev.Origin, connectionEdge.Origin, connectionEdge.Next.Origin, Normal) != 1)
@@ -392,9 +392,9 @@ namespace EarClipperLib
         public bool RaySegmentIntersection(out Vector3m intersection, out Rational distanceSquared, Vector3m linePoint1, Vector3m lineVec1, Vector3m linePoint3, Vector3m linePoint4, Vector3m direction)
         {
             var lineVec2 = linePoint4 - linePoint3;
-            Vector3m lineVec3 = linePoint3 - linePoint1;
-            Vector3m crossVec1and2 = lineVec1.Cross(lineVec2);
-            Vector3m crossVec3and2 = lineVec3.Cross(lineVec2);
+            var lineVec3 = linePoint3 - linePoint1;
+            var crossVec1and2 = lineVec1.Cross(lineVec2);
+            var crossVec3and2 = lineVec3.Cross(lineVec2);
 
             var res = Misc.PointLineDistance(linePoint3, linePoint4, linePoint1);
             if (res == 0) // line and ray are collinear
@@ -510,7 +510,7 @@ namespace EarClipperLib
             cur.Prev.Next = cur.Next;
             cur.Next.Prev = cur.Prev;
             var incidentEdges = (List<ConnectionEdge>)cur.Origin.DynamicProperties.GetValue(PropertyConstants.IncidentEdges);
-            int index = incidentEdges.FindIndex(x => x.Equals(cur));
+            var index = incidentEdges.FindIndex(x => x.Equals(cur));
             Debug.Assert(index >= 0);
             incidentEdges.RemoveAt(index);
             if (incidentEdges.Count == 0)

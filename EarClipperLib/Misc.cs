@@ -2,7 +2,7 @@
 
 namespace EarClipperLib
 {
-    class Misc
+    internal static class Misc
     {
         public static int GetOrientation(Vector3m v0, Vector3m v1, Vector3m v2, Vector3m normal)
         {

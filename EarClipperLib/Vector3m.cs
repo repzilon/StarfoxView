@@ -168,8 +168,8 @@ namespace EarClipperLib
 
         public static Vector3m PlaneNormal(Vector3m v0, Vector3m v1, Vector3m v2)
         {
-            Vector3m a = v1 - v0;
-            Vector3m b = v2 - v0;
+            var a = v1 - v0;
+            var b = v2 - v0;
             return a.Cross(b);
         }
 

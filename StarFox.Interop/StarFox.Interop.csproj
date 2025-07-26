@@ -13,7 +13,10 @@
     <PackageReference Include="fastJSON" Version="2.4.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\geometry4Sharp\geometry4Sharp_netstandard.csproj" />
+    <Compile Remove="BSP\BSPSlimExporter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\geometry4Sharp\geometry4Sharp_netstandard_mesh.csproj" />
     <ProjectReference Include="..\EarClipperLib\EarClipperLib.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">

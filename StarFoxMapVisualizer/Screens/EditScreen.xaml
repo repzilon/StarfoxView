@@ -137,7 +137,7 @@
                     <MenuItem Header="Open Project Folder" Click="OpenProjectFolderItem_Click" />
                     <MenuItem Header="Close Project" Click="CloseProjectMenuItem_Click" />
                     <Separator/>
-                    <MenuItem Header="Convert .sfscreen file" Name="ConvertSfscreenItem" Click="ConvertSfscreenItem_OnClick" />
+                    <MenuItem Header="Convert .sfscreen file..." Name="ConvertSfscreenItem" Click="ConvertSfscreenItem_OnClick" />
                     <Separator/>
                     <MenuItem Header="Exit" Name="ExitItem" Click="ExitItem_Click" />
                 </MenuItem>
@@ -148,7 +148,8 @@
                     <MenuItem Header="Refresh Workspace"/>
                 </MenuItem>
                 <MenuItem Header="Editor" Style="{StaticResource MenuItemBaseStyle}">
-                    <MenuItem Header="Export All 3D Data..." Click="ExportAll3DButton_Click" />
+                    <MenuItem Header="Export All 3D Data to .sfshape format..." Click="ExportAll3DButton_Click" />
+                    <MenuItem Header="Export All 3D Data to .obj format..." Click="ExportAll3DObjButton_Click" />
                     <Separator/>
                     <MenuItem Header="Refresh Editor SHAPES Map..." Click="SHAPEMapRefreshButton_Click"/>
                     <MenuItem Header="Refresh Editor STAGES Map..." Click="STAGEMapRefreshButton_Click"/>
