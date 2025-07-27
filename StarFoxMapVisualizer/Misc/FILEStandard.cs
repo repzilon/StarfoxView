@@ -384,7 +384,7 @@ namespace StarFoxMapVisualizer.Misc
 			return rObj;
 		}
 
-		internal static async Task<ASMFile> OpenASMFile(FileInfo File, bool IgnoreDialogs = false)
+		internal static async Task<ASMFile> OpenASMFile(FileInfo File, bool IgnoreDialogs)
 		{
 			//DO FILE PARSE NOW
 			return await ParseFile(File, IgnoreDialogs ? (SFFileType.ASMFileTypes?)SFFileType.ASMFileTypes.ASM : null);

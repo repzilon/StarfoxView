@@ -525,7 +525,7 @@ namespace StarFoxMapVisualizer.Screens
             //HANDLE VIEW MODES -- PAUSE / ENABLE VIEW MODE CONTROLS
             await HandleViewModes();
             //DO FILE PARSE NOW
-            var asmfile = await FILEStandard.OpenASMFile(File);
+            var asmfile = await FILEStandard.OpenASMFile(File, File.IsPlainAssemblyOnly());
             bool isMap = asmfile is MAPFile;
             bool isObj = asmfile is BSPFile;
             bool isMSG = asmfile is MSGFile;

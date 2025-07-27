@@ -1,68 +1,80 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Starfox.Editor
 {
-    public enum SFCodeProjectFileTypes
-    {
-        Unknown,
-        Include,
-        Palette,
-        Assembly,
-        BINFile,
-        CCR,
-        PCR,
-        CGX,
-        SCR,
-        MSG,
-        BRR,
-        SPC,
-        /// <summary>
-        /// An <see cref="SFOptimizerNode"/>
-        /// </summary>
-        SF_EDIT_OPTIM
-    }
+	public enum SFCodeProjectFileTypes
+	{
+		Unknown,
+		Include,
+		Palette,
+		Assembly,
+		BINFile,
+		CCR,
+		PCR,
+		CGX,
+		SCR,
+		MSG,
+		BRR,
+		SPC,
+		/// <summary>
+		/// An <see cref="SFOptimizerNode"/>
+		/// </summary>
+		SF_EDIT_OPTIM
+	}
 
-    public static class SFCodeProjectFileExtensions
-    {
-        /// <summary>
-        /// Attempts to return what kind of file this node is
-        /// </summary>
-        /// <param name="File"></param>
-        /// <returns></returns>
-        public static SFCodeProjectFileTypes GetSFFileType(string FilePath)
-        {
-            var path = Path.GetExtension(FilePath).ToUpper();
-            if (path.EndsWith("ASM"))
-                return SFCodeProjectFileTypes.Assembly;
-            else if (path.EndsWith("INC"))
-                return SFCodeProjectFileTypes.Include;
-            else if (path.EndsWith("COL"))
-                return SFCodeProjectFileTypes.Palette;
-            else if (path.EndsWith("BIN"))
-                return SFCodeProjectFileTypes.BINFile;
-            else if (path.EndsWith("SPC"))
-                return SFCodeProjectFileTypes.SPC;
-            else if (path.EndsWith("BRR"))
-                return SFCodeProjectFileTypes.BRR;
-            else if (path.EndsWith("CCR"))
-                return SFCodeProjectFileTypes.CCR;
-            else if (path.EndsWith("PCR"))
-                return SFCodeProjectFileTypes.PCR;
-            else if (path.EndsWith("CGX"))
-                return SFCodeProjectFileTypes.CGX;
-            else if (path.EndsWith("SCR"))
-                return SFCodeProjectFileTypes.SCR;
-            else if (path.EndsWith("TRN"))
-	            return SFCodeProjectFileTypes.Include;
-			else if (path.EndsWith(SFOptimizerNode.SF_OPTIM_Extension))
-                return SFCodeProjectFileTypes.SF_EDIT_OPTIM;
-            return SFCodeProjectFileTypes.Unknown;
-        }
-        /// <summary>
-        /// Attempts to return what kind of file this node is
-        /// </summary>
-        /// <param name="File"></param>
-        /// <returns></returns>
-        public static SFCodeProjectFileTypes GetSFFileType(this FileInfo File) => GetSFFileType(File.FullName);
-    }
+	public static class SFCodeProjectFileExtensions
+	{
+		private static readonly IReadOnlyDictionary<string, SFCodeProjectFileTypes> FileTypeByExtension =
+			InitExtensionToFileTypeMap();
+
+		private static Dictionary<string, SFCodeProjectFileTypes> InitExtensionToFileTypeMap()
+		{
+			var dictionary = new Dictionary<string, SFCodeProjectFileTypes>(StringComparer.OrdinalIgnoreCase)
+			{
+				{ ".asm", SFCodeProjectFileTypes.Assembly },
+				{ ".ext", SFCodeProjectFileTypes.Assembly },
+				{ ".mc", SFCodeProjectFileTypes.Assembly },
+				{ ".inc", SFCodeProjectFileTypes.Include },
+				{ ".trn", SFCodeProjectFileTypes.Include },
+				{ ".col", SFCodeProjectFileTypes.Palette },
+				{ ".bin", SFCodeProjectFileTypes.BINFile },
+				{ ".spc", SFCodeProjectFileTypes.SPC },
+				{ ".brr", SFCodeProjectFileTypes.BRR },
+				{ ".ccr", SFCodeProjectFileTypes.CCR },
+				{ ".pcr", SFCodeProjectFileTypes.PCR },
+				{ ".cgx", SFCodeProjectFileTypes.CGX },
+				{ ".scr", SFCodeProjectFileTypes.SCR },
+				{ "." + SFOptimizerNode.SF_OPTIM_Extension, SFCodeProjectFileTypes.SF_EDIT_OPTIM }
+			};
+
+			return dictionary;
+		}
+
+
+		/// <summary>
+		/// Attempts to return what kind of file this node is
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		public static SFCodeProjectFileTypes GetSFFileType(string filePath)
+		{
+			return FileTypeByExtension.TryGetValue(Path.GetExtension(filePath), out var enuType) ? enuType : SFCodeProjectFileTypes.Unknown;
+		}
+
+		/// <summary>
+		/// Attempts to return what kind of file this node is
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public static SFCodeProjectFileTypes GetSFFileType(this FileInfo file) => GetSFFileType(file.FullName);
+
+		public static bool IsPlainAssemblyOnly(this FileInfo file)
+		{
+			var strExt = Path.GetExtension(file.FullName);
+			return strExt.Equals(".ext", StringComparison.OrdinalIgnoreCase) ||
+			       strExt.Equals(".mc", StringComparison.OrdinalIgnoreCase);
+		}
+	}
 }
