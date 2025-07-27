@@ -15,6 +15,9 @@
     <AssemblyVersion>0.6.1</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controls\Subcontrols\ASMCodeEditor.xaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Resources\AtlantisInternational-jen0.ttf" />
     <None Remove="Resources\Image\1423.png" />
     <None Remove="Resources\Image\album.png" />
@@ -45,6 +48,9 @@
     <None Remove="Resources\Tribute.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Remove="Controls\Subcontrols\ASMCodeEditor.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Resources\SFViewLogoSmall.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -56,20 +62,25 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
+    <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
+    <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows7.0'">
     <PackageReference Include="System.Drawing.Common" Version="[6.0.0]" />
     <PackageReference Include="NAudio" Version="[2.0.1]" />
+    <PackageReference Include="AvalonEdit" Version="[6.2.0.78]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows7.0'">
     <PackageReference Include="System.Drawing.Common" Version="[8.0.17]" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\AtlantisInternational-jen0.ttf" />

@@ -18,28 +18,28 @@ namespace StarFoxMapVisualizer.Controls
 	public partial class ASMControl : UserControl
 	{
 		private const byte MinTextSize = 9;
-        private const byte BaseTextSize = 12;
-        private const byte MaxTextSize = 96;
-        private const double ZoomStepFactor = 1.095445115; // Math.Sqrt(1.2)
+		private const byte BaseTextSize = 12;
+		private const byte MaxTextSize = 96;
+		private const double ZoomStepFactor = 1.095445115; // Math.Sqrt(1.2)
 
-        private ASM_FINST current;
-        private ASMCodeEditor EditorScreen => current?.EditorScreen;
-        private Dictionary<string, ASM_FINST> fileInstanceMap = new Dictionary<string, ASM_FINST>();
+		private ASM_FINST<AsmAvalonEditor> current;
+		private AsmAvalonEditor EditorScreen => current?.EditorScreen;
+		private Dictionary<string, ASM_FINST<AsmAvalonEditor>> fileInstanceMap = new Dictionary<string, ASM_FINST<AsmAvalonEditor>>();
 
-        /// <summary>
-        /// The queue of <see cref="OpenFileContents(FileInfo, ASMFile?)"/> calls made while paused
-        /// </summary>
-        private Queue<FOPENCALL> chewQueue = new Queue<FOPENCALL>();
+		/// <summary>
+		/// The queue of <see cref="OpenFileContents(FileInfo, ASMFile?)"/> calls made while paused
+		/// </summary>
+		private Queue<FOPENCALL> chewQueue = new Queue<FOPENCALL>();
 
-        /// <summary>
-        /// Gets whether this control is paused. See: <see cref="Pause"/>
-        /// </summary>
-        public bool Paused { get; private set; }
+		/// <summary>
+		/// Gets whether this control is paused. See: <see cref="Pause"/>
+		/// </summary>
+		public bool Paused { get; private set; }
 
-        public ASMControl()
-        {
-            InitializeComponent();
-            FileBrowserTabView.Items.Clear();
+		public ASMControl()
+		{
+			InitializeComponent();
+			FileBrowserTabView.Items.Clear();
 			FileBrowserTabView.SelectionChanged += FileBrowserTabView_SelectionChanged;
 		}
 
@@ -52,12 +52,12 @@ namespace StarFoxMapVisualizer.Controls
 			}
 		}
 
-		private void DisplayEditorTab(ASM_FINST tag, ASMChunk chunk)
+		private void DisplayEditorTab(ASM_FINST<AsmAvalonEditor> tag, ASMChunk chunk)
 		{
 			FilePathBlock.Text = tag.OpenFile.FullName;
 			current.EditorScreen.Focus();
 			if (chunk != null) {
-				current.EditorScreen.JumpToSymbol(chunk);
+				current.EditorScreen.ScrollToSymbol(chunk);
 			}
 			_ = Dispatcher.InvokeAsync(current.EditorScreen.Focus, DispatcherPriority.ApplicationIdle);
 		}
@@ -66,84 +66,85 @@ namespace StarFoxMapVisualizer.Controls
 		/// Any calls made to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> are queued until this control is <see cref="Unpause"/>'d
 		/// </summary>
 		public void Pause()
-        {
-            Paused = true;
-            IsEnabled = false;
-        }
-        /// <summary>
-        /// Unpauses the control and runs all calls to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> asyncronously
-        /// </summary>
-        /// <returns></returns>
-        public async Task Unpause()
-        {
-            Paused = false;
-            IsEnabled = true;
-            while (TryDequeue(chewQueue, out var call))
-                await doFileOpenTaskAsync(call);
-        }
+		{
+			Paused = true;
+			IsEnabled = false;
+		}
+		/// <summary>
+		/// Unpauses the control and runs all calls to <see cref="OpenFileContents(FileInfo, ASMFile?)"/> asyncronously
+		/// </summary>
+		/// <returns></returns>
+		public async Task Unpause()
+		{
+			Paused = false;
+			IsEnabled = true;
+			while (TryDequeue(chewQueue, out var call))
+				await DoFileOpenTaskAsync(call);
+		}
 
-        private static bool TryDequeue<T>(/*this*/ Queue<T> self, out T result)
-        {
-            if ((self != null) && (self.Count > 0)) {
-                try {
-                    result = self.Dequeue();
-                    return true;
-                } catch (Exception) {
+		private static bool TryDequeue<T>(/*this*/ Queue<T> self, out T result)
+		{
+			if ((self != null) && (self.Count > 0)) {
+				try {
+					result = self.Dequeue();
+					return true;
+				}
+				catch (Exception) {
 					result = default;
 					return false;
 				}
-            } else {
-                result = default;
-                return false;
-            }
-        }
+			}
+			else {
+				result = default;
+				return false;
+			}
+		}
 
-		private ASM_FINST TabItemTagAt(int index)
+		private ASM_FINST<AsmAvalonEditor> TabItemTagAt(int index)
 		{
 			if (index >= 0) {
 				// WTF M$, using weakly typed collections when you already have GENERICS
 				var selectedTab = FileBrowserTabView.Items[index] as TabItem;
-				return selectedTab?.Tag as ASM_FINST;
-			} else {
+				return selectedTab?.Tag as ASM_FINST<AsmAvalonEditor>;
+			}
+			else {
 				return null;
 			}
 		}
 
 		private class FOPENCALL
-        {
-            public FileInfo FileSelected;
-            public ASMFile FileData;
-            /// <summary>
-            /// The symbol to jump to after opening, if applicable
-            /// </summary>
-            public ASMChunk chunk;
-        }
-        private async Task doFileOpenTaskAsync(FOPENCALL Call)
-        {
-            void OpenTab(ASM_FINST inst)
-            {
-                FileBrowserTabView.SelectedItem = inst.Tab; // select the tab
-                current = inst;
-                DisplayEditorTab(inst, Call.chunk);
+		{
+			public FileInfo FileSelected;
+			public ASMFile FileData;
+			/// <summary>
+			/// The symbol to jump to after opening, if applicable
+			/// </summary>
+			public ASMChunk Chunk;
+		}
+		private async Task DoFileOpenTaskAsync(FOPENCALL call)
+		{
+			void OpenTab(ASM_FINST<AsmAvalonEditor> inst)
+			{
+				FileBrowserTabView.SelectedItem = inst.Tab; // select the tab
+				current = inst;
+				DisplayEditorTab(inst, call.Chunk);
 			}
-            if (fileInstanceMap.TryGetValue(Call.FileSelected.FullName, out var finst))
-            {
-                OpenTab(finst);// select the tab
-                return;
-            }
-            foreach (var fileInstance in fileInstanceMap.Values)
-            {
-                if (Call.FileSelected.FullName == fileInstance.OpenFile.FullName) // FILE Opened?
-                {
-                    OpenTab(fileInstance);// select the tab
-                    return;
-                }
-            }
-            var tab = new TabItem()
-            {
-                Header = Call.FileSelected.Name,
-                ToolTip = Call.FileSelected.FullName
-            };
+			if (fileInstanceMap.TryGetValue(call.FileSelected.FullName, out var finst)) {
+				OpenTab(finst);	// select the tab
+				return;
+			}
+			foreach (var fileInstance in fileInstanceMap.Values) {
+				if (call.FileSelected.FullName == fileInstance.OpenFile.FullName) {	// FILE Opened?
+
+					OpenTab(fileInstance);	// select the tab
+					return;
+				}
+			}
+			var tab = new TabItem()
+			{
+				Header = call.FileSelected.Name,
+				ToolTip = call.FileSelected.FullName
+			};
 			tab.MouseDoubleClick += delegate
 			{
 				int selectedIndex = FileBrowserTabView.SelectedIndex;
@@ -157,7 +158,8 @@ namespace StarFoxMapVisualizer.Controls
 				// more tabs, switch to the next one to the left
 				if (FileBrowserTabView.Items.Count <= 1) {
 					selectedIndex = -1;
-				} else if (selectedIndex > 0) {
+				}
+				else if (selectedIndex > 0) {
 					selectedIndex--;
 				}
 				if (selectedIndex > -1) {
@@ -169,66 +171,67 @@ namespace StarFoxMapVisualizer.Controls
 					}
 				}
 			};
-            var instance = new ASM_FINST() {
-                OpenFile = Call.FileSelected,
-                symbolMap = new Dictionary<ASMChunk, Run>(),
-                Tab = tab,
-                FileImportData = Call.FileData
-            };
-            tab.Tag = instance;
-            var newEditZone = new ASMCodeEditor(this, instance)
-            {
-                FontSize = BaseTextSize
-            };
-            instance.StateObject = newEditZone;
-            tab.Content = newEditZone;
+			var instance = new ASM_FINST<AsmAvalonEditor>()
+			{
+				OpenFile = call.FileSelected,
+				SymbolMap = new Dictionary<ASMChunk, Run>(),
+				Tab = tab,
+				FileImportData = call.FileData
+			};
+			tab.Tag = instance;
+			var newEditZone = new AsmAvalonEditor(this, instance)
+			{
+				FontSize = BaseTextSize
+			};
+			instance.StateObject = newEditZone;
+			tab.Content = newEditZone;
 
-            fileInstanceMap.Add(Call.FileSelected.FullName, instance);
-            FileBrowserTabView.Items.Add(tab);
-            OpenTab(instance);
-            await ParseAsync(Call.FileSelected);
-        }
+			fileInstanceMap.Add(call.FileSelected.FullName, instance);
+			FileBrowserTabView.Items.Add(tab);
+			OpenTab(instance);
+			await ParseAsync(call.FileSelected);
+		}
 
 		public async Task OpenFileContents(FileInfo FileSelected, ASMFile FileData = default, ASMChunk Symbol = default)
-        {
-            var call = new FOPENCALL()
-            {
-                FileSelected = FileSelected,
-                FileData = FileData,
-                chunk = Symbol,
-            };
-            if (Paused)
-            {
-                chewQueue.Enqueue(call);
-                return;
-            }
-            await doFileOpenTaskAsync(call);
-        }
-        public Task OpenSymbol(ASMChunk chunk) => OpenFileContents(new FileInfo(chunk.OriginalFileName), null, chunk);
+		{
+			var call = new FOPENCALL()
+			{
+				FileSelected = FileSelected,
+				FileData = FileData,
+				Chunk = Symbol,
+			};
+			if (Paused) {
+				chewQueue.Enqueue(call);
+				return;
+			}
+			await DoFileOpenTaskAsync(call);
+		}
 
-        private DispatcherOperation ParseAsync(FileInfo File)
-        {
-            return Dispatcher.InvokeAsync(async delegate
-            {
-                await EditorScreen.InvalidateFileContents();
-            });
-        }
+		public Task OpenSymbol(ASMChunk chunk) => OpenFileContents(new FileInfo(chunk.OriginalFileName), null, chunk);
 
-        private void ButtonZoomRestore_Click(object sender, RoutedEventArgs e)
-        {
-            EditorScreen.FontSize = BaseTextSize;
-        }
+		private DispatcherOperation ParseAsync(FileInfo File)
+		{
+			return Dispatcher.InvokeAsync(delegate
+			{
+				EditorScreen.InvalidateFileContents();
+			});
+		}
 
-        private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
-        {
-            // The compiler will turn the division of the constant 
-            // to a multiplication of its reciprocal.
-	        EditorScreen.FontSize = Math.Max(MinTextSize, EditorScreen.FontSize * (1.0 / ZoomStepFactor));
-        }
+		private void ButtonZoomRestore_Click(object sender, RoutedEventArgs e)
+		{
+			EditorScreen.FontSize = BaseTextSize;
+		}
 
-        private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
-        {
-	        EditorScreen.FontSize = Math.Min(MaxTextSize, EditorScreen.FontSize * ZoomStepFactor);
-        }
-    }
+		private void ButtonZoomOut_Click(object sender, RoutedEventArgs e)
+		{
+			// The compiler will turn the division of the constant 
+			// to a multiplication of its reciprocal.
+			EditorScreen.FontSize = Math.Max(MinTextSize, EditorScreen.FontSize * (1.0 / ZoomStepFactor));
+		}
+
+		private void ButtonZoomIn_Click(object sender, RoutedEventArgs e)
+		{
+			EditorScreen.FontSize = Math.Min(MaxTextSize, EditorScreen.FontSize * ZoomStepFactor);
+		}
+	}
 }

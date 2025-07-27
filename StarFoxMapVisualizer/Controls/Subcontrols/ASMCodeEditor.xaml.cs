@@ -21,11 +21,12 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
     public partial class ASMCodeEditor : RichTextBox
     {
         private readonly ASMControl parent; // attached parent control
-        internal ASM_FINST FileInstance { get; } // the current context for this control
-        private Dictionary<ASMChunk, Run> symbolMap => current?.symbolMap; // where all of the symbols in the document are located
-        private ASM_FINST current => FileInstance; // band-aid
+        private ASM_FINST<ASMCodeEditor> FileInstance { get; } // the current context for this control
+        private Dictionary<ASMChunk, Run> symbolMap => current?.SymbolMap; // where all of the symbols in the document are located
+        private ASM_FINST<ASMCodeEditor> current => FileInstance; // band-aid
         private IEnumerable<ASMMacro> macros; // performance cache
         private IEnumerable<string> macroNames; // performance cache
+        
         /// <summary>
         /// Invalidates the macro symbol caches, causing them to be reloaded from <see cref="AppResources.Includes"/>
         /// </summary>
@@ -39,38 +40,41 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
         {
             InitializeComponent();
         }
+
         public ASMCodeEditor(string Line) : this()
         {
             ShowStringContent(Line);
         }
+
         /// <summary>
         /// Creates a new ASMCodeEditor attached to the <see cref="ASMControl"/> it's a child of.
         /// <para>This control cannot work without attaching to a <see cref="ASMControl"/></para>
         /// </summary>
         /// <param name="Parent"></param>
         /// <param name="FileInstance"></param>
-        public ASMCodeEditor(ASMControl Parent, ASM_FINST FileInstance) : this()
+        public ASMCodeEditor(ASMControl Parent, ASM_FINST<ASMCodeEditor> FileInstance) : this()
         {
             parent = Parent;
             this.FileInstance = FileInstance;
         }
+
         /// <summary>
         /// Jumps to the given symbol, if it is present in this document
         /// </summary>
         /// <param name="Chunk"></param>
-        public bool JumpToSymbol(ASMChunk Chunk)
+        public bool ScrollToSymbol(ASMChunk Chunk)
         {
             var chunk = Chunk;
             if (chunk == null) return false;
             if (chunk.OriginalFileName != current.OpenFile.FullName) return false;
-            if (current?.symbolMap?.TryGetValue(chunk, out var run) ?? false)
+            if (current?.SymbolMap?.TryGetValue(chunk, out var run) ?? false)
             {
                 ScrollToInline(run);
                 return true;
             }
             else
             {
-                JumpToLine(Chunk.Line);
+                ScrollToLine(Chunk.Line);
                 return true;
             }
             return false;
@@ -82,7 +86,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
             ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
             CaretPosition = Inline.ContentStart;
         }
-        public void JumpToLine(long Line)
+        public void ScrollToLine(int Line)
         {
             var map = current?.NewLineMap;
             if (map == default) return;
