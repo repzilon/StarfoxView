@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SyntaxDefinition name="SuperFX and 65c816 Assembly" extensions=".asm;.inc;.ext;.mc" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="Green" exampleText="; comment" />
+  <Color name="String" foreground="Blue" exampleText="&quot;Hello, World!&quot;"/>
+  <Color name="ConditionalAssembly" foreground="Green" exampleText="ifne pal" />
+  <Color name="MacroProcessor" foreground="Olive" exampleText="fopen msgs.txt" />
+  <Color name="Punctuation" exampleText="a(b.c);" />
+  <Color name="ValueTypeKeywords" fontWeight="bold" foreground="Red" />
+  <Color name="ReferenceTypeKeywords" foreground="Red" />
+  <Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="adc"/>
+  <Color name="NumberLiteral" foreground="DarkBlue" exampleText="$31"/>
+  <Color name="ThisOrBaseReference" fontWeight="bold"/>
+  <Color name="NullOrValueKeywords" fontWeight="bold"/>
+  <Color name="Keywords" fontWeight="bold" foreground="Blue" />
+  <Color name="GotoKeywords" foreground="Navy"/>
+  <Color name="ContextKeywords" foreground="Navy"/>
+  <Color name="ExceptionKeywords" fontWeight="bold" foreground="Teal"/>
+  <Color name="CheckedKeyword" fontWeight="bold" foreground="DarkGray"/>
+  <Color name="UnsafeKeywords" foreground="Olive"/>
+  <Color name="OperatorKeywords" fontWeight="bold" foreground="Pink"/>
+  <Color name="ParameterModifiers" fontWeight="bold" foreground="DeepPink"/>
+  <Color name="Modifiers" foreground="Brown"/>
+  <Color name="Visibility" fontWeight="bold" foreground="Blue"/>
+  <Color name="NamespaceKeywords" fontWeight="bold" foreground="Green"/>
+  <Color name="GetSetAddRemove" foreground="SaddleBrown"/>
+  <Color name="TrueFalse" fontWeight="bold" foreground="DarkCyan"/>
+  <Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan"/>
+  <Color name="SemanticKeywords" fontWeight="bold" foreground="DarkCyan" />
+
+  <RuleSet name="CommentMarkerSet">
+    <Keywords fontWeight="bold" foreground="Red">
+      <Word>TODO</Word>
+      <Word>FIXME</Word>
+    </Keywords>
+    <Keywords fontWeight="bold" foreground="#E0E000">
+      <Word>HACK</Word>
+      <Word>UNDONE</Word>
+    </Keywords>
+  </RuleSet>
+
+  <!-- This is the main ruleset. -->
+  <RuleSet ignoreCase="true">
+    <Span color="ConditionalAssembly">
+      <!-- preprocessor directives that allows comments -->
+      <Begin fontWeight="bold">
+        \b(ifeq|ifne|ifge|ifle|ifgt|iflt|ifd|ifnd|ifc|ifnc|ifv|ifnv|ifs|ifns|iffe|iffne|elseif|endc)\b
+      </Begin>
+      <RuleSet>
+        <Span color="Comment" ruleSet="CommentMarkerSet">
+          <Begin>;</Begin>
+        </Span>
+      </RuleSet>
+    </Span>
+
+    <Span color="MacroProcessor">
+      <!-- preprocessor directives that allows comments -->
+      <Begin fontWeight="bold">
+        \b(ansi|checkmac|date|db|dw|ds|defend|deferror|error_wrong_mode|error|erro|defs|end|endm|endr|equ|equr|expr|extern|fabcard|fail|fopen|fclose|getenv|getheap|incbin|inccol|incdir|include|irp|irs|list|local|longa|longi|lower|macro|mario|m_error|mexit|narg|on|off|org|output|printf|prtf|public|rols|run|release|rept|send|setdbr|shorta|shorti|sice|string|strlen|substr|suppress|time|type|upper|warn|write)\b
+      </Begin>
+      <RuleSet>
+        <Span color="Comment" ruleSet="CommentMarkerSet">
+          <Begin>;</Begin>
+        </Span>
+      </RuleSet>
+    </Span>
+
+    <Span color="Comment" ruleSet="CommentMarkerSet">
+      <Begin>;</Begin>
+    </Span>
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+
+    <Span color="String">
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+
+    <Span color="String">
+      <Begin>&lt;</Begin>
+      <End>&gt;</End>
+    </Span>
+
+    <!--
+    <Keywords color="TypeKeywords">
+      <Word>as</Word>
+      <Word>is</Word>
+      <Word>new</Word>
+      <Word>sizeof</Word>
+      <Word>typeof</Word>
+      <Word>stackalloc</Word>
+    </Keywords>
+
+    <Keywords color="TrueFalse">
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
+
+    <Keywords color="Keywords">
+      <Word>else</Word>
+      <Word>if</Word>
+      <Word>switch</Word>
+      <Word>case</Word>
+      <Word>default</Word>
+      <Word>do</Word>
+      <Word>for</Word>
+      <Word>foreach</Word>
+      <Word>in</Word>
+      <Word>while</Word>
+      <Word>lock</Word>
+    </Keywords>
+
+    <Keywords color="GotoKeywords">
+      <Word>break</Word>
+      <Word>continue</Word>
+      <Word>goto</Word>
+      <Word>return</Word>
+    </Keywords>
+
+    <Keywords color="ContextKeywords">
+      <Word>yield</Word>
+      <Word>partial</Word>
+      <Word>global</Word>
+      <Word>where</Word>
+      <Word>select</Word>
+      <Word>group</Word>
+      <Word>by</Word>
+      <Word>into</Word>
+      <Word>from</Word>
+      <Word>ascending</Word>
+      <Word>descending</Word>
+      <Word>orderby</Word>
+      <Word>let</Word>
+      <Word>join</Word>
+      <Word>on</Word>
+      <Word>equals</Word>
+      <Word>var</Word>
+      <Word>dynamic</Word>
+      <Word>await</Word>
+    </Keywords>
+
+    <Keywords color="ExceptionKeywords">
+      <Word>try</Word>
+      <Word>throw</Word>
+      <Word>catch</Word>
+      <Word>finally</Word>
+    </Keywords>
+
+    <Keywords color="CheckedKeyword">
+      <Word>checked</Word>
+      <Word>unchecked</Word>
+    </Keywords>
+
+    <Keywords color="UnsafeKeywords">
+      <Word>fixed</Word>
+      <Word>unsafe</Word>
+    </Keywords>
+
+    <Keywords color="ValueTypeKeywords">
+      <Word>bool</Word>
+      <Word>byte</Word>
+      <Word>char</Word>
+      <Word>decimal</Word>
+      <Word>double</Word>
+      <Word>enum</Word>
+      <Word>float</Word>
+      <Word>int</Word>
+      <Word>long</Word>
+      <Word>sbyte</Word>
+      <Word>short</Word>
+      <Word>struct</Word>
+      <Word>uint</Word>
+      <Word>ushort</Word>
+      <Word>ulong</Word>
+    </Keywords>
+
+    <Keywords color="ReferenceTypeKeywords">
+      <Word>class</Word>
+      <Word>interface</Word>
+      <Word>delegate</Word>
+      <Word>object</Word>
+      <Word>string</Word>
+      <Word>void</Word>
+    </Keywords>
+
+    <Keywords color="OperatorKeywords">
+      <Word>explicit</Word>
+      <Word>implicit</Word>
+      <Word>operator</Word>
+    </Keywords>
+
+    <Keywords color="ParameterModifiers">
+      <Word>params</Word>
+      <Word>ref</Word>
+      <Word>out</Word>
+    </Keywords>
+    -->
+
+    <!--
+    <Keywords color="Modifiers">
+      <Word>equ</Word>
+    </Keywords>
+
+    <Keywords color="Visibility">
+      <Word>public</Word>
+      <Word>protected</Word>
+      <Word>private</Word>
+      <Word>internal</Word>
+    </Keywords>
+
+    <Keywords color="NamespaceKeywords">
+      <Word>namespace</Word>
+      <Word>using</Word>
+    </Keywords>
+
+    <Keywords color="GetSetAddRemove">
+      <Word>get</Word>
+      <Word>set</Word>
+      <Word>add</Word>
+      <Word>remove</Word>
+    </Keywords>
+
+    <Keywords color="NullOrValueKeywords">
+      <Word>null</Word>
+      <Word>value</Word>
+    </Keywords>
+
+    <Keywords color="SemanticKeywords">
+      <Word>nameof</Word>
+    </Keywords>
+    -->
+
+    <Keywords color="MethodCall">
+      <Word>add</Word>
+      <Word>adc</Word>
+      <Word>alt1</Word>
+      <Word>alt2</Word>
+      <Word>alt3</Word>
+      <Word>and</Word>
+      <Word>asr</Word>
+      <Word>bcc</Word>
+      <Word>bcs</Word>
+      <Word>beq</Word>
+      <Word>bge</Word>
+      <Word>bic</Word>
+      <Word>blt</Word>
+      <Word>bmi</Word>
+      <Word>bne</Word>
+      <Word>bpl</Word>
+      <Word>bra</Word>
+      <Word>bvc</Word>
+      <Word>bvs</Word>
+      <Word>cache</Word>
+      <Word>cmode</Word>
+      <Word>cmp</Word>
+      <Word>colour</Word>
+      <Word>dec</Word>
+      <Word>dic2</Word>
+      <Word>fmult</Word>
+      <Word>from</Word>
+      <Word>getb</Word>
+      <Word>getbh</Word>
+      <Word>getbl</Word>
+      <Word>getbs</Word>
+      <Word>getc</Word>
+      <Word>hib</Word>
+      <Word>ibt</Word>
+      <Word>inc</Word>
+      <Word>iwt</Word>
+      <Word>jal</Word>
+      <Word>jmp</Word>
+      <Word>ldb</Word>
+      <Word>ldw</Word>
+      <Word>lea</Word>
+      <Word>link</Word>
+      <Word>ljmp</Word>
+      <Word>lm</Word>
+      <Word>lms</Word>
+      <Word>lmult</Word>
+      <Word>lob</Word>
+      <Word>loop</Word>
+      <Word>lsr</Word>
+      <Word>merge</Word>
+      <Word>move</Word>
+      <Word>moveb</Word>
+      <Word>moves</Word>
+      <Word>movew</Word>
+      <Word>mult</Word>
+      <Word>nop</Word>
+      <Word>not</Word>
+      <Word>or</Word>
+      <Word>plot</Word>
+      <Word>pop</Word>
+      <Word>push</Word>
+      <Word>ramb</Word>
+      <Word>rol</Word>
+      <Word>romb</Word>
+      <Word>ror</Word>
+      <Word>rpix</Word>
+      <Word>sbc</Word>
+      <Word>sbk</Word>
+      <Word>sex</Word>
+      <Word>sm</Word>
+      <Word>sms</Word>
+      <Word>stb</Word>
+      <Word>stop</Word>
+      <Word>stw</Word>
+      <Word>sub</Word>
+      <Word>swap</Word>
+      <Word>to</Word>
+      <Word>umult</Word>
+      <Word>with</Word>
+      <Word>xor</Word>
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule color="NumberLiteral">
+      \b([#][$][a-fA-F0-9]+|[^rR][#]?[0-9]+|[%][0-1]+)\b
+    </Rule>
+
+    <Rule color="Punctuation">
+      [?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>

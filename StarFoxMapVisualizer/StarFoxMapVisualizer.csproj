@@ -54,6 +54,9 @@
     <Content Include="Resources\SFViewLogoSmall.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\GSUandSuperNESAssemly.xshd" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PanCanvas\WpfPanAndZoom.csproj" />
     <ProjectReference Include="..\Starfox.Editor\Starfox.Editor.csproj" />
     <ProjectReference Include="..\StarFox.Interop.Audio\StarFox.Interop.Audio.csproj" />

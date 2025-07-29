@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Documents;
+using System.Xml;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFoxMapVisualizer.Misc;
@@ -17,9 +20,26 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 	{
 		private readonly ASMControl _parent; // attached parent control
 		private ASM_FINST<AsmAvalonEditor> FileInstance { get; } // the current context for this control
-		private Dictionary<ASMChunk, Run> SymbolMap => FileInstance?.SymbolMap; // where all of the symbols in the document are located
+		private Dictionary<ASMChunk, Run> SymbolMap => FileInstance?.SymbolMap; // where all the symbols in the document are located
 		private IEnumerable<ASMMacro> _macros; // performance cache
 		private IEnumerable<string> _macroNames; // performance cache
+
+		static AsmAvalonEditor()
+		{
+			IHighlightingDefinition customHighlighting;
+			using (Stream s = typeof(AsmAvalonEditor).Assembly.GetManifestResourceStream("StarFoxMapVisualizer.Resources.GSUandSuperNESAssemly.xshd")) {
+				if (s == null) {
+					throw new InvalidOperationException("Could not find syntax highlighting embedded resource");
+				}
+
+				using (XmlReader reader = new XmlTextReader(s)) {
+					customHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+				}
+			}
+			// and register it in the HighlightingManager
+			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly", 
+				new string[] { ".asm", ".inc", ".ext", ".mc" }, customHighlighting);
+		}
 
 		public AsmAvalonEditor()
 		{
