@@ -55,7 +55,7 @@
     <Span color="MacroProcessor">
       <!-- preprocessor directives that allows comments -->
       <Begin fontWeight="bold">
-        \b(ansi|checkmac|date|db|dw|ds|defend|deferror|error_wrong_mode|error|erro|defs|end|endm|endr|equ|equr|expr|extern|fabcard|fail|fopen|fclose|getenv|getheap|incbin|inccol|incdir|include|irp|irs|list|local|longa|longi|lower|macro|mario|m_error|mexit|narg|on|off|org|output|printf|prtf|public|rols|run|release|rept|send|setdbr|shorta|shorti|sice|string|strlen|substr|suppress|time|type|upper|warn|write)\b
+        \b(ansi|checkmac|date|db|dw|ds|defend|deferror|error_wrong_mode|error|erro|defs|end|endm|endr|equr|expr|extern|fabcard|fail|fopen|fclose|getenv|getheap|incbin|inccol|incdir|include|irp|irs|list|local|lower|macro|mario|m_error|mexit|narg|on|off|org|output|printf|prtf|public|rols|run|release|rept|send|setdbr|sice|string|strlen|substr|suppress|time|type|upper|warn|write)\b
       </Begin>
       <RuleSet>
         <Span color="Comment" ruleSet="CommentMarkerSet">
@@ -72,16 +72,19 @@
       <Begin>"</Begin>
       <End>"</End>
     </Span>
-
     <Span color="String">
       <Begin>'</Begin>
       <End>'</End>
     </Span>
-
     <Span color="String">
-      <Begin>&lt;</Begin>
+      <Begin>,&lt;</Begin>
       <End>&gt;</End>
     </Span>
+    <!--
+    <Rule color="String">
+      (?&lt;=\s|,)\s*&lt;[^&lt;&gt;\n]+?&gt;
+    </Rule>
+    -->
 
     <!--
     <Keywords color="TypeKeywords">
@@ -96,27 +99,6 @@
     <Keywords color="TrueFalse">
       <Word>true</Word>
       <Word>false</Word>
-    </Keywords>
-
-    <Keywords color="Keywords">
-      <Word>else</Word>
-      <Word>if</Word>
-      <Word>switch</Word>
-      <Word>case</Word>
-      <Word>default</Word>
-      <Word>do</Word>
-      <Word>for</Word>
-      <Word>foreach</Word>
-      <Word>in</Word>
-      <Word>while</Word>
-      <Word>lock</Word>
-    </Keywords>
-
-    <Keywords color="GotoKeywords">
-      <Word>break</Word>
-      <Word>continue</Word>
-      <Word>goto</Word>
-      <Word>return</Word>
     </Keywords>
 
     <Keywords color="ContextKeywords">
@@ -158,24 +140,6 @@
       <Word>unsafe</Word>
     </Keywords>
 
-    <Keywords color="ValueTypeKeywords">
-      <Word>bool</Word>
-      <Word>byte</Word>
-      <Word>char</Word>
-      <Word>decimal</Word>
-      <Word>double</Word>
-      <Word>enum</Word>
-      <Word>float</Word>
-      <Word>int</Word>
-      <Word>long</Word>
-      <Word>sbyte</Word>
-      <Word>short</Word>
-      <Word>struct</Word>
-      <Word>uint</Word>
-      <Word>ushort</Word>
-      <Word>ulong</Word>
-    </Keywords>
-
     <Keywords color="ReferenceTypeKeywords">
       <Word>class</Word>
       <Word>interface</Word>
@@ -195,19 +159,6 @@
       <Word>params</Word>
       <Word>ref</Word>
       <Word>out</Word>
-    </Keywords>
-    -->
-
-    <!--
-    <Keywords color="Modifiers">
-      <Word>equ</Word>
-    </Keywords>
-
-    <Keywords color="Visibility">
-      <Word>public</Word>
-      <Word>protected</Word>
-      <Word>private</Word>
-      <Word>internal</Word>
     </Keywords>
 
     <Keywords color="NamespaceKeywords">
@@ -232,6 +183,44 @@
     </Keywords>
     -->
 
+    <Keywords color="Visibility">
+      <Word>public</Word>
+      <Word>extern</Word>
+      <Word>global</Word>
+    </Keywords>
+    
+    <Keywords color="Modifiers">
+      <Word>equ</Word>
+    </Keywords>
+
+    <Keywords color="ValueTypeKeywords">
+      <Word>longa</Word>
+      <Word>longi</Word>
+      <Word>shorta</Word>
+      <Word>shorti</Word>
+    </Keywords>
+
+    <Keywords color="Keywords">
+      <Word>cmp</Word>
+      <Word>cpx</Word>
+      <Word>cpy</Word>
+    </Keywords>
+
+    <Keywords color="GotoKeywords">
+      <Word>bcc</Word>
+      <Word>bcs</Word>
+      <Word>beq</Word>
+      <Word>bmi</Word>
+      <Word>bne</Word>
+      <Word>bpl</Word>
+      <Word>bra</Word>
+      <Word>bvc</Word>
+      <Word>bvs</Word>
+      <Word>brl</Word>
+      <Word>rtl</Word>
+      <Word>rts</Word>
+    </Keywords>
+
     <Keywords color="MethodCall">
       <Word>add</Word>
       <Word>adc</Word>
@@ -240,21 +229,11 @@
       <Word>alt3</Word>
       <Word>and</Word>
       <Word>asr</Word>
-      <Word>bcc</Word>
-      <Word>bcs</Word>
-      <Word>beq</Word>
       <Word>bge</Word>
       <Word>bic</Word>
       <Word>blt</Word>
-      <Word>bmi</Word>
-      <Word>bne</Word>
-      <Word>bpl</Word>
-      <Word>bra</Word>
-      <Word>bvc</Word>
-      <Word>bvs</Word>
       <Word>cache</Word>
       <Word>cmode</Word>
-      <Word>cmp</Word>
       <Word>colour</Word>
       <Word>dec</Word>
       <Word>dic2</Word>
@@ -313,15 +292,90 @@
       <Word>umult</Word>
       <Word>with</Word>
       <Word>xor</Word>
+      <Word>asl</Word>
+      <Word>bit</Word>
+      <Word>clc</Word>
+      <Word>cld</Word>
+      <Word>cli</Word>
+      <Word>clv</Word>
+      <Word>cop</Word>
+      <Word>dc</Word>
+      <Word>dec</Word>
+      <Word>dex</Word>
+      <Word>dey</Word>
+      <Word>eor</Word>
+      <Word>inc</Word>
+      <Word>inx</Word>
+      <Word>iny</Word>
+      <Word>jmp</Word>
+      <Word>jml</Word>
+      <Word>jsr</Word>
+      <Word>jsl</Word>
+      <Word>lda</Word>
+      <Word>ldx</Word>
+      <Word>ldy</Word>
+      <Word>lsr</Word>
+      <Word>mvn</Word>
+      <Word>mvp</Word>
+      <Word>nop</Word>
+      <Word>ora</Word>
+      <Word>pea</Word>
+      <Word>pei</Word>
+      <Word>per</Word>
+      <Word>pha</Word>
+      <Word>phb</Word>
+      <Word>phd</Word>
+      <Word>phk</Word>
+      <Word>php</Word>
+      <Word>phx</Word>
+      <Word>phy</Word>
+      <Word>pla</Word>
+      <Word>plb</Word>
+      <Word>pld</Word>
+      <Word>plp</Word>
+      <Word>plx</Word>
+      <Word>ply</Word>
+      <Word>rep</Word>
+      <Word>rol</Word>
+      <Word>ror</Word>
+      <Word>rti</Word>
+      <Word>sbc</Word>
+      <Word>sec</Word>
+      <Word>sed</Word>
+      <Word>sei</Word>
+      <Word>sep</Word>
+      <Word>sta</Word>
+      <Word>stx</Word>
+      <Word>sty</Word>
+      <Word>stp</Word>
+      <Word>stz</Word>
+      <Word>swa</Word>
+      <Word>tax</Word>
+      <Word>tay</Word>
+      <Word>tcd</Word>
+      <Word>tcs</Word>
+      <Word>tdc</Word>
+      <Word>tdc</Word>
+      <Word>tdx</Word>
+      <Word>txa</Word>
+      <Word>txs</Word>
+      <Word>txy</Word>
+      <Word>tya</Word>
+      <Word>tyx</Word>
+      <Word>trb</Word>
+      <Word>tsb</Word>
+      <Word>wai</Word>
+      <Word>wdm</Word>
+      <Word>xba</Word>
+      <Word>xce</Word>
     </Keywords>
 
-    <!-- Digits -->
     <Rule color="NumberLiteral">
-      \b([#][$][a-fA-F0-9]+|[^rR][#]?[0-9]+|[%][0-1]+)\b
+      (?:\W|^)([#][-]?[0-9]+|\b[0-9]+|\#\$[0-9A-Fa-f]+|\$[0-9A-Fa-f]+|[0-9A-Fa-f]+h|[-][0-9]|[%][01]+)(?:\W|$)
     </Rule>
 
     <Rule color="Punctuation">
-      [?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+      [?,;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
     </Rule>
   </RuleSet>
 </SyntaxDefinition>
