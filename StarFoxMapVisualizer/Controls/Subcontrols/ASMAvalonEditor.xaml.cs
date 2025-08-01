@@ -37,7 +37,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				}
 			}
 			// and register it in the HighlightingManager
-			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly", 
+			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly (Argonaut Syntax)", 
 				new string[] { ".asm", ".inc", ".ext", ".mc" }, customHighlighting);
 		}
 

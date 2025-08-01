@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SyntaxDefinition name="SuperFX and 65c816 Assembly (Argonaut syntax)" extensions=".asm;.inc;.ext;.mc" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Comment" foreground="#808080" exampleText="; comment" />
+  <Color name="Comment" foreground="#999999" exampleText="; comment" />
   <Color name="String" foreground="#336699" exampleText="&quot;Hello, World!&quot;"/>
   <Color name="NumberLiteral" foreground="#0099cc" exampleText="$31"/>
   <Color name="Punctuation" foreground="#ff9933" exampleText="a(b.c);" />
@@ -18,6 +18,8 @@
   <Color name="GotoKeywords" foreground="#ff6633" fontWeight="bold"/>
   <Color name="JumpMnemonics" foreground="#cc9900" fontWeight="bold"/>
   <Color name="ReturnMnemonics" foreground="#cc9900"/>
+  
+  <Color name="SpecialMnemonics" foreground="#663399" fontWeight="bold" />
   
   <Color name="Visibility" fontWeight="bold" foreground="#cc0066"/>
   <Color name="Modifiers" foreground="Brown"/>
@@ -109,6 +111,7 @@
     </Keywords>
 
     <Keywords color="RegisterLengthInstructions">
+      <!-- 65c816 -->
       <Word>rep</Word>
       <Word>sep</Word>
       <Word>.b</Word>
@@ -117,49 +120,75 @@
     </Keywords>
       
     <Keywords color="RegisterLengthDirectives">
+      <!-- 65c816 -->
       <Word>longa</Word>
       <Word>longi</Word>
       <Word>shorta</Word>
       <Word>shorti</Word>
     </Keywords>
     
+    <!-- Not all macros from the family are here, only the ones really in use in StarFox 1 source -->
     <Keywords color="RegisterLengthStarfoxMacros">
+      <!-- 65c816 -->
       <Word>a8</Word>
+      <Word>i8</Word>
       <Word>a16</Word>
+      <Word>i16</Word>
+      <Word>a8sec</Word>
+      <Word>ai16</Word>
+      <Word>ai8</Word>
       <Word>a8i16</Word>
+      <Word>a16i8</Word>
     </Keywords>
 
     <Keywords color="CompareMnemonics">
-      <Word>cmp</Word>
+      <!-- Both -->
+      <Word>cmp</Word> 
+      <!-- 65c816 -->
       <Word>cpx</Word>
       <Word>cpy</Word>
     </Keywords>
 
     <Keywords color="GotoKeywords">
-      <Word>bcc</Word>
-      <Word>bcs</Word>
+      <!-- Both -->
       <Word>beq</Word>
-      <Word>bmi</Word>
       <Word>bne</Word>
       <Word>bpl</Word>
       <Word>bra</Word>
+      <Word>bcc</Word>
+      <Word>bcs</Word>
+      <Word>bmi</Word>
       <Word>bvc</Word>
       <Word>bvs</Word>
+      <!-- SuperFX -->
+      <Word>bge</Word>
+      <Word>blt</Word>
+      <Word>loop</Word>
+      <!-- 65c816 -->
       <Word>brl</Word>
     </Keywords>
     
     <Keywords color="JumpMnemonics">
+      <!-- Both -->
       <Word>jmp</Word>
+      <!-- SuperFX -->
+      <Word>ljmp</Word>
+      <!-- 65c816 -->
       <Word>jsr</Word>
       <Word>jsl</Word>
     </Keywords>
     
     <Keywords color="ReturnMnemonics">
+      <!-- SuperFX -->
+      <Word>link</Word>
+      <Word>nop</Word> <!-- because of the pipeline hardware issue -->
+      <!-- 65c816 -->
       <Word>rtl</Word>
       <Word>rts</Word>
     </Keywords>
 
     <Keywords color="Mnemonics">
+      <!-- SuperFX -->
       <Word>add</Word>
       <Word>adc</Word>
       <Word>alt1</Word>
@@ -167,12 +196,8 @@
       <Word>alt3</Word>
       <Word>and</Word>
       <Word>asr</Word>
-      <Word>bge</Word>
       <Word>bic</Word>
-      <Word>blt</Word>
       <Word>cache</Word>
-      <Word>cmode</Word>
-      <Word>colour</Word>
       <Word>dec</Word>
       <Word>dic2</Word>
       <Word>fmult</Word>
@@ -181,7 +206,6 @@
       <Word>getbh</Word>
       <Word>getbl</Word>
       <Word>getbs</Word>
-      <Word>getc</Word>
       <Word>hib</Word>
       <Word>ibt</Word>
       <Word>inc</Word>
@@ -191,13 +215,10 @@
       <Word>ldb</Word>
       <Word>ldw</Word>
       <Word>lea</Word>
-      <Word>link</Word>
-      <Word>ljmp</Word>
       <Word>lm</Word>
       <Word>lms</Word>
       <Word>lmult</Word>
       <Word>lob</Word>
-      <Word>loop</Word>
       <Word>lsr</Word>
       <Word>merge</Word>
       <Word>move</Word>
@@ -205,17 +226,14 @@
       <Word>moves</Word>
       <Word>movew</Word>
       <Word>mult</Word>
-      <Word>nop</Word>
       <Word>not</Word>
       <Word>or</Word>
-      <Word>plot</Word>
       <Word>pop</Word>
       <Word>push</Word>
       <Word>ramb</Word>
       <Word>rol</Word>
       <Word>romb</Word>
       <Word>ror</Word>
-      <Word>rpix</Word>
       <Word>sbc</Word>
       <Word>sbk</Word>
       <Word>sex</Word>
@@ -230,6 +248,7 @@
       <Word>umult</Word>
       <Word>with</Word>
       <Word>xor</Word>
+      <!-- 65c816 -->
       <Word>asl</Word>
       <Word>bit</Word>
       <Word>clc</Word>
@@ -306,6 +325,15 @@
       <Word>wdm</Word>
       <Word>xba</Word>
       <Word>xce</Word>
+    </Keywords>
+
+    <Keywords color="SpecialMnemonics">
+      <!-- SuperFX, see SNES Development Manual from NoA, book 2, section 2, chapter 8 -->
+      <Word>cmode</Word>
+      <Word>colour</Word>
+      <Word>getc</Word>
+      <Word>plot</Word>
+      <Word>rpix</Word>
     </Keywords>
 
     <Rule color="NumberLiteral">
