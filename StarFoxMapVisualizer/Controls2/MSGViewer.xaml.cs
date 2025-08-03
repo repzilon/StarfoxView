@@ -102,6 +102,8 @@ namespace StarFoxMapVisualizer.Controls2
 					i++;
 				}
 			}
+
+			ResizeActorColumns();
 		}
 
 		private void AddMessage(Dictionary<string, ListBox> personToListBoxMap, MSGEntry Entry, int messageNumber)
