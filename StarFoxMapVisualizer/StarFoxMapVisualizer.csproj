@@ -54,7 +54,7 @@
     <Content Include="Resources\SFViewLogoSmall.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\GSUandSuperNESAssemly.xshd" />
+    <EmbeddedResource Include="Resources\GSUandSCPUAssembly.xshd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PanCanvas\WpfPanAndZoom.csproj" />

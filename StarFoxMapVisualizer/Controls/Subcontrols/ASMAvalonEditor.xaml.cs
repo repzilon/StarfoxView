@@ -27,7 +27,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		static AsmAvalonEditor()
 		{
 			IHighlightingDefinition customHighlighting;
-			using (Stream s = typeof(AsmAvalonEditor).Assembly.GetManifestResourceStream("StarFoxMapVisualizer.Resources.GSUandSuperNESAssemly.xshd")) {
+			using (Stream s = typeof(AsmAvalonEditor).Assembly.GetManifestResourceStream("StarFoxMapVisualizer.Resources.GSUandSCPUAssembly.xshd")) {
 				if (s == null) {
 					throw new InvalidOperationException("Could not find syntax highlighting embedded resource");
 				}
