@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFox.Interop.MISC;
@@ -86,11 +87,25 @@ namespace StarFox.Interop.MSG
 
 			var second = macroLine.TryGetParameter(translationIndex)?.ParameterContent ?? "blank in " + fileName;
 			var sound = macroLine.TryGetParameter(soundIndex)?.ParameterContent ?? "other";
-
 			var tt = this.TranslationTable;
-			if (MojiZeroTranslator.IsMojibake(second) && (tt != null)) {
+
+			if (MojiZeroTranslator.IsUtf8ReadInLatin1(second)) {
+				// Upstream UltraStarFox 1 version > 2.2 as of August 2025 switched to UTF-8 without BOM and without header
+#if NETFRAMEWORK || NETSTANDARD
+				var charSet = Encoding.Default;
+#else
+				var charSet = Encoding.Latin1;
+#endif
+				second = Encoding.UTF8.GetString(charSet.GetBytes(second));
+			} else if (MojiZeroTranslator.IsMojibake(second.Trim()) && (tt != null)) {
+				// Older versions of the source (upstream or fork)
 				second = MojiZeroTranslator.Decode(second, tt);
 				this.NeedsCharacterCodingTranslation = true;
+			} // Repzilon's UltraStarFox fork uses a charset header comment, whether the file is encoded in ISO-8859-15 (yes, part fifteen) or UTF-8; see ASMImporter.ProcChunk
+
+			// From any source, merge dakutens in japanese text
+			if (MojiZeroTranslator.IsJapaneseText(second)) {
+				second = MojiZeroTranslator.MergeDakutens(second);
 			}
 
 			return new MSGEntry(person, english, second, sound);

@@ -16,7 +16,7 @@ namespace StarFox.Interop.MSG
 	public static class MojiZeroTranslator
 	{
 		/// <summary>
-		/// Characters shown in MOJI_0.bmp found in UltraStarFox source
+		/// Characters shown in MOJI_0.bmp found in (Ultra)StarFox 1 source
 		/// </summary>
 		/// <remarks>
 		/// This constant is laid out in 7-character rows in source code, just like the bitmap image.
@@ -45,13 +45,12 @@ namespace StarFox.Interop.MSG
 "ォャュョッ,;" +
 "!?,・ABL";
 
-		// Dakuten and handakuten also apply to hiragana, but StarFox only uses katakana.
+		// Dakuten and handakuten also apply to hiragana, but StarFox 1 only uses katakana.
 		private const string DakutenableKana = "カキクケコサシスセソタチツテトハヒフヘホ";
 		private const string DakutenedKana = "ガギグゲゴザジズゼゾダヂヅデドバビブベボ";
 		private const string HandakutenableKana = "ハヒフヘホ";
 		private const string HandakutenedKana = "パピプペポ";
 
-		// TODO : this method does not do the job it is supposed to
 		public static string MergeDakutens(string text)
 		{
 			int i;
@@ -102,13 +101,7 @@ namespace StarFox.Interop.MSG
 					stbJapanese.Append((char)ch);
 				}
 			}
-#if DEBUG
-			var strJap = stbJapanese.ToString();
-			strJap = MergeDakutens(strJap);
-			return strJap;
-#else
-			return MergeDakutens(stbJapanese.ToString());
-#endif
+			return stbJapanese.ToString();
 		}
 
 		public static bool IsMojibake(string text)
@@ -127,6 +120,46 @@ namespace StarFox.Interop.MSG
 				// ReSharper disable once IntDivisionByZero (there is a length check above)
 				return (100 * n / c) < 50; // mojibake if less than 50% of letters
 			}
+		}
+
+		public static bool IsJapaneseText(string text)
+		{
+			if (String.IsNullOrEmpty(text)) {
+				return false;
+			} else {
+				var c = text.Length;
+				var n = 0;
+				for (int i = 0; i < c; i++) {
+					if (IsJapaneseChar(text[i])) {
+						n++;
+					}
+				}
+
+				// ReSharper disable once IntDivisionByZero (there is a length check above)
+				return (100 * n / c) >= 75; // japanese if at least 75% of characters
+			}
+		}
+
+		private static bool IsJapaneseChar(char what)
+		{
+			// Japanese-style punctuation	(3000 - 303f)
+			// Hiragana	(3040 - 309f), U+3040, U+3097 and U+3098 are undefined
+			// Katakana	(30a0 - 30ff)
+			// Full-width roman characters and half-width katakana	(ff00 - ffef)
+			// CJK unified ideographs - Common and uncommon kanji	(4e00 - 9faf)
+
+			if ((what >= 0x3000) && (what <= 0x30ff)) {
+				return (what != 0x3040) && (what != 0x3097) && (what != 0x3098);
+			} else if ((what >= 0xff00) && (what <= 0xffef)) {
+				return true;
+			} else {
+				return (what >= 0x4e00) && (what <= 0x9faf);
+			}
+		}
+
+		public static bool IsUtf8ReadInLatin1(string text)
+		{
+			return text.Contains("ãƒ");
 		}
 	}
 }

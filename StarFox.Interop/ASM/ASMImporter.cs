@@ -84,9 +84,10 @@ namespace StarFox.Interop.ASM
 
 		private StreamReader ImportCore(string filePath, FileStream stream, ref Encoding charSet, ASMFile newFile)
 		{
-			var reader = new StreamReader(stream, charSet);
+			var reader = new StreamReader(stream, charSet, true);
+			charSet = reader.CurrentEncoding;
 			while (!reader.EndOfStream) {
-				var chunk = ProcChunk(filePath, Context, reader, ref charSet); // process this line as a new chunk
+				var chunk = ProcChunk(filePath, Context, reader­, ref charSet); // process this line as a new chunk
 				if (chunk != null) {
 					newFile.Chunks.Add(chunk);
 				}
