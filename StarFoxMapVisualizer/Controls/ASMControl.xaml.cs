@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Threading;
 using StarFox.Interop.ASM;
 using StarFoxMapVisualizer.Controls.Subcontrols;
@@ -145,29 +146,30 @@ namespace StarFoxMapVisualizer.Controls
 				Header = call.FileSelected.Name,
 				ToolTip = call.FileSelected.FullName
 			};
-			tab.MouseDoubleClick += delegate
+			tab.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs args)
 			{
-				int selectedIndex = FileBrowserTabView.SelectedIndex;
-				if (selectedIndex >= 0) {
-					var tagged = TabItemTagAt(selectedIndex);
-					if (tagged != null) {
-						fileInstanceMap.Remove(tagged.OpenFile.FullName);
+				if (!(args.OriginalSource is ICSharpCode.AvalonEdit.Rendering.TextView)) {
+					int selectedIndex = FileBrowserTabView.SelectedIndex;
+					if (selectedIndex >= 0) {
+						var tagged = TabItemTagAt(selectedIndex);
+						if (tagged != null) {
+							fileInstanceMap.Remove(tagged.OpenFile.FullName);
+						}
+						FileBrowserTabView.Items.RemoveAt(selectedIndex);
 					}
-					FileBrowserTabView.Items.RemoveAt(selectedIndex);
-				}
-				// more tabs, switch to the next one to the left
-				if (FileBrowserTabView.Items.Count <= 1) {
-					selectedIndex = -1;
-				}
-				else if (selectedIndex > 0) {
-					selectedIndex--;
-				}
-				if (selectedIndex > -1) {
-					FileBrowserTabView.SelectedIndex = selectedIndex;
-					var tagged = TabItemTagAt(selectedIndex);
-					if (tagged != null) {
-						current = tagged;
-						DisplayEditorTab(tagged, null);
+					// more tabs, switch to the next one to the left
+					if (FileBrowserTabView.Items.Count <= 1) {
+						selectedIndex = -1;
+					} else if (selectedIndex > 0) {
+						selectedIndex--;
+					}
+					if (selectedIndex > -1) {
+						FileBrowserTabView.SelectedIndex = selectedIndex;
+						var tagged = TabItemTagAt(selectedIndex);
+						if (tagged != null) {
+							current = tagged;
+							DisplayEditorTab(tagged, null);
+						}
 					}
 				}
 			};
