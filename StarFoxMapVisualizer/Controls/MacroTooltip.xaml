@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StarFoxMapVisualizer.Controls"
              mc:Ignorable="d" x:Name="HOST"
-             MinHeight="100" MinWidth="200" MaxWidth="400" Background="{DynamicResource MacroTooltipColor}" Header="Name" FontFamily="{DynamicResource SFFont}" Foreground="White" Padding="5">
+             MinHeight="100" MinWidth="200" MaxWidth="400" Header="Name" FontFamily="{DynamicResource SFFont}" Padding="1">
     <HeaderedContentControl.Resources>
         <SolidColorBrush x:Key="MacroTooltipColor" Color="#FF004F69"/>
         <SolidColorBrush x:Key="DefineTooltipColor" Color="#FF33007F"/>
     </HeaderedContentControl.Resources>
     <HeaderedContentControl.Template>
         <ControlTemplate TargetType="HeaderedContentControl">
-            <Button Style="{StaticResource {x:Type Button}}" Padding="{TemplateBinding Padding}" IsEnabled="False" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <Button Padding="{TemplateBinding Padding}" IsEnabled="False" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <DockPanel>
                     <ContentPresenter DockPanel.Dock="Top" ContentSource="Header"/>
                     <ContentPresenter Margin="0,5,0,0" ContentSource="Content"/>
@@ -20,16 +20,10 @@
             </Button>
         </ControlTemplate>
     </HeaderedContentControl.Template>
-    <StackPanel>
+    <StackPanel Background="{DynamicResource MacroTooltipColor}" x:Name="DetailStack">
         <TextBlock x:Name="SubtitleText" Style="{StaticResource BodyText}" Opacity=".75" Text="Hello world"/>
         <ContentControl FontFamily="{StaticResource Atlantis}" FontSize="18">
             <WrapPanel x:Name="ParameterStack" Orientation="Horizontal">
-                <WrapPanel.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="Background" Value="{Binding Background, ElementName=HOST}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Style>
-                </WrapPanel.Resources>
                 <Button>PARAM</Button>
                 <Button>PARAM</Button>
             </WrapPanel>

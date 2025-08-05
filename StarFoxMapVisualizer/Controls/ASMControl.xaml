@@ -33,9 +33,7 @@
             </DockPanel>
         </Border>
         <TabControl Name="FileBrowserTabView" Style="{StaticResource SFTabViewerKey}">
-            <TabItem Header="File">
-                
-            </TabItem>
+            <TabItem Header="File"/>
         </TabControl>
     </DockPanel>
 </UserControl>
