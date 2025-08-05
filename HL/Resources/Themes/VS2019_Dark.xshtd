@@ -96,14 +96,14 @@
     <Color name="Comment"       foreground="#57A64A" />
     <Color name="String"        foreground="#D69D85"/>
     <Color name="NumberLiteral" foreground="#b5cea8"/>
-    <Color name="Punctuation"   foreground="White" />
+    <Color name="Punctuation"   foreground="#eeeeee" />
 
     <Color name="ConditionalAssembly" foreground="#9B9B9B" />
-    <Color name="MacroProcessor"      foreground="#669933" />
+    <Color name="MacroProcessor"      foreground="#99ca3c" />
 
-    <Color name="RegisterLengthInstructions"  fontWeight="bold" foreground="#cc3333"/>
-    <Color name="RegisterLengthDirectives"    foreground="#cc3333"/>
-    <Color name="RegisterLengthStarfoxMacros" foreground="#cc0066"/>
+    <Color name="RegisterLengthInstructions"  fontWeight="bold" foreground="#ffcc00"/>
+    <Color name="RegisterLengthDirectives"    foreground="#ffcc00"/>
+    <Color name="RegisterLengthStarfoxMacros" foreground="#ffff00"/>
 
     <Color name="Mnemonics" foreground="#dcdcaa" fontWeight="bold"/>
 
@@ -111,7 +111,7 @@
     <Color name="GotoKeywords"     foreground="#ff6633" fontWeight="bold"/>
     <Color name="JumpMnemonics"    foreground="#cc9900" fontWeight="bold"/>
     <Color name="ReturnMnemonics"  foreground="#cc9900"/>
-    <Color name="SpecialMnemonics" foreground="#663399" fontWeight="bold" />
+    <Color name="SpecialMnemonics" foreground="#B686FF" fontWeight="bold" />
 
     <Color name="Visibility" fontWeight="bold" foreground="#559CD6"/>
     <Color name="Modifiers"  foreground="#559CD6"/>

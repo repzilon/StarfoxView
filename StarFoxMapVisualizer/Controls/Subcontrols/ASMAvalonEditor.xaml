@@ -1,9 +1,10 @@
-﻿<avalonEdit:TextEditor
+﻿<avEditEx:TextEdit
     x:Class="StarFoxMapVisualizer.Controls.Subcontrols.AsmAvalonEditor"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:avEditEx="clr-namespace:TextEditLib;assembly=TextEditLib"
     mc:Ignorable="d" 
     Name="textEditor"
     SyntaxHighlighting="C#"

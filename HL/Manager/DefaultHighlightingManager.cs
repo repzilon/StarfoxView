@@ -14,6 +14,14 @@ namespace HL.Manager
 	/// </summary>
 	public sealed class DefaultHighlightingManager : ThemedHighlightingManager
 	{
+		public static class BuiltinThemes
+		{
+			public const string Light = nameof(Light);
+			public const string Dark = nameof(Dark);
+			public const string TrueBlue = nameof(TrueBlue);
+			public const string VisualStudio2019Dark = "VS2019_Dark";
+		}
+
 		#region ctors
 		/// <summary>
 		/// Static class constructor
@@ -22,21 +30,21 @@ namespace HL.Manager
 		{
 			var defaultManager = new DefaultHighlightingManager();
 
-			var theme = new HLTheme("Dark", "Light", "Dark",
+			var theme = new HLTheme(BuiltinThemes.Dark, BuiltinThemes.Light, "Dark",
 									HL_THEMES_NAMESPACE_ROOT, "Dark.xshtd", defaultManager);
 			defaultManager.ThemedHighlightingAdd(theme.Key, theme);
 
-			theme = new HLTheme("Light", HL_GENERIC_NAMESPACE_ROOT, "Light");
+			theme = new HLTheme(BuiltinThemes.Light, HL_GENERIC_NAMESPACE_ROOT, "Light");
 			defaultManager.ThemedHighlightingAdd(theme.Key, theme);
 
 			// Setup default theme without registration of Highlightings
 			defaultManager.SetCurrentThemeInternal(theme.Key);
 
-			theme = new HLTheme("TrueBlue", "Light", "True Blue",
+			theme = new HLTheme(BuiltinThemes.TrueBlue, BuiltinThemes.Light, "True Blue",
 								HL_THEMES_NAMESPACE_ROOT, "TrueBlue.xshtd", defaultManager);
 			defaultManager.ThemedHighlightingAdd(theme.Key, theme);
 
-			theme = new HLTheme("VS2019_Dark", "Light", "VS2019 Dark",
+			theme = new HLTheme(BuiltinThemes.VisualStudio2019Dark, BuiltinThemes.Light, "VS2019 Dark",
 								HL_THEMES_NAMESPACE_ROOT, "VS2019_Dark.xshtd", defaultManager);
 			defaultManager.ThemedHighlightingAdd(theme.Key, theme);
 
