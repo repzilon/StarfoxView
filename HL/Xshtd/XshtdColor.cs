@@ -107,9 +107,9 @@ namespace HL.Xshtd
 		/// <summary>
 		/// Serializes this XshdColor instance.
 		/// </summary>
-#if DOTNET4
+#if NET40
 		[System.Security.SecurityCritical]
-#else
+#elif NETCOREAPP3_0
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)

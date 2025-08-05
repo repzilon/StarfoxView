@@ -1,7 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
+    <TargetFrameworks>net46;net48;netcoreapp3.0;net6.0-windows7.0;net5.0-windows7.0</TargetFrameworks>
+    <NoWarn>NETSDK1138</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' != '17.0' ">
+    <TargetFrameworks>net40;netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net4;netcoreapp3.0</TargetFrameworks>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWPF>true</UseWPF>
     <Version>1.0.4</Version>
     <AssemblyVersion>1.0.4</AssemblyVersion>
@@ -11,7 +17,7 @@
     <Copyright>2019-2020</Copyright>
     <Description>This assembly implements a docking layout system for WPF.</Description>
 
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/Dirkster99/HL</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dirkster99/HL</RepositoryUrl>
     <PackageId>Dirkster.HL</PackageId>
@@ -115,8 +121,23 @@
     <EmbeddedResource Include="Resources\Themes\VS2019_Dark.xshtd" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AvalonEdit" Version="6.0.1" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <PackageReference Include="AvalonEdit" Version="[6.1.1]" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows7.0'">
+    <PackageReference Include="AvalonEdit" Version="[6.2.0.78]" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows7.0'">
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
   </ItemGroup>
 
   <!-- NuGet Packaging -->
