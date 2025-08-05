@@ -12,7 +12,7 @@ namespace HL.Manager
 	/// Implements a default highlighting manager for
 	/// AvalonEdit based themable syntax highlighting definitions.
 	/// </summary>
-	internal sealed class DefaultHighlightingManager : ThemedHighlightingManager
+	public sealed class DefaultHighlightingManager : ThemedHighlightingManager
 	{
 		#region ctors
 		/// <summary>
@@ -48,7 +48,7 @@ namespace HL.Manager
 		/// <summary>
 		/// Default class constructor
 		/// </summary>
-		public DefaultHighlightingManager()
+		private DefaultHighlightingManager()
 			: base()
 		{
 		}

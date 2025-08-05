@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0"?>
-<SyntaxDefinition name="BAT" extensions=".bat;.dos"
+<SyntaxDefinition name="DOS/Windows batch" extensions=".bat;.cmd"
                   xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
   <Color name="String"  foreground="Red" exampleText="string text = &quot;Hello, World!&quot;"/>

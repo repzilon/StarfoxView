@@ -38,8 +38,10 @@
     <None Remove="Modes\ModeV2.xsd" />
     <None Remove="Modes\ModeV2_htd.xsd" />
     <None Remove="Resources\Light\CPP-Mode.xshd" />
+    <None Remove="Resources\Light\CSharp-Mode.xshd" />
     <None Remove="Resources\Light\DOSBATCH.xshd" />
     <None Remove="Resources\Light\MarkDown-Mode.xshd" />
+    <None Remove="Resources\Light\XmlDoc.xshd" />
     <None Remove="Resources\Themes\Dark.xshtd" />
     <None Remove="Resources\Themes\TrueBlue.xshtd" />
     <None Remove="Resources\Themes\VS2019_Dark.xshtd" />
@@ -56,8 +58,11 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Light\CPP-Mode.xshd" />
+    <EmbeddedResource Include="Resources\Light\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Resources\Light\DOSBATCH.xshd" />
+    <EmbeddedResource Include="Resources\Light\GSUandSCPUAssembly.xshd" />
     <EmbeddedResource Include="Resources\Light\MarkDown-Mode.xshd" />
+    <EmbeddedResource Include="Resources\Light\XmlDoc.xshd" />
     <EmbeddedResource Include="Resources\Themes\Dark.xshtd" />
     <EmbeddedResource Include="Resources\Themes\TrueBlue.xshtd" />
     <EmbeddedResource Include="Resources\Themes\VS2019_Dark.xshtd" />

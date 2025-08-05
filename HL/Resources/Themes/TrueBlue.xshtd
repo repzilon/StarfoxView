@@ -57,6 +57,73 @@
     <Color name="LineBreak"      foreground="#FF222222" exampleText="end of line      \r\n2nd line   "/>
   </SyntaxDefinition>
 
+  <SyntaxDefinition name="C#" extensions=".cs">
+    <Color name="Comment"             foreground="#FF55FF00"/>
+    <Color name="String"              foreground="#FFFFFF00"/>
+    <Color name="StringInterpolation" foreground="White" exampleText="string text = $&quot;Hello, {name}!&quot;"/>
+    <Color name="Char"                foreground="#FFFFEF00"/>
+    <Color name="Preprocessor"        foreground="#FFFF8080"/>
+    <Color name="Punctuation"         foreground="#FFFFCF00"/>
+
+    <Color name="ValueTypeKeywords"     foreground="#FF00A0FF" exampleText="bool b = true;"/>
+
+    <Color name="ReferenceTypeKeywords" foreground="#FFFFA000" exampleText="object o;"/>
+    <Color name="MethodCall"            foreground="#FFFFA000"/>
+    <Color name="NumberLiteral"         foreground="#FFFFCF00"/>
+    <Color name="ThisOrBaseReference"   foreground="#FFFFA000"/>
+    <Color name="NullOrValueKeywords"   foreground="#FFFF8000"/>
+    <Color name="Keywords"              foreground="#FFFFE000"/>
+    <Color name="GotoKeywords"          foreground="#FFFFE000"/>
+    <Color name="ContextKeywords"       foreground="#FFFF8000"/>
+    <Color name="ExceptionKeywords"     foreground="#FFFF6000"/>
+    <Color name="CheckedKeyword"        foreground="#FFFF4000"/>
+    <Color name="UnsafeKeywords"        foreground="#FFFFC000"/>
+    <Color name="OperatorKeywords"      foreground="#FFFFE000"/>
+    <Color name="ParameterModifiers"    foreground="#FFFF8000"/>
+    <Color name="Modifiers"             foreground="#FFFF6000"/>
+    <Color name="Visibility"            foreground="#FFFF6000"/>
+    <Color name="NamespaceKeywords"     foreground="#FFFF4000"/>
+    <Color name="GetSetAddRemove"       foreground="#FFFFC000"/>
+    <Color name="TrueFalse"             foreground="#FFFF4000"/>
+    <Color name="TypeKeywords"          foreground="#FFFFC000"/>
+    <Color name="SemanticKeywords"      foreground="#FFFF5AB3" fontWeight="bold" exampleText="if (args == null) throw new ArgumentNullException(nameof(args));" />
+
+    <Color name="CommentMarkerSetTodo"       foreground="#FFFF0000" fontWeight="bold" />
+    <Color name="CommentMarkerSetHackUndone" foreground="#FF8B008B" fontWeight="bold" />
+  </SyntaxDefinition>
+
+  <SyntaxDefinition name="SuperFX and 65c816 Assembly (Argonaut syntax)" extensions=".asm;.inc;.ext;.mc">
+    <Color name="Comment"       foreground="#55FF00" />
+    <Color name="String"        foreground="#FFFF00"/>
+    <Color name="NumberLiteral" foreground="#FFCF00"/>
+    <Color name="Punctuation"   foreground="#FFCF00" />
+
+    <Color name="ConditionalAssembly" foreground="#FF8080" />
+    <Color name="MacroProcessor"      foreground="#669933" />
+
+    <Color name="RegisterLengthInstructions"  fontWeight="bold" foreground="#cc3333"/>
+    <Color name="RegisterLengthDirectives"    foreground="#cc3333"/>
+    <Color name="RegisterLengthStarfoxMacros" foreground="#cc0066"/>
+
+    <Color name="Mnemonics" foreground="#FFA000" fontWeight="bold"/>
+
+    <Color name="CompareMnemonics" foreground="#ff6633" />
+    <Color name="GotoKeywords"     foreground="#ff6633" fontWeight="bold"/>
+    <Color name="JumpMnemonics"    foreground="#cc9900" fontWeight="bold"/>
+    <Color name="ReturnMnemonics"  foreground="#cc9900"/>
+    <Color name="SpecialMnemonics" foreground="#663399" fontWeight="bold" />
+
+    <Color name="Visibility" fontWeight="bold" foreground="#FF6000"/>
+    <Color name="Modifiers"  foreground="#FF6000"/>
+  </SyntaxDefinition>
+
+  <SyntaxDefinition name="XmlDoc">
+    <Color name="XmlString"      foreground="#FF666666" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+    <Color name="DocComment"     foreground="#FFAAAAAA" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+    <Color name="XmlPunctuation" foreground="#FF999999" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+    <Color name="KnownDocTags"   foreground="#FF7979B9" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+  </SyntaxDefinition>
+
   <GlobalStyles>
     <!-- Background and foreground color of the default text (without highlighting) in the text editor -->
     <DefaultStyle foreground="#FFFFFFFF" background="#FF000080" />

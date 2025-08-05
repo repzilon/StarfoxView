@@ -25,7 +25,7 @@ namespace HL.Resources
 
 		/// <summary>
 		/// Registers the built-in highlighting definitions on first time request for a definition
-		/// or when the application changes its WPF Theme (eg. from 'Light' to 'Dark') to load the
+		/// or when the application changes its WPF Theme (e.g. from 'Light' to 'Dark') to load the
 		/// appropriate highlighting resource when queried for it.
 		/// </summary>
 		/// <param name="hlm"></param>
@@ -38,9 +38,16 @@ namespace HL.Resources
 			if (theme.IsBuiltInThemesRegistered == true)
 				return;
 
+			// XmlDoc is required by C#
+			hlm.RegisterHighlighting(theme, "XmlDoc", null, "XmlDoc.xshd");
+			// C# is required for MarkDown
+			hlm.RegisterHighlighting(theme, "C#", new[] { ".cs" }, "CSharp-Mode.xshd");
+
 			hlm.RegisterHighlighting(theme, "C/C++", new[] { ".c", ".h", ".cc", ".cpp", ".hpp" }, "CPP-Mode.xshd");
 			hlm.RegisterHighlighting(theme, "MarkDown", new[] { ".md" }, "MarkDown-Mode.xshd");
 			hlm.RegisterHighlighting(theme, "DOS/Windows batch", new[] { ".bat", ".cmd" }, "DOSBATCH.xshd");
+
+			hlm.RegisterHighlighting(theme, "SuperFX and 65c816 Assembly (Argonaut syntax)", new[] { ".asm", ".inc", ".ext", ".mc" }, "GSUandSCPUAssembly.xshd");
 
 			theme.IsBuiltInThemesRegistered = true;
 		}

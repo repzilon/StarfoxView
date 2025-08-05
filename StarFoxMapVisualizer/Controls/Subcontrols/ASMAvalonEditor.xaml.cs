@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Documents;
-using System.Xml;
+using HL.Manager;
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFoxMapVisualizer.Misc;
@@ -23,23 +20,6 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private Dictionary<ASMChunk, Run> SymbolMap => FileInstance?.SymbolMap; // where all the symbols in the document are located
 		private IEnumerable<ASMMacro> _macros; // performance cache
 		private IEnumerable<string> _macroNames; // performance cache
-
-		static AsmAvalonEditor()
-		{
-			IHighlightingDefinition customHighlighting;
-			using (Stream s = typeof(AsmAvalonEditor).Assembly.GetManifestResourceStream("StarFoxMapVisualizer.Resources.GSUandSCPUAssembly.xshd")) {
-				if (s == null) {
-					throw new InvalidOperationException("Could not find syntax highlighting embedded resource");
-				}
-
-				using (XmlReader reader = new XmlTextReader(s)) {
-					customHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-				}
-			}
-			// and register it in the HighlightingManager
-			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly (Argonaut Syntax)",
-				new string[] { ".asm", ".inc", ".ext", ".mc" }, customHighlighting);
-		}
 
 		public AsmAvalonEditor()
 		{
@@ -85,7 +65,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			using (var stream = FileInstance.OpenFile.OpenRead()) {
 				base.Load(stream);
 			}
-			base.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(FileInstance.OpenFile.Name));
+			base.SyntaxHighlighting = DefaultHighlightingManager.Instance.GetDefinitionByExtension(
+			 Path.GetExtension(FileInstance.OpenFile.Name));
 		}
 
 		/// <summary>
@@ -101,7 +82,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				ms.Flush();
 				base.Load(ms);
 			}
-			base.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".asm");
+			base.SyntaxHighlighting = DefaultHighlightingManager.Instance.GetDefinitionByExtension(".asm");
 		}
 
 		/// <summary>
