@@ -37,7 +37,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				}
 			}
 			// and register it in the HighlightingManager
-			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly (Argonaut Syntax)", 
+			HighlightingManager.Instance.RegisterHighlighting("SuperFX and 65c816 Assembly (Argonaut Syntax)",
 				new string[] { ".asm", ".inc", ".ext", ".mc" }, customHighlighting);
 		}
 
@@ -101,8 +101,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				ms.Flush();
 				base.Load(ms);
 			}
-			// TODO : Single line syntax highlighting
-			//base.SyntaxHighlighting = 
+			base.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".asm");
 		}
 
 		/// <summary>
@@ -114,12 +113,21 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			if (chunk == null) return false;
 			if (chunk.OriginalFileName != FileInstance.OpenFile.FullName) return false;
 			if (SymbolMap?.TryGetValue(chunk, out var run) ?? false) {
-				//ScrollToInline(run);
-				return false;
+				ScrollToInline(run);
+				return true;
 			} else {
 				ScrollToLine(chunk.Line);
 				return true;
 			}
+		}
+
+		private void ScrollToInline(Inline Inline)
+		{
+			var characterRect = Inline.ContentStart.GetCharacterRect(LogicalDirection.Forward);
+			ScrollToHorizontalOffset(HorizontalOffset + characterRect.Left - ActualWidth / 2d);
+			ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
+			// TODO : Change caret position
+			//this.CaretOffset = Inline.ContentStart;
 		}
 	}
 }
