@@ -13,7 +13,6 @@ namespace TextEditLib.Foldings
 
 	public abstract class BaseFoldingStrategy : IFoldingStrategy
 	{
-
 		public void UpdateFoldings(FoldingManager manager, TextDocument document)
 		{
 			int firstErrorOffset;
