@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using HL.Manager;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
@@ -178,6 +179,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			base.SyntaxHighlighting = DefaultHighlightingManager.Instance.GetDefinitionByExtension(
 			 Path.GetExtension(FileInstance.OpenFile.Name));
 			ApplyHighlightManagerThemeToControl();
+			ReinstallLineTransformer(new ContextualKeywordStyler(this.Highlights), true);
 		}
 
 		/// <summary>
@@ -386,12 +388,17 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		// https://stackoverflow.com/questions/9223674/highlight-all-occurrences-of-selected-word-in-avalonedit
 		private void TextArea_SelectionChanged(object sender, EventArgs e)
 		{
+			this.ReinstallLineTransformer(new MarkSameWord(SelectedText), !String.IsNullOrWhiteSpace(SelectedText));
+		}
+
+		private void ReinstallLineTransformer<T>(T newInstance, bool condition) where T : DocumentColorizingTransformer
+		{
 			var transformers = TextArea.TextView.LineTransformers;
-			foreach (var markSameWord in transformers.OfType<MarkSameWord>().ToList()) {
-				transformers.Remove(markSameWord);
+			foreach (var oldTransformer in transformers.OfType<T>().ToList()) {
+				transformers.Remove(oldTransformer);
 			}
-			if (!String.IsNullOrWhiteSpace(SelectedText)) {
-				transformers.Add(new MarkSameWord(SelectedText));
+			if (condition) {
+				transformers.Add(newInstance);
 			}
 		}
 		#endregion
