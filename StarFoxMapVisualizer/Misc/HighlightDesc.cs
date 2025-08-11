@@ -8,10 +8,19 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
-using StarFox.Interop.ASM.TYP.STRUCT;
 
 namespace StarFoxMapVisualizer.Misc
 {
+	public enum ASMLineType
+	{
+		Unknown,
+		Label,
+		Define,
+		Macro,
+		MacroInvoke,
+		MacroInvokeParameter
+	}
+
 	/// <summary>
 	/// Represents a Highlighting tip
 	/// </summary>
