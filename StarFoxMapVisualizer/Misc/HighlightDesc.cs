@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
 
 namespace StarFoxMapVisualizer.Misc
 {
@@ -13,24 +17,16 @@ namespace StarFoxMapVisualizer.Misc
 	/// </summary>
 	internal sealed class HighlightDesc
 	{
-		private static class ContextualKeyword
-		{
-			public const string DefineColor = nameof(DefineColor);
-			public const string MacroColor = nameof(MacroColor);
-			public const string MacroInvokeColor = nameof(MacroInvokeColor);
-			public const string MacroInvokeParameterColor = nameof(MacroInvokeParameterColor);
-		}
+		private static readonly IReadOnlyDictionary<ASMLineType, Brush> FallbackBrushes = InitFallbackBrushes();
 
-		private static readonly IReadOnlyDictionary<string, Brush> FallbackBrushes = InitFallbackBrushes();
-
-		private static IReadOnlyDictionary<string, Brush> InitFallbackBrushes()
+		private static IReadOnlyDictionary<ASMLineType, Brush> InitFallbackBrushes()
 		{
-			var dicBrushes = new Dictionary<string, Brush>(4);
-			dicBrushes.Add(ContextualKeyword.DefineColor, Brushes.Red);
-			dicBrushes.Add(ContextualKeyword.MacroInvokeColor, Brushes.Orange);
-			dicBrushes.Add(ContextualKeyword.MacroInvokeParameterColor, Brushes.Pink);
-			dicBrushes.Add(ContextualKeyword.MacroColor, Brushes.Red);
-			return new ReadOnlyDictionary<string, Brush>(dicBrushes);
+			var dicBrushes = new Dictionary<ASMLineType, Brush>(4);
+			dicBrushes.Add(ASMLineType.Define, Brushes.Red);
+			dicBrushes.Add(ASMLineType.MacroInvoke, Brushes.Orange);
+			dicBrushes.Add(ASMLineType.MacroInvokeParameter, Brushes.Pink);
+			dicBrushes.Add(ASMLineType.Macro, Brushes.Red);
+			return new ReadOnlyDictionary<ASMLineType, Brush>(dicBrushes);
 		}
 
 		public readonly string Word;
@@ -52,13 +48,13 @@ namespace StarFoxMapVisualizer.Misc
 		/// </summary>
 		public string TooltipText = null;
 
-		public HighlightDesc(string word, FrameworkElement finder, string highlightKey, ASMChunk chunkHint)
+		public HighlightDesc(string word, FrameworkElement finder, ASMLineType highlightKey, ASMChunk chunkHint)
 		{
 			if (!FallbackBrushes.ContainsKey(highlightKey)) {
-				throw new ArgumentOutOfRangeException(nameof(highlightKey));
+				throw new InvalidEnumArgumentException(nameof(highlightKey), (int)highlightKey, typeof(ASMLineType));
 			}
 			this.Word = word;
-			this.HighlightKey = finder.FindResource(highlightKey) as Brush ?? FallbackBrushes[highlightKey];
+			this.HighlightKey = finder.FindResource(highlightKey + "Color") as Brush ?? FallbackBrushes[highlightKey];
 			this.ChunkHint = chunkHint;
 		}
 
@@ -88,6 +84,48 @@ namespace StarFoxMapVisualizer.Misc
 					return null;
 				}
 			}
+		}
+
+		public TextBlock ToTextBlock()
+		{
+			var block = new TextBlock();
+			if (this.TooltipText != null) {
+				block.Inlines.Add(new Run(this.TooltipText));
+			} else {
+				var namedSymbol = this.ChunkHint as IASMNamedSymbol;
+				if (namedSymbol != null) {
+					AsmChunkTextBlock.FormatNamedChunk(block, namedSymbol, this.ChunkHint);
+				}
+			}
+
+			return block;
+		}
+	}
+
+	internal static class AsmChunkTextBlock
+	{
+		internal static TextBlock ToTextBlock<T>(this T namedAsmChunk) where T : ASMChunk, IASMNamedSymbol
+		{
+			var block = new TextBlock();
+			FormatNamedChunk(block, namedAsmChunk, namedAsmChunk);
+			return block;
+		}
+
+		internal static void FormatNamedChunk(TextBlock block, IASMNamedSymbol namedSymbol, ASMChunk chunkHint)
+		{
+			block.Inlines.Add(MakeRun(namedSymbol.Name, "#Star Fox/Starwing", 12));
+			block.Inlines.Add(new LineBreak());
+			block.Inlines.Add(MakeRun(chunkHint.ToString("F0", null), "#Atlantis International", 22));
+		}
+
+		private static Run MakeRun(string text, string fontFace, int fontSize)
+		{
+			var run = new Run(text);
+			run.FontFamily = fontFace[0] == '#' ?
+			 new FontFamily(new Uri("pack://application:,,,/Resources/ControlStyle.xaml"), "/Resources/" + fontFace) :
+			 new FontFamily(fontFace);
+			run.FontSize = fontSize;
+			return run;
 		}
 	}
 }

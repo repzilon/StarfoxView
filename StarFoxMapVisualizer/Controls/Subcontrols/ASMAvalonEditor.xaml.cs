@@ -11,6 +11,7 @@ using HL.Manager;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
+using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFoxMapVisualizer.Misc;
 using TextEditLib.Themes;
 
@@ -45,54 +46,6 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			this.MouseHoverStopped += AsmAvalonEditor_MouseHoverStopped;
 		}
 
-		private void AsmAvalonEditor_MouseHoverStopped(object sender, MouseEventArgs e)
-		{
-			_wpfToolTip.IsOpen = false;
-		}
-
-		private void AsmAvalonEditor_MouseHover(object sender, MouseEventArgs e)
-		{
-			var pos = GetPositionFromPoint(e.GetPosition(this));
-			if (pos != null) {
-				//_wpfToolTip.Content = pos.ToString();   // just for testing tooltip functionality
-				var lineNumber = pos.Value.Line;
-				IList<HighlightDesc> lstHilites;
-				if (Highlights.TryGetValue(lineNumber, out lstHilites)) {
-					var desc = lstHilites[0];
-
-					_wpfToolTip.Background = desc.TooltipBackground;
-					_wpfToolTip.Foreground = desc.TooltipForeground;
-					_wpfToolTip.Content = desc.ToString();
-
-					if (desc.ChunkHint != null) {
-						/* I cannot make the MacroTooltip change its size
-						_wpfToolTip.Background = null;
-						_wpfToolTip.BorderThickness = new Thickness();
-						var tooltip = new MacroTooltip();
-						tooltip.Attach(desc.ChunkHint);
-						_wpfToolTip.Content = tooltip;
-						// */
-
-						var highlight = new Run(desc.Word)
-						{
-							Foreground = desc.HighlightKey,
-						};
-
-						if (!SymbolMap.TryGetValue(desc.ChunkHint, out var symbolLocation)) {
-							SymbolMap.Add(desc.ChunkHint, highlight);
-						} else if (symbolLocation == null) {    // register symbol into the map
-							SymbolMap[desc.ChunkHint] = highlight;
-						}
-					}
-
-					_wpfToolTip.PlacementTarget = this; // required for property inheritance
-					_wpfToolTip.IsOpen = desc.TooltipBackground != null;
-				}
-
-				e.Handled = true;
-			}
-		}
-
 		/// <summary>
 		/// Creates a new ASMCodeEditor attached to the <see cref="ASMControl"/> it's a child of.
 		/// <para>This control cannot work without attaching to a <see cref="ASMControl"/></para>
@@ -108,6 +61,45 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		public AsmAvalonEditor(string line) : this()
 		{
 			ShowStringContent(line);
+		}
+
+		private void AsmAvalonEditor_MouseHoverStopped(object sender, MouseEventArgs e)
+		{
+			_wpfToolTip.IsOpen = false;
+		}
+
+		private void AsmAvalonEditor_MouseHover(object sender, MouseEventArgs e)
+		{
+			var pos = GetPositionFromPoint(e.GetPosition(this));
+			if (pos != null) {
+				var lineNumber = pos.Value.Line;
+				IList<HighlightDesc> lstHilites;
+				if (Highlights.TryGetValue(lineNumber, out lstHilites)) {
+					var desc = lstHilites[0];
+
+					_wpfToolTip.Background = desc.TooltipBackground;
+					_wpfToolTip.Foreground = desc.TooltipForeground;
+					_wpfToolTip.Content = desc.ToTextBlock();
+
+					if (desc.ChunkHint != null) {
+						var highlight = new Run(desc.Word)
+						{
+							Foreground = desc.HighlightKey
+						};
+
+						if (!SymbolMap.TryGetValue(desc.ChunkHint, out var symbolLocation)) {
+							SymbolMap.Add(desc.ChunkHint, highlight);
+						} else if (symbolLocation == null) {    // register symbol into the map
+							SymbolMap[desc.ChunkHint] = highlight;
+						}
+					}
+
+					_wpfToolTip.PlacementTarget = this; // required for property inheritance
+					_wpfToolTip.IsOpen = desc.TooltipBackground != null;
+				}
+
+				e.Handled = true;
+			}
 		}
 
 		/// <summary>
@@ -194,14 +186,16 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
 		private void ScrollToInline(Inline rtfInline)
 		{
-			var start = rtfInline.ContentStart;
-			var characterRect = start.GetCharacterRect(LogicalDirection.Forward);
-			ScrollToHorizontalOffset(HorizontalOffset + characterRect.Left - ActualWidth / 2d);
-			ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
-			try {
-				this.CaretOffset = Math.Abs(start.GetOffsetToPosition(start.DocumentStart));
-			} catch (ArgumentOutOfRangeException) {
-				// ignore
+			if (rtfInline != null) {
+				var start = rtfInline.ContentStart;
+				var characterRect = start.GetCharacterRect(LogicalDirection.Forward);
+				ScrollToHorizontalOffset(HorizontalOffset + characterRect.Left - ActualWidth / 2d);
+				ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
+				try {
+					this.CaretOffset = Math.Abs(start.GetOffsetToPosition(start.DocumentStart));
+				} catch (ArgumentOutOfRangeException) {
+					// ignore
+				}
 			}
 		}
 
@@ -229,33 +223,33 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			var lineBlocks = input.Split(" \t".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			// DEFINES
 			var parsedLine = FileInstance?.FileImportData?.Chunks.OfType<ASMLine>().FirstOrDefault(x => x.Line == lineNumber);
-			if (parsedLine != null && parsedLine.HasStructureApplied) {  // line found and it has recognizable structure
-				var structure = parsedLine.StructureAsDefineStructure;    // is this structure a define structured line?
+			if (parsedLine != null && parsedLine.HasStructureApplied) {	// line found and it has recognizable structure
+				var structure = parsedLine.StructureAsDefineStructure;	// is this structure a define structured line?
 				if (structure != null) {
 					if (structure.Constant != null && !SymbolMap.ContainsKey(structure.Constant)) {
 						SymbolMap.Add(structure.Constant, null);
 					}
 
-					yield return NewHighlightDesc(structure.Symbol, "DefineColor", structure.Constant);
-					yield return NewHighlightDesc(structure.Value, "MacroInvokeParameterColor", null,
+					yield return NewHighlightDesc(structure.Symbol, ASMLineType.Define, structure.Constant);
+					yield return NewHighlightDesc(structure.Value, ASMLineType.MacroInvokeParameter, null,
 						$"Value: {structure.Value}");
 					yield break;
 				}
 			}
 			if (lineBlocks.Length > 2 && lineBlocks[1].ToLower().Contains("equ")) { // define found
-				yield return NewHighlightDesc(lineBlocks[0], "DefineColor", null);
+				yield return NewHighlightDesc(lineBlocks[0], ASMLineType.Define, null);
 				yield break;
 			}
 			//MACROS
-			if (parsedLine != null && parsedLine.HasStructureApplied) {    // line found and it has recognizable structure
-				var structure = parsedLine.StructureAsMacroInvokeStructure;    // is this structure a macro invoke structured line?
+			if (parsedLine != null && parsedLine.HasStructureApplied) {		// line found and it has recognizable structure
+				var structure = parsedLine.StructureAsMacroInvokeStructure;	// is this structure a macro invoke structured line?
 				if (structure != null) {
-					yield return NewHighlightDesc(structure.MacroReference.Name, "MacroInvokeColor",
+					yield return NewHighlightDesc(structure.MacroReference.Name, ASMLineType.MacroInvoke,
 						structure.MacroReference);
 					var index = 0;
 					foreach (var param in structure.Parameters) {
 						index++;
-						yield return NewHighlightDesc(param.ParameterContent, "MacroInvokeParameterColor", null,
+						yield return NewHighlightDesc(param.ParameterContent, ASMLineType.MacroInvokeParameter, null,
 							$"Parameter {index}: {param.ParameterName}");
 					}
 					yield break;
@@ -267,17 +261,17 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					if (sourceMacroData != null && !SymbolMap.ContainsKey(sourceMacroData)) {
 						SymbolMap.Add(sourceMacroData, null);
 					}
-					yield return NewHighlightDesc(block, "MacroColor", sourceMacroData);
+					yield return NewHighlightDesc(block, ASMLineType.Macro, sourceMacroData);
 				}
 			}
 		}
 
-		private HighlightDesc NewHighlightDesc(string word, string highlightKey, ASMChunk chunk)
+		private HighlightDesc NewHighlightDesc(string word, ASMLineType highlightKey, ASMChunk chunk)
 		{
 			return new HighlightDesc(word, this, highlightKey, chunk);
 		}
 
-		private HighlightDesc NewHighlightDesc(string word, string highlightKey, ASMChunk chunk, string tooltip)
+		private HighlightDesc NewHighlightDesc(string word, ASMLineType highlightKey, ASMChunk chunk, string tooltip)
 		{
 			var x = new HighlightDesc(word, this, highlightKey, chunk);
 			x.TooltipText = tooltip;

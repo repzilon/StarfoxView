@@ -134,7 +134,7 @@ namespace StarFox.Interop.ASM.TYP
 
 			var stbOutput = new StringBuilder();
 			if (Char.IsUpper(format[0])) {
-				this.AppendHeader(stbOutput, formatProvider, format);
+				this.AppendHeader(stbOutput, formatProvider, format, format[0] != 'F');
 				stbOutput.Append("Line: ").Append(formatProvider, format, this.Line + 1).Append(", Length: ");
 				stbOutput.Append(formatProvider, format, this.Lines.Length).Append(" lines");
 				if (Parameters.Length > 0) {

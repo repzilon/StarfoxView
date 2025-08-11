@@ -95,13 +95,16 @@ namespace StarFox.Interop.ASM
 		internal static StringBuilder Append(this StringBuilder buffer, IFormatProvider culture, string format,
 		IFormattable value)
 		{
-			return buffer.Append(value.ToString(format, culture));
+			return buffer.Append(value.ToString(value.GetType().IsEnum ? format.CharAt(0) : format, culture));
 		}
 
 		internal static StringBuilder AppendHeader<T>(this T what, StringBuilder stbOutput, IFormatProvider culture,
-		string format) where T : ASMChunk, IASMNamedSymbol
+		string format, bool withName) where T : ASMChunk, IASMNamedSymbol
 		{
-			stbOutput.AppendLine(what.Name.ToUpper(culture as CultureInfo)).Append(culture, format, what.ChunkType);
+			if (withName) {
+				stbOutput.AppendLine(what.Name.ToUpper(culture as CultureInfo));
+			}
+			stbOutput.Append(culture, format, what.ChunkType);
 			return stbOutput.Append(" defined in ").AppendLine(Path.GetFileName(what.OriginalFileName));
 		}
 	}

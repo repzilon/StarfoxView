@@ -592,21 +592,25 @@ namespace StarFoxMapVisualizer.Screens
         {
             void AddSymbol<T>(T symbol) where T : ASMChunk, IASMNamedSymbol
             {
-                var tooltip = new MacroTooltip();
-                tooltip.Attach(symbol);
+	            var wpfTooltip = new ToolTip()
+	            {
+		            Foreground = Brushes.White,
+		            HasDropShadow = true,
+		            Content = symbol.ToTextBlock()
+	            };
+				if (symbol is ASMMacro) {
+					wpfTooltip.Background = new SolidColorBrush(Color.FromRgb(0x00, 0x4F, 0x69));
+				} else if (symbol is ASMConstant) {
+					wpfTooltip.Background = new SolidColorBrush(Color.FromRgb(0x33, 0x00, 0x7F));
+				}
 
                 var item = new ListBoxItem()
                 {
                     Content = symbol.Name,
-                    ToolTip = new ToolTip()
-                    {
-                        Background = null,
-                        BorderBrush = null,
-                        HasDropShadow = true,
-                        Content = tooltip
-                    },
-                    Tag = symbol
+                    ToolTip = wpfTooltip,
+					Tag = symbol
                 };
+
                 MacroExplorerView.Items.Add(item);
             }
             MacroExplorerView.Items.Clear();

@@ -58,7 +58,7 @@ namespace StarFox.Interop.ASM.TYP
 
 			if (Char.IsUpper(format[0])) {
 				var stbOutput = new StringBuilder();
-				this.AppendHeader(stbOutput, formatProvider, format).Append("Value: ").Append(this.Value);
+				this.AppendHeader(stbOutput, formatProvider, format, format[0] != 'F').Append("Value: ").Append(this.Value);
 				return stbOutput.ToString();
 			} else {
 				return base.ToString(format, formatProvider);
