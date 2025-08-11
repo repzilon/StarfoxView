@@ -14,6 +14,7 @@ using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
 using StarFoxMapVisualizer.Misc;
+using TextEditLib.Extensions;
 using TextEditLib.Themes;
 
 namespace StarFoxMapVisualizer.Controls.Subcontrols
@@ -46,6 +47,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			InitializeComponent();
 			this.MouseHover += AsmAvalonEditor_MouseHover;
 			this.MouseHoverStopped += AsmAvalonEditor_MouseHoverStopped;
+			this.TextArea.SelectionChanged += TextArea_SelectionChanged;
 		}
 
 		/// <summary>
@@ -376,6 +378,20 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					newColorBrush.Freeze();
 					Application.Current.Resources[key] = newColorBrush;
 				}
+			}
+		}
+		#endregion
+
+		#region Dynamic highlighting
+		// https://stackoverflow.com/questions/9223674/highlight-all-occurrences-of-selected-word-in-avalonedit
+		private void TextArea_SelectionChanged(object sender, EventArgs e)
+		{
+			var transformers = TextArea.TextView.LineTransformers;
+			foreach (var markSameWord in transformers.OfType<MarkSameWord>().ToList()) {
+				transformers.Remove(markSameWord);
+			}
+			if (!String.IsNullOrWhiteSpace(SelectedText)) {
+				transformers.Add(new MarkSameWord(SelectedText));
 			}
 		}
 		#endregion
