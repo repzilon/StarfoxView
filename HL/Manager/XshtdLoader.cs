@@ -273,9 +273,7 @@ namespace HL.Manager
 
 		static HighlightingBrush FixedColorHighlightingBrush(Color? color)
 		{
-			if (color == null)
-				return null;
-			return new SimpleHighlightingBrush(color.Value);
+			return color == null ? null : (HighlightingBrush)new SimpleHighlightingBrush(color.Value);
 		}
 
 		static FontWeight? ParseFontWeight(string fontWeight)
@@ -292,5 +290,20 @@ namespace HL.Manager
 			return (FontStyle?)FontStyleConverter.ConvertFromInvariantString(fontStyle);
 		}
 		#endregion
+
+		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> elements)
+		{
+			foreach (T e in elements)
+				collection.Add(e);
+		}
+
+		/// <summary>
+		/// Gets the value of the attribute as boolean, or null if the attribute does not exist.
+		/// </summary>
+		public static bool? GetBoolAttribute(this XmlReader reader, string attributeName)
+		{
+			string attributeValue = reader.GetAttribute(attributeName);
+			return attributeValue == null ? (bool?)null : XmlConvert.ToBoolean(attributeValue);
+		}
 	}
 }

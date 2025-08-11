@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Modes\ModeV1.xsd" />
     <None Remove="Modes\ModeV2.xsd" />
     <None Remove="Modes\ModeV2_htd.xsd" />
     <None Remove="Resources\Light\CPP-Mode.xshd" />
@@ -48,9 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Modes\ModeV1.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Modes\ModeV2.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
