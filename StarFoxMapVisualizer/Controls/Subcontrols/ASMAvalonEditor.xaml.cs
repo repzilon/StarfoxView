@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using HL.Manager;
+using ICSharpCode.AvalonEdit.Document;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
@@ -31,6 +32,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private readonly ToolTip _wpfToolTip = new ToolTip() { HasDropShadow = true };
 		private IDictionary<int, IList<HighlightDesc>> Highlights;
 
+		#region Constructors
 		static AsmAvalonEditor()
 		{
 			// Do not use the "Dark" theme yet because it lacks the control color style.
@@ -62,7 +64,9 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		{
 			ShowStringContent(line);
 		}
+		#endregion
 
+		#region Toolip display
 		private void AsmAvalonEditor_MouseHoverStopped(object sender, MouseEventArgs e)
 		{
 			_wpfToolTip.IsOpen = false;
@@ -75,32 +79,63 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				var lineNumber = pos.Value.Line;
 				IList<HighlightDesc> lstHilites;
 				if (Highlights.TryGetValue(lineNumber, out lstHilites)) {
-					var desc = lstHilites[0];
+					var hoveredWord = GetWordAtMousePosition(e);
+					var desc = lstHilites.FirstOrDefault(x => x.Word == hoveredWord);
+					if (desc != null) {
+						_wpfToolTip.Background = desc.TooltipBackground;
+						_wpfToolTip.Foreground = desc.TooltipForeground;
+						_wpfToolTip.Content = desc.ToTextBlock();
 
-					_wpfToolTip.Background = desc.TooltipBackground;
-					_wpfToolTip.Foreground = desc.TooltipForeground;
-					_wpfToolTip.Content = desc.ToTextBlock();
+						if (desc.ChunkHint != null) {
+							var highlight = new Run(desc.Word)
+							{
+								Foreground = desc.HighlightKey
+							};
 
-					if (desc.ChunkHint != null) {
-						var highlight = new Run(desc.Word)
-						{
-							Foreground = desc.HighlightKey
-						};
-
-						if (!SymbolMap.TryGetValue(desc.ChunkHint, out var symbolLocation)) {
-							SymbolMap.Add(desc.ChunkHint, highlight);
-						} else if (symbolLocation == null) {    // register symbol into the map
-							SymbolMap[desc.ChunkHint] = highlight;
+							if (!SymbolMap.TryGetValue(desc.ChunkHint, out var symbolLocation)) {
+								SymbolMap.Add(desc.ChunkHint, highlight);
+							} else if (symbolLocation == null) {    // register symbol into the map
+								SymbolMap[desc.ChunkHint] = highlight;
+							}
 						}
-					}
 
-					_wpfToolTip.PlacementTarget = this; // required for property inheritance
-					_wpfToolTip.IsOpen = desc.TooltipBackground != null;
+						_wpfToolTip.PlacementTarget = this; // required for property inheritance
+						_wpfToolTip.IsOpen = desc.TooltipBackground != null;
+					}
 				}
 
 				e.Handled = true;
 			}
 		}
+
+		// https://stackoverflow.com/questions/27003784/select-word-like-double-click-in-avalonedit
+		private string GetWordAtMousePosition(MouseEventArgs e)
+		{
+			var mousePosition = this.GetPositionFromPoint(e.GetPosition(this));
+
+			if (mousePosition == null) {
+				return "";
+			}
+
+			var mpv = mousePosition.Value;
+			var offset = Document.GetOffset(mpv.Line, mpv.Column);
+
+			if (offset >= Document.TextLength) {
+				offset--;
+			}
+
+			var offsetStart = TextUtilities.GetNextCaretPosition(Document, offset, LogicalDirection.Backward, CaretPositioningMode.WordBorder);
+			var offsetEnd = TextUtilities.GetNextCaretPosition(Document, offset, LogicalDirection.Forward, CaretPositioningMode.WordBorder);
+
+			if (offsetEnd == -1 || offsetStart == -1) {
+				return "";
+			}
+
+			var currentChar = Document.GetText(offset, 1);
+
+			return String.IsNullOrWhiteSpace(currentChar) ? "" : Document.GetText(offsetStart, offsetEnd - offsetStart);
+		}
+		#endregion
 
 		/// <summary>
 		/// Invalidates the macro symbol caches, causing them to be reloaded from <see cref="AppResources.Includes"/>
@@ -223,8 +258,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			var lineBlocks = input.Split(" \t".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			// DEFINES
 			var parsedLine = FileInstance?.FileImportData?.Chunks.OfType<ASMLine>().FirstOrDefault(x => x.Line == lineNumber);
-			if (parsedLine != null && parsedLine.HasStructureApplied) {	// line found and it has recognizable structure
-				var structure = parsedLine.StructureAsDefineStructure;	// is this structure a define structured line?
+			if (parsedLine != null && parsedLine.HasStructureApplied) { // line found and it has recognizable structure
+				var structure = parsedLine.StructureAsDefineStructure;  // is this structure a define structured line?
 				if (structure != null) {
 					if (structure.Constant != null && !SymbolMap.ContainsKey(structure.Constant)) {
 						SymbolMap.Add(structure.Constant, null);
@@ -241,8 +276,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 				yield break;
 			}
 			//MACROS
-			if (parsedLine != null && parsedLine.HasStructureApplied) {		// line found and it has recognizable structure
-				var structure = parsedLine.StructureAsMacroInvokeStructure;	// is this structure a macro invoke structured line?
+			if (parsedLine != null && parsedLine.HasStructureApplied) {     // line found and it has recognizable structure
+				var structure = parsedLine.StructureAsMacroInvokeStructure; // is this structure a macro invoke structured line?
 				if (structure != null) {
 					yield return NewHighlightDesc(structure.MacroReference.Name, ASMLineType.MacroInvoke,
 						structure.MacroReference);
