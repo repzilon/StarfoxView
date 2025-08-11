@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using StarFox.Interop.ASM.TYP.STRUCT;
 
 namespace StarFox.Interop.ASM.TYP
@@ -43,6 +45,24 @@ namespace StarFox.Interop.ASM.TYP
 		public override void Parse(StreamReader FileStream)
 		{
 			throw new InvalidOperationException("ASMConstant is parsed through ASMLine parse procedure.");
+		}
+
+		public override string ToString(string format, IFormatProvider formatProvider)
+		{
+			if (String.IsNullOrEmpty(format)) {
+				format = "g";
+			}
+			if (formatProvider == null) {
+				formatProvider = CultureInfo.CurrentCulture;
+			}
+
+			if (Char.IsUpper(format[0])) {
+				var stbOutput = new StringBuilder();
+				this.AppendHeader(stbOutput, formatProvider, format).Append("Value: ").Append(this.Value);
+				return stbOutput.ToString();
+			} else {
+				return base.ToString(format, formatProvider);
+			}
 		}
 	}
 }

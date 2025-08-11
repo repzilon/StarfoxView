@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.MISC;
 
@@ -22,7 +24,7 @@ namespace StarFox.Interop.ASM
 	/// <summary>
 	/// A block of ASM code
 	/// </summary>
-	public abstract class ASMChunk
+	public abstract class ASMChunk : IFormattable
 	{
 		/// <summary>
 		/// The original file this chunk can be found in
@@ -68,6 +70,39 @@ namespace StarFox.Interop.ASM
 		public override string ToString()
 		{
 			return $"{this.ChunkType} @L{this.Line} [{this.Position}..+{this.Length}]";
+		}
+
+		public virtual string ToString(string format, IFormatProvider formatProvider)
+		{
+			if (String.IsNullOrEmpty(format)) {
+				format = "g";
+			}
+			if (formatProvider == null) {
+				formatProvider = CultureInfo.CurrentCulture;
+			}
+
+			var stbOutput = new StringBuilder();
+			stbOutput.Append(formatProvider, format, this.ChunkType);
+			stbOutput.Append("@L").Append(formatProvider, format, this.Line);
+			stbOutput.Append(" [").Append(formatProvider, format, this.Position);
+			stbOutput.Append("..+").Append(formatProvider, format, this.Length).Append(']');
+			return stbOutput.ToString();
+		}
+	}
+
+	internal static class AsmChunkFormatting
+	{
+		internal static StringBuilder Append(this StringBuilder buffer, IFormatProvider culture, string format,
+		IFormattable value)
+		{
+			return buffer.Append(value.ToString(format, culture));
+		}
+
+		internal static StringBuilder AppendHeader<T>(this T what, StringBuilder stbOutput, IFormatProvider culture,
+		string format) where T : ASMChunk, IASMNamedSymbol
+		{
+			stbOutput.AppendLine(what.Name.ToUpper(culture as CultureInfo)).Append(culture, format, what.ChunkType);
+			return stbOutput.Append(" defined in ").AppendLine(Path.GetFileName(what.OriginalFileName));
 		}
 	}
 }

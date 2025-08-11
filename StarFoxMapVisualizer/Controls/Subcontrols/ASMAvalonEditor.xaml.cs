@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using HL.Manager;
+using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFoxMapVisualizer.Misc;
@@ -24,6 +27,9 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private IEnumerable<ASMMacro> _macros; // performance cache
 		private IEnumerable<string> _macroNames; // performance cache
 
+		private readonly ToolTip _wpfToolTip = new ToolTip() { HasDropShadow = true };
+		private IDictionary<int, IList<HighlightDesc>> Highlights;
+
 		static AsmAvalonEditor()
 		{
 			// Do not use the "Dark" theme yet because it lacks the control color style.
@@ -35,6 +41,56 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		public AsmAvalonEditor()
 		{
 			InitializeComponent();
+			this.MouseHover += AsmAvalonEditor_MouseHover;
+			this.MouseHoverStopped += AsmAvalonEditor_MouseHoverStopped;
+		}
+
+		private void AsmAvalonEditor_MouseHoverStopped(object sender, MouseEventArgs e)
+		{
+			_wpfToolTip.IsOpen = false;
+		}
+
+		private void AsmAvalonEditor_MouseHover(object sender, MouseEventArgs e)
+		{
+			var pos = GetPositionFromPoint(e.GetPosition(this));
+			if (pos != null) {
+				//_wpfToolTip.Content = pos.ToString();   // just for testing tooltip functionality
+				var lineNumber = pos.Value.Line;
+				IList<HighlightDesc> lstHilites;
+				if (Highlights.TryGetValue(lineNumber, out lstHilites)) {
+					var desc = lstHilites[0];
+
+					_wpfToolTip.Background = desc.TooltipBackground;
+					_wpfToolTip.Foreground = desc.TooltipForeground;
+					_wpfToolTip.Content = desc.ToString();
+
+					if (desc.ChunkHint != null) {
+						/* I cannot make the MacroTooltip change its size
+						_wpfToolTip.Background = null;
+						_wpfToolTip.BorderThickness = new Thickness();
+						var tooltip = new MacroTooltip();
+						tooltip.Attach(desc.ChunkHint);
+						_wpfToolTip.Content = tooltip;
+						// */
+
+						var highlight = new Run(desc.Word)
+						{
+							Foreground = desc.HighlightKey,
+						};
+
+						if (!SymbolMap.TryGetValue(desc.ChunkHint, out var symbolLocation)) {
+							SymbolMap.Add(desc.ChunkHint, highlight);
+						} else if (symbolLocation == null) {    // register symbol into the map
+							SymbolMap[desc.ChunkHint] = highlight;
+						}
+					}
+
+					_wpfToolTip.PlacementTarget = this; // required for property inheritance
+					_wpfToolTip.IsOpen = desc.TooltipBackground != null;
+				}
+
+				e.Handled = true;
+			}
 		}
 
 		/// <summary>
@@ -69,9 +125,23 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		/// <returns></returns>
 		public void InvalidateFileContents()
 		{
-			if (FileInstance == null) return;
+			if (FileInstance == null) {
+				return;
+			}
 
 			InvalidateMacros();
+
+			var lineNumber = -1;
+			var dicHighlights = new Dictionary<int, IList<HighlightDesc>>();
+			using (var fs = FileInstance.OpenFile.OpenText()) {
+				// open file for reading
+				while (!fs.EndOfStream) {
+					var line = fs.ReadLine();
+					lineNumber++;   // line numbering similar to AvalonEdit
+					ProcessLineForTooltips(dicHighlights, line, lineNumber);
+				}
+			}
+			this.Highlights = dicHighlights;
 
 			using (var stream = FileInstance.OpenFile.OpenRead()) {
 				base.Load(stream);
@@ -87,14 +157,20 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		/// <param name="line"></param>
 		public void ShowStringContent(string line)
 		{
-			using (var ms = new MemoryStream()) {
-				using (var stw = new StreamWriter(ms)) {
-					stw.WriteLine(line);
+			if (!String.IsNullOrWhiteSpace(line)) {
+				using (var ms = new MemoryStream()) {
+					using (var stw = new StreamWriter(ms)) {
+						stw.WriteLine(line);
+					}
+					ms.Flush();
+					base.Load(ms);
 				}
-				ms.Flush();
-				base.Load(ms);
+				base.SyntaxHighlighting = DefaultHighlightingManager.Instance.GetDefinitionByExtension(".asm");
+
+				var dicHighlights = new Dictionary<int, IList<HighlightDesc>>();
+				ProcessLineForTooltips(dicHighlights, line, 1);
+				this.Highlights = dicHighlights;
 			}
-			base.SyntaxHighlighting = DefaultHighlightingManager.Instance.GetDefinitionByExtension(".asm");
 		}
 
 		/// <summary>
@@ -103,8 +179,10 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		/// <param name="chunk"></param>
 		public bool ScrollToSymbol(ASMChunk chunk)
 		{
-			if (chunk == null) return false;
-			if (chunk.OriginalFileName != FileInstance.OpenFile.FullName) return false;
+			if ((chunk == null) || (chunk.OriginalFileName != FileInstance.OpenFile.FullName)) {
+				return false;
+			}
+
 			if (SymbolMap?.TryGetValue(chunk, out var run) ?? false) {
 				ScrollToInline(run);
 				return true;
@@ -116,12 +194,113 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 
 		private void ScrollToInline(Inline rtfInline)
 		{
-			var characterRect = rtfInline.ContentStart.GetCharacterRect(LogicalDirection.Forward);
+			var start = rtfInline.ContentStart;
+			var characterRect = start.GetCharacterRect(LogicalDirection.Forward);
 			ScrollToHorizontalOffset(HorizontalOffset + characterRect.Left - ActualWidth / 2d);
 			ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
-			// TODO : Change caret position
-			//this.CaretOffset = Inline.ContentStart;
+			try {
+				this.CaretOffset = Math.Abs(start.GetOffsetToPosition(start.DocumentStart));
+			} catch (ArgumentOutOfRangeException) {
+				// ignore
+			}
 		}
+
+		#region Line processing for tooltips
+		private void ProcessLineForTooltips(IDictionary<int, IList<HighlightDesc>> destination,
+		string line, int lineNumber)
+		{
+			if (!String.IsNullOrWhiteSpace(line)) {
+				var highlights = FindHighlights(line, (uint)lineNumber).ToList(); // find the big words
+				if (highlights.Count > 0) {
+					destination.Add(lineNumber, highlights);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Searches through a line to find symbols and keywords.
+		/// <para>This uses data from sources like <see cref="FINST.FileImportData"/> to link symbols.</para>
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="lineNumber"></param>
+		/// <returns></returns>
+		private IEnumerable<HighlightDesc> FindHighlights(string input, uint lineNumber)
+		{
+			var lineBlocks = input.Split(" \t".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			// DEFINES
+			var parsedLine = FileInstance?.FileImportData?.Chunks.OfType<ASMLine>().FirstOrDefault(x => x.Line == lineNumber);
+			if (parsedLine != null && parsedLine.HasStructureApplied) {  // line found and it has recognizable structure
+				var structure = parsedLine.StructureAsDefineStructure;    // is this structure a define structured line?
+				if (structure != null) {
+					if (structure.Constant != null && !SymbolMap.ContainsKey(structure.Constant)) {
+						SymbolMap.Add(structure.Constant, null);
+					}
+
+					yield return NewHighlightDesc(structure.Symbol, "DefineColor", structure.Constant);
+					yield return NewHighlightDesc(structure.Value, "MacroInvokeParameterColor", null,
+						$"Value: {structure.Value}");
+					yield break;
+				}
+			}
+			if (lineBlocks.Length > 2 && lineBlocks[1].ToLower().Contains("equ")) { // define found
+				yield return NewHighlightDesc(lineBlocks[0], "DefineColor", null);
+				yield break;
+			}
+			//MACROS
+			if (parsedLine != null && parsedLine.HasStructureApplied) {    // line found and it has recognizable structure
+				var structure = parsedLine.StructureAsMacroInvokeStructure;    // is this structure a macro invoke structured line?
+				if (structure != null) {
+					yield return NewHighlightDesc(structure.MacroReference.Name, "MacroInvokeColor",
+						structure.MacroReference);
+					var index = 0;
+					foreach (var param in structure.Parameters) {
+						index++;
+						yield return NewHighlightDesc(param.ParameterContent, "MacroInvokeParameterColor", null,
+							$"Parameter {index}: {param.ParameterName}");
+					}
+					yield break;
+				}
+			}
+			foreach (var block in lineBlocks) { // check each word
+				if (_macroNames.Contains(block.ToLower())) { // macro found
+					var sourceMacroData = _macros.FirstOrDefault(x => x.Name == block);
+					if (sourceMacroData != null && !SymbolMap.ContainsKey(sourceMacroData)) {
+						SymbolMap.Add(sourceMacroData, null);
+					}
+					yield return NewHighlightDesc(block, "MacroColor", sourceMacroData);
+				}
+			}
+		}
+
+		private HighlightDesc NewHighlightDesc(string word, string highlightKey, ASMChunk chunk)
+		{
+			return new HighlightDesc(word, this, highlightKey, chunk);
+		}
+
+		private HighlightDesc NewHighlightDesc(string word, string highlightKey, ASMChunk chunk, string tooltip)
+		{
+			var x = new HighlightDesc(word, this, highlightKey, chunk);
+			x.TooltipText = tooltip;
+			return x;
+		}
+
+		/// <summary>
+		/// Set Keyboard Macro Shortcuts on this particular symbol
+		/// </summary>
+		/// <param name="keyword"></param>
+		/// <param name="chunk"></param>
+		private void SetupKeyboardMacros(Run keyword, ASMChunk chunk)
+		{
+			void Clicked(object sender, MouseButtonEventArgs e)
+			{
+				if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) { // NAVIGATE COMMAND
+					_parent.OpenSymbol(chunk);
+				}
+			}
+			keyword.Cursor = Cursors.Hand;
+			keyword.MouseLeftButtonDown += Clicked;
+		}
+		#endregion
 
 		#region Control theming from ThemedDemo
 		private void ApplyHighlightManagerThemeToControl()
@@ -162,7 +341,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private static void ApplyToDynamicResource(ComponentResourceKey key, Color? newColor)
 		{
 			if (newColor != null) {
-				if ((Application.Current.Resources[key] == null) || 
+				if ((Application.Current.Resources[key] == null) ||
 				(Application.Current.Resources[key] is SolidColorBrush)) {
 					var newColorBrush = new SolidColorBrush((Color)newColor);
 					newColorBrush.Freeze();

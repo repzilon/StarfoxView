@@ -11,16 +11,16 @@ namespace StarFoxMapVisualizer.Misc
 	/// <summary>
 	/// Represents an instance of a file opened in an editor
 	/// </summary>
-	/// <typeparam name="File">The type of file this is interpreted as</typeparam>
-	/// <typeparam name="State">The type of editor it is used in</typeparam>
-	/// <typeparam name="Tag">The object used to find this instance, like a tab at the top of the screen</typeparam>
-	public class FINST<File, State, Tag> where File : IImporterObject
+	/// <typeparam name="TFile">The type of file this is interpreted as</typeparam>
+	/// <typeparam name="TState">The type of editor it is used in</typeparam>
+	/// <typeparam name="TTag">The object used to find this instance, like a tab at the top of the screen</typeparam>
+	public class FINST<TFile, TState, TTag> where TFile : IImporterObject
 	{
 		internal FileInfo OpenFile;
-		internal File FileImportData;
+		internal TFile FileImportData;
 
-		internal Tag Tab;
-		internal State StateObject;
+		internal TTag Tab;
+		internal TState StateObject;
 	}
 
 	/// <summary>
@@ -38,8 +38,8 @@ namespace StarFoxMapVisualizer.Misc
 	{
 		public class MAPEditorState
 		{
-			public bool Loaded => ContentControl != default;
-			public Panel ContentControl { get; set; } = default;
+			public bool Loaded => ContentControl != null;
+			public Panel ContentControl { get; set; }
 
 			public double LevelWidth = 0;
 

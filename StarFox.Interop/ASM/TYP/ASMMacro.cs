@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -120,6 +121,32 @@ namespace StarFox.Interop.ASM.TYP
 		public override string ToString()
 		{
 			return base.ToString() + $": {Name}({Parameters.Length} args) {{ {Lines.Length} lines }}";
+		}
+
+		public override string ToString(string format, IFormatProvider formatProvider)
+		{
+			if (String.IsNullOrEmpty(format)) {
+				format = "g";
+			}
+			if (formatProvider == null) {
+				formatProvider = CultureInfo.CurrentCulture;
+			}
+
+			var stbOutput = new StringBuilder();
+			if (Char.IsUpper(format[0])) {
+				this.AppendHeader(stbOutput, formatProvider, format);
+				stbOutput.Append("Line: ").Append(formatProvider, format, this.Line + 1).Append(", Length: ");
+				stbOutput.Append(formatProvider, format, this.Lines.Length).Append(" lines");
+				if (Parameters.Length > 0) {
+					stbOutput.AppendLine().Append(formatProvider, format, Parameters.Length);
+					stbOutput.Append(" Parameters: ").Append(String.Join(", ", this.Parameters));
+				}
+			} else {
+				stbOutput.Append(base.ToString(format, formatProvider));
+				stbOutput.Append(": ").Append(this.Name).Append(formatProvider, format, Parameters.Length);
+				stbOutput.Append(" args) {").Append(formatProvider, format, Lines.Length).Append(" lines }");
+			}
+			return stbOutput.ToString();
 		}
 	}
 }
