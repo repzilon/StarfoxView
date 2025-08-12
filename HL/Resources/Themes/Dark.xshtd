@@ -115,6 +115,9 @@
 
     <Color name="Visibility" fontWeight="bold" foreground="#0060FF"/>
     <Color name="Modifiers"  foreground="#0060FF"/>
+
+    <Color name="DocComment" foreground="#FFAAAAAA" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
+    <Color name="KnownDocTags" fontWeight="bold" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
   </SyntaxDefinition>
 
   <SyntaxDefinition name="XmlDoc">

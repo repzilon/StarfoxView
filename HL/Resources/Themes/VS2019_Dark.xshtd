@@ -115,13 +115,18 @@
 
     <Color name="Visibility" fontWeight="bold" foreground="#559CD6"/>
     <Color name="Modifiers"  foreground="#559CD6"/>
+
+    <Color name="CommentMarkerSetTodo"       foreground="#2aafd4" fontWeight="bold"/>
+    <Color name="CommentMarkerSetHackUndone" foreground="#2aafd4" fontWeight="normal"/>
+    <Color name="DocComment"     foreground="#608b4e" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+    <Color name="KnownDocTags"   foreground="#90c088" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
   </SyntaxDefinition>
 
   <SyntaxDefinition name="XmlDoc">
     <Color name="XmlString"      foreground="White"     fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
     <Color name="DocComment"     foreground="#FF57A64A" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
     <Color name="XmlPunctuation" foreground="#FF57A64A" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
-    <Color name="KnownDocTags"   foreground="#FF90c088"     fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
+    <Color name="KnownDocTags"   foreground="#FF90c088" fontWeight="normal" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;"/>
   </SyntaxDefinition>
 
   <GlobalStyles>

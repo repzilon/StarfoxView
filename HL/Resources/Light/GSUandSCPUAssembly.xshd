@@ -23,32 +23,21 @@
   
   <Color name="Visibility" fontWeight="bold" foreground="#cc0066"/>
   <Color name="Modifiers" foreground="Brown"/>
-  
-  <!--
-  <Color name="ExceptionKeywords" fontWeight="bold" foreground="Teal" exampleText="try {  } catch { throw; } finally { }" />
-  <Color name="CheckedKeyword" fontWeight="bold" foreground="DarkGray" exampleText="checked() unchecked { }" />
-  <Color name="UnsafeKeywords" foreground="Olive" exampleText="unsafe { fixed }" />
-  <Color name="OperatorKeywords" fontWeight="bold" foreground="Pink" exampleText="operator implicit"/>
-  <Color name="ParameterModifiers" fontWeight="bold" foreground="DeepPink" exampleText="bool Method<T1,T2,T3>(ref T1 var1, out T2 parsed, params T3[] args)"/>
-  <Color name="NamespaceKeywords" fontWeight="bold" foreground="Green" exampleText="using System; namespace A.B.C { }"/>
-  <Color name="GetSetAddRemove" foreground="SaddleBrown"/>
-  <Color name="TrueFalse" fontWeight="bold" foreground="DarkCyan"/>
-  <Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan"/>
-  <Color name="SemanticKeywords" fontWeight="bold" foreground="DarkCyan" />
-  -->
+
+  <Color name="CommentMarkerSetTodo"       foreground="Red"     fontWeight="bold"/>
+  <Color name="CommentMarkerSetHackUndone" foreground="#2aafd4" fontWeight="bold"/>
+  <Color name="KnownDocTags" fontWeight="bold" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
+  <Color name="DocComment" foreground="Gray" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
 
   <!-- Parity with Sunlit's VSCode extension -->
-  <Property name="DocCommentMarker" value=";* " />
-    
-  <RuleSet name="CommentMarkerSet">
-    <Keywords fontWeight="bold" foreground="Red">
-      <Word>TODO</Word>
-      <Word>FIXME</Word>
-    </Keywords>
-    <Keywords fontWeight="bold" foreground="#E0E000">
-      <Word>HACK</Word>
-      <Word>UNDONE</Word>
-    </Keywords>
+  <Property name="DocCommentMarker" value=";**" />
+
+  <RuleSet name="CommentMarkerSet" ignoreCase="false">
+    <Span color="CommentMarkerSetTodo" begin="TODO"/>
+    <Span color="CommentMarkerSetTodo" begin="FIXME"/>
+    <Span color="CommentMarkerSetHackUndone" begin="HACK"/>
+    <Span color="CommentMarkerSetHackUndone" begin="UNDONE"/>
+    <Span color="CommentMarkerSetHackUndone" begin="SUNLITNOTE"/>
   </RuleSet>
 
   <!-- This is the main ruleset. -->
@@ -77,6 +66,16 @@
       </RuleSet>
     </Span>
 
+    <Span color="DocComment" multiline="true">
+      <Begin>;[*][*]</Begin>
+      <End>^[^;]</End>
+      <RuleSet>
+        <Import ruleSet="CommentMarkerSet"/>
+        <Keywords color="KnownDocTags">
+          <Word>@param</Word>
+        </Keywords>
+      </RuleSet>
+    </Span>
     <Span color="Comment" ruleSet="CommentMarkerSet">
       <Begin>;</Begin>
     </Span>
@@ -89,15 +88,11 @@
       <Begin>'</Begin>
       <End>'</End>
     </Span>
+    <!-- Start with comma to prevent << and >> being considered -->
     <Span color="String">
       <Begin>,&lt;</Begin>
       <End>&gt;</End>
     </Span>
-    <!--
-    <Rule color="String">
-      (?&lt;=\s|,)\s*&lt;[^&lt;&gt;\n]+?&gt;
-    </Rule>
-    -->
 
     <Keywords color="Visibility">
       <Word>public</Word>
