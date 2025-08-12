@@ -112,6 +112,7 @@
     <Color name="JumpMnemonics"    foreground="#cc9900" fontWeight="bold"/>
     <Color name="ReturnMnemonics"  foreground="#cc9900"/>
     <Color name="SpecialMnemonics" foreground="#663399" fontWeight="bold" />
+    <Color name="Registers" underline="true" />
 
     <Color name="Visibility" fontWeight="bold" foreground="#0060FF"/>
     <Color name="Modifiers"  foreground="#0060FF"/>

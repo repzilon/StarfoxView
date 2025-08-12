@@ -28,6 +28,8 @@
   <Color name="CommentMarkerSetHackUndone" foreground="#2aafd4" fontWeight="bold"/>
   <Color name="KnownDocTags" fontWeight="bold" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
   <Color name="DocComment" foreground="Gray" exampleText="${DocCommentMarker} &lt;exception cref=&quot;System.Exception&quot; /&gt;" />
+  
+  <Color name="Registers" foreground="#b8860b" underline="true" />
 
   <!-- Parity with Sunlit's VSCode extension -->
   <Property name="DocCommentMarker" value=";**" />
@@ -329,6 +331,30 @@
       <Word>getc</Word>
       <Word>plot</Word>
       <Word>rpix</Word>
+    </Keywords>
+    
+    <Keywords color="Registers">
+      <!-- 65c816 -->
+      <Word>a</Word>
+      <Word>x</Word>
+      <Word>y</Word>
+      <!-- SuperFX -->
+      <Word>r0</Word>
+      <Word>r1</Word>
+      <Word>r2</Word>
+      <Word>r3</Word>
+      <Word>r4</Word>
+      <Word>r5</Word>
+      <Word>r6</Word>
+      <Word>r7</Word>
+      <Word>r8</Word>
+      <Word>r9</Word>
+      <Word>r10</Word>
+      <Word>r11</Word>
+      <Word>r12</Word>
+      <Word>r13</Word>
+      <Word>r14</Word>
+      <Word>r15</Word>
     </Keywords>
 
     <Rule color="NumberLiteral">
