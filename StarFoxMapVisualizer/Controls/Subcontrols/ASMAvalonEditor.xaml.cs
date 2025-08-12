@@ -11,7 +11,6 @@ using System.Windows.Media;
 using HL.Manager;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
-using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.ASM.TYP.STRUCT;
@@ -50,6 +49,10 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			this.MouseHover += AsmAvalonEditor_MouseHover;
 			this.MouseHoverStopped += AsmAvalonEditor_MouseHoverStopped;
 			this.TextArea.SelectionChanged += TextArea_SelectionChanged;
+
+			this.Options.RequireControlModifierForHyperlinkClick = true;
+			this.Options.EnableHyperlinks = true;
+			this.Options.EnableEmailHyperlinks = false;
 		}
 
 		/// <summary>
@@ -80,8 +83,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		{
 			var pos = GetPositionFromPoint(e.GetPosition(this));
 			if (pos != null) {
-				IList<HighlightDesc> lstHilites;
-				if (Highlights.TryGetValue(pos.Value.Line - 1, out lstHilites)) {
+				if (Highlights.TryGetValue(pos.Value.Line - 1, out var lstHilites)) {
 					var hoveredWord = GetWordAtMousePosition(e);
 					var desc = lstHilites.FirstOrDefault(x => MatchesParameterValue(x, hoveredWord));
 					if (desc != null) {
@@ -172,6 +174,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			}
 			this.Highlights = dicHighlights;
 
+			ReinstallElementGenerator(new MacroLinkGenerator(_parent, this.Highlights));
 			using (var stream = FileInstance.OpenFile.OpenRead()) {
 				base.Load(stream);
 			}
@@ -212,29 +215,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			if ((chunk == null) || (chunk.OriginalFileName != FileInstance.OpenFile.FullName)) {
 				return false;
 			}
-
-			if (SymbolMap?.TryGetValue(chunk, out var run) ?? false) {
-				ScrollToInline(run);
-				return true;
-			} else {
-				ScrollToLine(chunk.Line);
-				return true;
-			}
-		}
-
-		private void ScrollToInline(Inline rtfInline)
-		{
-			if (rtfInline != null) {
-				var start = rtfInline.ContentStart;
-				var characterRect = start.GetCharacterRect(LogicalDirection.Forward);
-				ScrollToHorizontalOffset(HorizontalOffset + characterRect.Left - ActualWidth / 2d);
-				ScrollToVerticalOffset(VerticalOffset + characterRect.Top - ActualHeight / 2d);
-				try {
-					this.CaretOffset = Math.Abs(start.GetOffsetToPosition(start.DocumentStart));
-				} catch (ArgumentOutOfRangeException) {
-					// ignore
-				}
-			}
+			ScrollToLine(chunk.Line);
+			return true;
 		}
 
 		#region Line processing for tooltips
@@ -352,23 +334,6 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			x.TooltipText = tooltip;
 			return x;
 		}
-
-		/// <summary>
-		/// Set Keyboard Macro Shortcuts on this particular symbol
-		/// </summary>
-		/// <param name="keyword"></param>
-		/// <param name="chunk"></param>
-		private void SetupKeyboardMacros(Run keyword, ASMChunk chunk)
-		{
-			void Clicked(object sender, MouseButtonEventArgs e)
-			{
-				if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) { // NAVIGATE COMMAND
-					_parent.OpenSymbol(chunk);
-				}
-			}
-			keyword.Cursor = Cursors.Hand;
-			keyword.MouseLeftButtonDown += Clicked;
-		}
 		#endregion
 
 		#region Control theming from ThemedDemo
@@ -436,6 +401,15 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			if (condition) {
 				transformers.Add(newInstance);
 			}
+		}
+
+		private void ReinstallElementGenerator<T>(T newInstance) where T : VisualLineElementGenerator
+		{
+			var generators = TextArea.TextView.ElementGenerators;
+			foreach (var old in generators.OfType<T>().ToList()) {
+				generators.Remove(old);
+			}
+			generators.Add(newInstance);
 		}
 		#endregion
 	}
