@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -28,8 +29,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private readonly ASMControl _parent; // attached parent control
 		private ASM_FINST<AsmAvalonEditor> FileInstance { get; } // the current context for this control
 		private Dictionary<ASMChunk, Run> SymbolMap => FileInstance?.SymbolMap; // where all the symbols in the document are located
-		private IEnumerable<ASMMacro> _macros; // performance cache
-		private IEnumerable<string> _macroNames; // performance cache
+		private IEnumerable<ASMMacro> _macros;  // performance cache
+		private IEnumerable<ASMConstant> _constants;    // performance cache
 
 		private readonly ToolTip _wpfToolTip = new ToolTip() { HasDropShadow = true };
 		private IDictionary<int, IList<HighlightDesc>> Highlights;
@@ -79,11 +80,10 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		{
 			var pos = GetPositionFromPoint(e.GetPosition(this));
 			if (pos != null) {
-				var lineNumber = pos.Value.Line;
 				IList<HighlightDesc> lstHilites;
-				if (Highlights.TryGetValue(lineNumber, out lstHilites)) {
+				if (Highlights.TryGetValue(pos.Value.Line - 1, out lstHilites)) {
 					var hoveredWord = GetWordAtMousePosition(e);
-					var desc = lstHilites.FirstOrDefault(x => x.Word == hoveredWord);
+					var desc = lstHilites.FirstOrDefault(x => MatchesParameterValue(x, hoveredWord));
 					if (desc != null) {
 						_wpfToolTip.Background = desc.TooltipBackground;
 						_wpfToolTip.Foreground = desc.TooltipForeground;
@@ -146,7 +146,7 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 		private void InvalidateMacros()
 		{
 			_macros = AppResources.Includes.SelectMany(x => x.Chunks.OfType<ASMMacro>()); // get all macros
-			_macroNames = _macros.Select(x => x.Name);
+			_constants = AppResources.Includes.SelectMany(x => x.Constants); // constants are kept separate in an ASMFile
 		}
 
 		/// <summary>
@@ -164,10 +164,9 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 			var lineNumber = -1;
 			var dicHighlights = new Dictionary<int, IList<HighlightDesc>>();
 			using (var fs = FileInstance.OpenFile.OpenText()) {
-				// open file for reading
 				while (!fs.EndOfStream) {
-					var line = fs.ReadLine();
-					lineNumber++;   // line numbering similar to AvalonEdit
+					var line = fs.ReadLine(); // do not inline the variable yet, risk of side effect with lineNumber
+					lineNumber++;
 					ProcessLineForTooltips(dicHighlights, line, lineNumber);
 				}
 			}
@@ -275,11 +274,8 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					yield break;
 				}
 			}
-			if (lineBlocks.Length > 2 && lineBlocks[1].ToLower().Contains("equ")) { // define found
-				yield return NewHighlightDesc(lineBlocks[0], ASMLineType.Define, null);
-				yield break;
-			}
 			//MACROS
+			var ciEnUs = new CultureInfo("en-us");
 			if (parsedLine != null && parsedLine.HasStructureApplied) {     // line found and it has recognizable structure
 				var structure = parsedLine.StructureAsMacroInvokeStructure; // is this structure a macro invoke structured line?
 				if (structure != null) {
@@ -288,21 +284,61 @@ namespace StarFoxMapVisualizer.Controls.Subcontrols
 					var index = 0;
 					foreach (var param in structure.Parameters) {
 						index++;
-						yield return NewHighlightDesc(param.ParameterContent, ASMLineType.MacroInvokeParameter, null,
-							$"Parameter {index}: {param.ParameterName}");
+						ASMConstant define = null;
+						// This allows to cheat with the $ prefix (treating asm hex numbers as currency in .NET eyes)
+						if (!Double.TryParse(param.ParameterContent, NumberStyles.Any, ciEnUs, out _)) {
+							define = _constants.FirstOrDefault(x => MatchesParameterValue(x, param));
+						}
+						if (define != null) {
+							yield return NewHighlightDesc(param.ParameterContent, ASMLineType.Define, define);
+						} else {
+							yield return NewHighlightDesc(param.ParameterContent, ASMLineType.MacroInvokeParameter,
+								null, $"Parameter {index}: {param.ParameterName}");
+						}
 					}
 					yield break;
 				}
 			}
 			foreach (var block in lineBlocks) { // check each word
-				if (_macroNames.Contains(block.ToLower())) { // macro found
-					var sourceMacroData = _macros.FirstOrDefault(x => x.Name == block);
-					if (sourceMacroData != null && !SymbolMap.ContainsKey(sourceMacroData)) {
+				var sourceMacroData = _macros.FirstOrDefault(x => x.Name.Equals(block, StringComparison.InvariantCultureIgnoreCase));
+				if (sourceMacroData != null) {
+					if (!SymbolMap.ContainsKey(sourceMacroData)) {
 						SymbolMap.Add(sourceMacroData, null);
 					}
 					yield return NewHighlightDesc(block, ASMLineType.Macro, sourceMacroData);
+				} else if (!Double.TryParse(block, NumberStyles.Any, ciEnUs, out _)) { // LOOK FOR SYMBOLIC CONSTANTS USAGE
+					var subblocks = block.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var subblock in subblocks) {
+						if (!Double.TryParse(subblock, NumberStyles.Any, ciEnUs, out _)) {
+							var sourceConstant = _constants.FirstOrDefault(x => MatchesParameterValue(x, subblock));
+							if (sourceConstant != null) {
+								yield return NewHighlightDesc(subblock, ASMLineType.Define, sourceConstant);
+							}
+						}
+					}
 				}
 			}
+		}
+
+		private static bool MatchesParameterValue(HighlightDesc x, string define)
+		{
+			return MatchesParameterValue(x.Word, define);
+		}
+
+		private static bool MatchesParameterValue(string nameOfObject, string define)
+		{
+			return (nameOfObject == define) || (define == "#" + nameOfObject) || (define == "#~" + nameOfObject) ||
+				   (nameOfObject == "#" + define) || (nameOfObject == "#~" + define);
+		}
+
+		private static bool MatchesParameterValue(ASMConstant x, string define)
+		{
+			return MatchesParameterValue(x.Name, define);
+		}
+
+		private static bool MatchesParameterValue(ASMConstant x, ASMMacroInvokeParameter parameter)
+		{
+			return MatchesParameterValue(x, parameter.ParameterContent);
 		}
 
 		private HighlightDesc NewHighlightDesc(string word, ASMLineType highlightKey, ASMChunk chunk)

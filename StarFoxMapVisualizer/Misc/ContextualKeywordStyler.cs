@@ -27,30 +27,48 @@ namespace StarFoxMapVisualizer.Misc
 		{
 			var lineStartOffset = line.Offset;
 			var text = CurrentContext.Document.GetText(line);
-			var start = 0;
-			if (_highlights.TryGetValue(line.LineNumber, out var lstHighlights)) {
+			// line.LineNumber is 1-based, but line numbering in _highlights starts at 0
+			if (_highlights.TryGetValue(line.LineNumber - 1, out var lstHighlights)) {
 				var c = lstHighlights.Count;
 				for (var i = 0; i < c; i++) {
+					var keyword = lstHighlights[i].Word;
 					if (lstHighlights[i].ChunkHint is ASMMacro) {
-						var keyword = lstHighlights[i].Word;
-						int index;
-						while ((index = text.IndexOf(keyword, start, StringComparison.InvariantCultureIgnoreCase)) >= 0) {
-							var startOffset = lineStartOffset + index;
-							base.ChangeLinePart(startOffset, startOffset + keyword.Length, BoldItalic);
-							start = index + 1; // search for next occurrence
-						}
+						ColorizeKeyword(lineStartOffset, text, keyword, BoldItalic);
+					} else if (lstHighlights[i].ChunkHint is ASMConstant) {
+						ColorizeKeyword(lineStartOffset, text, keyword, Italic);
 					}
-					// TODO : Turn symbolic constants used as macro parameters into normal weight italics
-					// Requires improvements to AsmAvalonEditor.FindHighlights method
 				}
+			}
+		}
+
+		private void ColorizeKeyword(int lineStartOffset, string lineText, string keyword,
+		Action<VisualLineElement> fontChanger)
+		{
+			var start = 0;
+			int index;
+			while ((index = lineText.IndexOf(keyword, start, StringComparison.InvariantCultureIgnoreCase)) >= 0) {
+				var startOffset = lineStartOffset + index;
+				base.ChangeLinePart(startOffset, startOffset + keyword.Length, fontChanger);
+				start = index + 1; // search for next occurrence
 			}
 		}
 
 		private static void BoldItalic(VisualLineElement element)
 		{
+			// Replace the typeface with a modified version of the same typeface
+			element.TextRunProperties.SetTypeface(Italic(element.TextRunProperties.Typeface, FontWeights.Bold));
+		}
+
+		private static void Italic(VisualLineElement element)
+		{
 			var tf = element.TextRunProperties.Typeface;
 			// Replace the typeface with a modified version of the same typeface
-			element.TextRunProperties.SetTypeface(new Typeface(tf.FontFamily, FontStyles.Italic, FontWeights.Bold, tf.Stretch));
+			element.TextRunProperties.SetTypeface(Italic(tf, tf.Weight));
+		}
+
+		private static Typeface Italic(Typeface tf, FontWeight weight)
+		{
+			return new Typeface(tf.FontFamily, FontStyles.Italic, weight, tf.Stretch);
 		}
 	}
 }
