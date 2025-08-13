@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarFoxMapVisualizer.Dialogs"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner"
-        Title="ABOUT SFVIEW" Icon="/Resources/Image/sf_small.png" SizeToContent="Height" Foreground="White" Height="Auto" Width="400" Style="{StaticResource SFDialogModalStyle}">
+        Title="ABOUT SFVIEW" Icon="/Resources/Image/sf_small.png" SizeToContent="Height" Foreground="White" Height="Auto" Width="415" Style="{StaticResource SFDialogModalStyle}">
     <Window.Resources>
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{Binding Background, ElementName=HOST}"/>
@@ -21,12 +21,12 @@
     <Grid>
         <DockPanel Margin="5">
             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
-                <Image DockPanel.Dock="Left" Width="150" Source="/Resources/SFviewLogo.png" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Top"/>
-                <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" Name="BlurbTextBlock">
+                <Image DockPanel.Dock="Left" Width="150" Source="/Resources/SFviewLogo.png" RenderOptions.BitmapScalingMode="NearestNeighbor"  VerticalAlignment="Top"/>
+                <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" Name="BlurbTextBlock" >
                 <Run FontWeight="Bold">Thanks for trying out SFView!</Run> <LineBreak/>
-                <Run>This tool was created by Jeremy Glazebrook "Bisquick" with much help from the starfox-ex team! This tool would not be possible without their assistance.</Run> <LineBreak/>
+                <Run>This tool was created by Jeremy Glazebrook "Bisquick" with much help from the StarFox-EX team and some from Repzilon! This tool would not be possible without their assistance.</Run> <LineBreak/>
                 <Run>Want to see more from me? </Run> <LineBreak/>
-                <Hyperlink x:Name="GithubLink" Click="GithubLink_Click">Check me out on GitHub!</Hyperlink>
+                <Hyperlink x:Name="GithubLink" Click="GithubLink_Click">Check me out on GitHub!</Hyperlink><LineBreak/>
                 </TextBlock>
             </DockPanel>
             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5" >
