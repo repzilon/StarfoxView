@@ -17,7 +17,7 @@ Large plans are in order of priority, while everything else is in no particular 
 - [ ] Have the menu bar and context menu items do something ==WIP==
 - [x] Stop asking for bit depth of CGX files when it can be guessed by file contents
 - [ ] Rewrite export to .obj without the geometry4Sharp dependency
-- [ ] Replace RichTextBox-based assembly code display with AvalonEdit ==WIP==
+- [x] Replace RichTextBox-based assembly code display with AvalonEdit ==WIP==
 - [x] Export to JSON and import JSON .scr files
 
 ## Smaller tasks
