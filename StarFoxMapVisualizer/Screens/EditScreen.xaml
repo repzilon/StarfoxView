@@ -129,25 +129,31 @@
             <RowDefinition Height="0"/>
         </Grid.RowDefinitions>
         <!--MENU BAR-->
-        <Border Grid.ColumnSpan="3" Background="{DynamicResource WindowAccentBackgroundColor}">
-            <Menu Background="{x:Null}" Foreground="White" Margin="10,0" VerticalAlignment="Center">
-                <MenuItem Header="File" Style="{StaticResource MenuItemBaseStyle}">
-                    <MenuItem Header="Open..." Name="OpenItem" Click="OpenItem_Click" />
-                    <Separator />
-                    <MenuItem Header="Open Project Folder" Click="OpenProjectFolderItem_Click" />
-                    <MenuItem Header="Close Project" Click="CloseProjectMenuItem_Click" />
+        <Border Grid.ColumnSpan="3" Background="#FF333333">
+            <Menu Background="{x:Null}" Foreground="White" Name="MenuStrip" Margin="10,0" VerticalAlignment="Center">
+                <Menu.Resources>
+                    <Style TargetType="MenuItem" x:Key="Base"  BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Foreground" Value="{Binding Foreground, ElementName=MenuStrip}"/>
+                        <!--<Setter Property="Width" Value="40"/>-->
+                    </Style>
+                </Menu.Resources>
+                <MenuItem Header="File" Style="{StaticResource Base}">
+                    <MenuItem Header="Open..." Name="OpenItem" Click="OpenItem_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Open Project Folder" Click="OpenProjectFolderItem_Click"/>
+                    <MenuItem Name="CloseProjectMenuItem" Header="Close Project" Click="CloseProjectMenuItem_Click"/>
                     <Separator/>
                     <MenuItem Header="Convert .sfscreen file..." Name="ConvertSfscreenItem" Click="ConvertSfscreenItem_OnClick" />
                     <Separator/>
-                    <MenuItem Header="Exit" Name="ExitItem" Click="ExitItem_Click" />
+                    <MenuItem Header="Exit" Name="ExitItem" Click="ExitItem_Click"/>
                 </MenuItem>
-                <MenuItem Header="View" Style="{StaticResource MenuItemBaseStyle}">
-                    <MenuItem Header="Level Backgrounds (Context Viewer)" Click="BGSASMViewerButton_Click" />
-                    <MenuItem Header="Level Select Screen" Click="LevelSelectItem_Click" />
+                <MenuItem Header="View" Style="{StaticResource Base}">
+                    <MenuItem Header="Level Backgrounds (Context Viewer)" Click="BGSASMViewerButton_Click"/>
+                    <MenuItem Header="Level Select Screen" Click="LevelSelectItem_Click"/>
                     <Separator/>
                     <MenuItem Header="Refresh Workspace"/>
                 </MenuItem>
-                <MenuItem Header="Editor" Style="{StaticResource MenuItemBaseStyle}">
+                <MenuItem Header="Editor" Style="{StaticResource Base}">
                     <MenuItem Header="Export All 3D Data to .sfshape format..." Click="ExportAll3DButton_Click" />
                     <MenuItem Header="Export All 3D Data to .obj format..." Click="ExportAll3DObjButton_Click" />
                     <Separator/>
@@ -156,11 +162,11 @@
                     <Separator/>
                     <MenuItem Header="Settings..." Click="SettingsMenuItem_Click"/>
                 </MenuItem>
-                <MenuItem Header="Go" Name="GoItem" SubmenuOpened="GoItem_Load" Style="{StaticResource MenuItemBaseStyle}">
-                    <MenuItem Header="Map..." />
-                    <MenuItem Header="Shape..." />
+                <MenuItem Header="Go" Name="GoItem" Style="{StaticResource Base}" SubmenuOpened="GoItem_Load">
+                    <MenuItem Header="Map..."/>
+                    <MenuItem Header="Shape..."/>
                 </MenuItem>
-                <MenuItem Header="About..." Click="AboutMenuItem_Click" Style="{StaticResource MenuItemBaseStyle}" />
+                <MenuItem Header="About..." Style="{StaticResource Base}" Name="AboutMenuItem" Click="AboutMenuItem_Click"/>
             </Menu>
         </Border>
         <Grid DockPanel.Dock="Top" Grid.Column="1" Grid.ColumnSpan="2">

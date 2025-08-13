@@ -12,9 +12,15 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
     </Window.Resources>
-    <Grid Background="{DynamicResource AboutGradient}">
-        <DockPanel Margin="5" Background="{DynamicResource AboutGradient}" >
-            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5" >
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF00FE0A" Offset="1"/>
+            <GradientStop Color="#FF0011FF" Offset="0"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid>
+        <DockPanel Margin="5">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
                 <Image DockPanel.Dock="Left" Width="150" Source="/Resources/SFviewLogo.png" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Top"/>
                 <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" Name="BlurbTextBlock">
                 <Run FontWeight="Bold">Thanks for trying out SFView!</Run> <LineBreak/>
