@@ -69,7 +69,7 @@
     </Span>
 
     <Span color="DocComment" multiline="true">
-      <Begin>;[*][*]</Begin>
+      <Begin>;[*][*]$</Begin>
       <End>^[^;]</End>
       <RuleSet>
         <Import ruleSet="CommentMarkerSet"/>
