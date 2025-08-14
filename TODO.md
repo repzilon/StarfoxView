@@ -2,7 +2,7 @@
 Large plans are in order of priority, while everything else is in no particular order.
 
 ## Large plans
-- [ ] Replace System.Drawing with SkiaSharp (multi OS and used by Avalonia)
+- [ ] Replace System.Drawing with SkiaSharp (multi OS and used by Avalonia) ==WIP==
 - [ ] Port to Avalonia
 - [ ] Have System.Threading.Tasks available for .NET Framework 3.5 and 4.0 ==WIP==
 - [ ] Back port to .NET Framework 4.0 ==WIP==

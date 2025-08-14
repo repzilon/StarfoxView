@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SkiaSharp;
 using StarFox.Interop.EFFECTS;
 using StarFoxMapVisualizer.Controls.Subcontrols;
 using StarFoxMapVisualizer.Misc;
@@ -155,7 +156,7 @@ namespace StarFoxMapVisualizer.Controls2
 
         async Task HandlePlanet(string mSprite, PlanetRenderer.PlanetRendererOptions options = default)
         {
-            SpriteTuple<Bitmap> mSpriteImage = await SHAPEStandard.RenderMSpriteBitmap(mSprite, _palette);
+            SpriteTuple<SKBitmap> mSpriteImage = await SHAPEStandard.RenderMSpriteBitmap(mSprite, _palette);
 
             var renderControl = new PlanetRendererControl(mSpriteImage.Image);
             if (options != null) renderControl.Options = options;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using SkiaSharp;
 
 namespace StarFox.Interop.EFFECTS
 {
@@ -8,12 +9,12 @@ namespace StarFox.Interop.EFFECTS
     /// Renders a <see cref="Bitmap"/> in a similar way to how
     /// the Awesome Blackhole or Final Level backgrounds appear in Starfox (SNES).
     /// </summary>
-    public sealed class WavyBackgroundRenderer : AnimatorEffect<Bitmap>
+    public sealed class WavyBackgroundRenderer : AnimatorEffect<SKBitmap>
     {
         const int RENDER_W = StarfoxEqu.RENDER_W, RENDER_H = StarfoxEqu.RENDER_H,
             SCR_W = StarfoxEqu.SCR_W, SCR_H = StarfoxEqu.SCR_H;
 
-        private readonly Bitmap _SCRFile;
+        private readonly SKBitmap _SCRFile;
 
         public WavyEffectStrategies Strategy { get; set; } = WavyEffectStrategies.None;
 
@@ -33,7 +34,7 @@ namespace StarFox.Interop.EFFECTS
         /// </summary>
         /// <param name="Strategy"></param>
         /// <param name="SCR"></param>
-        public WavyBackgroundRenderer(WavyEffectStrategies Strategy, Bitmap SCR, bool DiagnosticsEnabled = false) : base(DiagnosticsEnabled)
+        public WavyBackgroundRenderer(WavyEffectStrategies Strategy, SKBitmap SCR, bool DiagnosticsEnabled = false) : base(DiagnosticsEnabled)
         {
             this.Strategy = Strategy;
             _SCRFile = SCR;
@@ -46,7 +47,7 @@ namespace StarFox.Interop.EFFECTS
         /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
         /// <exception cref="NotImplementedException"></exception>
-        public override Bitmap RenderOnce(TimeSpan DeltaTime)
+        public override SKBitmap RenderOnce(TimeSpan DeltaTime)
         {
             if (BackgroundCache == null)
                 WavyBackground_CopyData2Cache();
@@ -55,7 +56,7 @@ namespace StarFox.Interop.EFFECTS
             if (Strategy == WavyEffectStrategies.None)
                 throw new InvalidDataException("You didn't specify a strategy to use, Strategy is None.");
 
-            Func<Bitmap> BackgroundFunction;
+            Func<SKBitmap> BackgroundFunction;
             if (Strategy == WavyEffectStrategies.Simple) {
                 BackgroundFunction = SetWavyBackground_Strategy1;
             } else if (Strategy == WavyEffectStrategies.SineFullscreen) {
@@ -95,7 +96,7 @@ namespace StarFox.Interop.EFFECTS
             return true;
         }
 
-        private Bitmap SetWavyBackground_Strategy1()
+        private SKBitmap SetWavyBackground_Strategy1()
         {
             int rowOffset = 0, sinX = SinX;
 
@@ -129,7 +130,7 @@ namespace StarFox.Interop.EFFECTS
             return CompleteBuffer(Ticket);
         }
 
-        private Bitmap SetWavyBackground_Strategy2()
+        private SKBitmap SetWavyBackground_Strategy2()
         {
             int rowOffset = 0, sinX = SinX;
 
@@ -172,7 +173,7 @@ namespace StarFox.Interop.EFFECTS
             return CompleteBuffer(Ticket);
         }
 
-        private Bitmap SetWavyBackground_Strategy3()
+        private SKBitmap SetWavyBackground_Strategy3()
         {
             int rowOffset = 0, sinX = SinX;
 

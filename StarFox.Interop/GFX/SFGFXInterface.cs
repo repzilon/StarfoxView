@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using SkiaSharp;
 using StarFox.Interop.GFX.DAT;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 using StarFox.Interop.MISC;
@@ -206,24 +207,8 @@ namespace StarFox.Interop.GFX
 		/// <param name="P_Col">Must be P_Col to avoid incorrect coloration</param>
 		/// <param name="CGXBanks">Must be in LOW -> HIGH order.</param>
 		/// <returns></returns>
-		public static Bitmap RenderMSprite(MSprite Sprite, CAD.COL P_Col, params FXCGXFile[] CGXBanks)
+		public static SKBitmap RenderMSprite(MSprite Sprite, CAD.COL P_Col, params FXCGXFile[] CGXBanks)
 		{
-			Bitmap Clip(Bitmap Src, Rectangle ViewRect)
-			{
-				Bitmap newBmp = new Bitmap(ViewRect.Width, ViewRect.Height);
-				/*
-				for (int x = ViewRect.X; x < Math.Min(ViewRect.Width + ViewRect.X, Src.Width); x++) {
-					for (int y = ViewRect.Y; y < Math.Min(ViewRect.Height + ViewRect.Y, Src.Height); y++) {
-						var color = Src.GetPixel(x, y);
-						newBmp.SetPixel(x - ViewRect.X, y - ViewRect.Y, color);
-					}
-				}// */
-				using (Graphics grD = Graphics.FromImage(newBmp)) {
-					grD.DrawImage(Src, new Rectangle(0, 0, ViewRect.Width, ViewRect.Height), ViewRect, GraphicsUnit.Pixel);
-				}
-				newBmp.MakeTransparent(Color.Transparent);
-				return newBmp;
-			}
 			if (CGXBanks.Length % 2 != 0) throw new ArgumentOutOfRangeException("CGX banks provided should be High AND Low banks.");
 			int bank = Sprite.Parent.BankIndex * 2 + (Sprite.HighBank ? 1 : 0);
 			if (CGXBanks.Length < bank) throw new ArgumentOutOfRangeException("CGX banks provided is not enough for the supplied sprite.");
@@ -231,6 +216,14 @@ namespace StarFox.Interop.GFX
 			using (var bmp = source.Render(P_Col, -1, 256, 128)) {
 				return Clip(bmp, new Rectangle(Sprite.X, Sprite.Y, Sprite.Width, Sprite.Height));
 			}
+		}
+
+		private static SKBitmap Clip(SKBitmap Src, Rectangle ViewRect)
+		{
+			SKBitmap newBmp = new SKBitmap(ViewRect.Width, ViewRect.Height);
+			Src.ExtractSubset(newBmp, new SKRectI(ViewRect.Left, ViewRect.Top, ViewRect.Right, ViewRect.Bottom));
+			//newBmp.MakeTransparent(Color.Transparent);
+			return newBmp;
 		}
 
 		/// <summary>

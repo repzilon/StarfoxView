@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SkiaSharp;
 using StarFox.Interop.EFFECTS;
 using StarFox.Interop.MAP.CONTEXT;
 using StarFoxMapVisualizer.Misc;
@@ -156,12 +157,12 @@ namespace StarFoxMapVisualizer.Renderers
             if (bgRenderer == null)
                 throw new NullReferenceException("The background renderer has not been created.");
             TargetFrameRate = FrameRate ?? TargetFrameRate;
-            bgRenderer.StartAsync((Bitmap Image) => {
+            bgRenderer.StartAsync((SKBitmap Image) => {
                 Dispatcher.BeginInvoke(new Action(delegate { DuringBackgroundAnimation(Image); }));
             }, false, TargetFrameRate);
         }
 
-        private void DuringBackgroundAnimation(Bitmap image)
+        private void DuringBackgroundAnimation(SKBitmap image)
         {
             BG2Invalidate(image.Convert());
             image.Dispose(); // AutoDispose is off for this reason

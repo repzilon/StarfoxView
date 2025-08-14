@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using SkiaSharp;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.BSP;
@@ -164,7 +165,7 @@ namespace StarFoxMapVisualizer.Misc
 		/// <returns></returns>
 		/// <exception cref="FileNotFoundException"></exception>
 		/// <exception cref="InvalidDataException"></exception>
-		internal static async Task<SpriteTuple<Bitmap>> RenderMSpriteBitmap(string MSpriteName, string PaletteName = DefaultMSpritePalette)
+		internal static async Task<SpriteTuple<SKBitmap>> RenderMSpriteBitmap(string MSpriteName, string PaletteName = DefaultMSpritePalette)
 		{
 			if (MSpriteName.EndsWith("_spr")) MSpriteName = MSpriteName.Replace("_spr", "");
 			if (RenderCachePalette == null || PaletteName != RenderCachePalette)
@@ -178,7 +179,7 @@ namespace StarFoxMapVisualizer.Misc
 				var image = bmp;
 				MSpriteNameMap.TryAdd(MSpriteName, Sprite);
 				RenderCache.TryAdd(Sprite, image.Convert());
-				return new SpriteTuple<Bitmap>(image, Sprite);
+				return new SpriteTuple<SKBitmap>(image, Sprite);
 			}
 			throw new FileNotFoundException($"{MSpriteName} was not found in {defAsmName}.");
 		}

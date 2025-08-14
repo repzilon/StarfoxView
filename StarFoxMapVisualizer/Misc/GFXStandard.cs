@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using SkiaSharp;
 using StarFox.Interop.GFX;
 using StarFox.Interop.GFX.DAT;
 using StarFoxMapVisualizer.Controls.Subcontrols;
@@ -159,7 +160,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="CHRName">The name of the CGX file (not a file path). If default will just use the SCR name.</param>
         /// <param name="Screen">Optionally can specify which quadrant of the SCR file to draw</param>
         /// <returns></returns>
-        internal static async Task<Bitmap> RenderSCR(string ColorPaletteName, string SCRName, string CHRName = default,
+        internal static async Task<SKBitmap> RenderSCR(string ColorPaletteName, string SCRName, string CHRName = default,
             int Screen = -1, bool ForceExtractCCR = false, bool ForceExtractPCR = false)
         {
             var palette = MAPContext_GetPaletteByName(ColorPaletteName, out _);
@@ -184,7 +185,7 @@ namespace StarFoxMapVisualizer.Misc
         /// <param name="SCR">The file name of the SCR file to use. Has to be extracted.</param>
         /// <param name="Screen">Optionally can specify which quadrant of the SCR file to draw</param>
         /// <returns></returns>
-        internal static async Task<Bitmap> RenderSCR(COL Palette, FileInfo CGX, FileInfo SCR, int Screen = -1)
+        internal static async Task<SKBitmap> RenderSCR(COL Palette, FileInfo CGX, FileInfo SCR, int Screen = -1)
         {
             //LOAD THE CGX
             var fxCGX = await OpenCGX(CGX);

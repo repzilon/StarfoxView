@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Controls;
+using SkiaSharp;
 using StarFox.Interop.EFFECTS;
 using StarFoxMapVisualizer.Misc;
 
@@ -45,20 +46,20 @@ namespace StarFoxMapVisualizer.Renderers
 
         private void PlanetRendererControl_Unloaded(object sender, System.Windows.RoutedEventArgs e) => Dispose();
 
-        public PlanetRendererControl(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) : this() => Load(PlanetTexture, Options);
+        public PlanetRendererControl(SKBitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) : this() => Load(PlanetTexture, Options);
 
-        public void Load(Bitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) => planetRenderer.LoadTexture(PlanetTexture, Options);
+        public void Load(SKBitmap PlanetTexture, PlanetRenderer.PlanetRendererOptions Options = null) => planetRenderer.LoadTexture(PlanetTexture, Options);
 
         public void StartAnimation(TimeSpan? FrameRate = default)
         {
             FrameRate = FrameRate ?? PlanetRenderer.GetFPSTimeSpan(DefaultFrameRate);
             if (planetRenderer == null) throw new NullReferenceException("PlanetRenderer is null, call Load first.");
-            planetRenderer.StartAsync((Bitmap bmp) => {
+            planetRenderer.StartAsync((SKBitmap bmp) => {
                 Dispatcher.BeginInvoke(new Action(delegate { SetRenderSource(bmp); }));
             }, false, FrameRate, TimeSpan.Zero);
         }
 
-        private void SetRenderSource(Bitmap bmp)
+        private void SetRenderSource(SKBitmap bmp)
         {
             RenderImage.Source = bmp.Convert();
             bmp.Dispose();

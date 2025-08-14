@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using SkiaSharp;
 using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.COLTAB.DEF;
 using static StarFox.Interop.GFX.CAD;
@@ -75,19 +76,24 @@ namespace StarFox.Interop.GFX
 			if (colorPaletteStartIndex < 1) colorPaletteStartIndex = 0;
 		}
 
-		public Bitmap RenderPalette()
+		public SKBitmap RenderPalette()
 		{
 			double sqSize = Colors.Length < 1 ? 1 : Math.Sqrt(Colors.Length);
 			int isqSize = (int)Math.Ceiling(sqSize); // round up for square size
-			Bitmap bmp = new Bitmap(isqSize, isqSize);
+			SKBitmap bmp = new SKBitmap(isqSize, isqSize);
 			for (int y = 0; y < isqSize; y++) { // row
 				for (int x = 0; x < isqSize; x++) { // col
 					int index = (isqSize * y) + x;
 					var color = index < Colors.Length ? Colors[index] : Color.White;
-					bmp.SetPixel(x, y, color);
+					bmp.SetPixel(x, y, ToSkia(color));
 				}
 			}
 			return bmp;
+		}
+
+		internal static SKColor ToSkia(Color gdiplusColor)
+		{
+			return new SKColor(gdiplusColor.R, gdiplusColor.G, gdiplusColor.B, gdiplusColor.A);
 		}
 
 		/// <summary>
@@ -231,7 +237,11 @@ namespace StarFox.Interop.GFX
 			if ((ColorByte >= 0) && (ColorByte <= 9)) {
 				collite = LerpColor(GetColorByIndex(karFirstIndexes[ColorByte]), GetColorByIndex(karSecondIndexes[ColorByte]));
 			} else {
+#if NETSTANDARD2_0
+				collite = Backporting.FromHtml("#FFFFFF");
+#else
 				collite = ColorTranslator.FromHtml("#FFFFFF");
+#endif
 			}
 
 			if (false) {
@@ -248,11 +258,11 @@ namespace StarFox.Interop.GFX
                     "#7C11A3", //= Shaded Red/blue (Purple)
                     "#2F9E28", //= Shaded Green/Dark Green
                 };
-				if ((ColorByte >= 0) && (ColorByte <= 9)) {
-					collite = ColorTranslator.FromHtml(karFallback[ColorByte]);
-				} else {
-					collite = ColorTranslator.FromHtml("#FFFFFF");
-				}
+#if NETSTANDARD2_0
+				collite = Backporting.FromHtml((ColorByte >= 0) && (ColorByte <= 9) ? karFallback[ColorByte] : "#FFFFFF");
+#else
+				collite = ColorTranslator.FromHtml((ColorByte >= 0) && (ColorByte <= 9) ? karFallback[ColorByte]: "#FFFFFF");
+#endif
 			}
 			Collites.Add(ColorByte, collite);
 			return collite;

@@ -71,6 +71,7 @@
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
     <ProjectReference Include="..\TextEditLib\TextEditLib.csproj" />
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
+    <PackageReference Include="SkiaSharp" Version="[1.60.3]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
@@ -97,7 +98,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows7.0'">
-    <PackageReference Include="System.Drawing.Common" Version="[6.0.0]" />
     <PackageReference Include="NAudio" Version="[2.0.1]" />
     <PackageReference Include="AvalonEdit" Version="[6.2.0.78]" />
     <Content Include="References\Microsoft.WindowsDesktop.App\5.0.17\PresentationFramework.Classic.dll">
@@ -106,7 +106,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows7.0'">
-    <PackageReference Include="System.Drawing.Common" Version="[8.0.17]" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <Content Include="References\Microsoft.WindowsDesktop.App\6.0.36\PresentationFramework.Classic.dll">

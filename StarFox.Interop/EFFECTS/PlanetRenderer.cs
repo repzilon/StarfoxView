@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using SkiaSharp;
 
 namespace StarFox.Interop.EFFECTS
 {
     /// <summary>
-    /// Outlines all of the individual options found in an <see cref="PlanetRenderer.PlanetRendererOptions"/> class
+    /// Outlines all the individual options found in an <see cref="PlanetRenderer.PlanetRendererOptions"/> class
     /// </summary>
     public interface IPlanetRenderOptions
     {
@@ -66,7 +67,7 @@ namespace StarFox.Interop.EFFECTS
     /// Renders a Starfox-like planet image that rotates over a given timestep.
     /// <para/>Please see: <see cref="PlanetRendererOptions"/> to customize this renderer
     /// </summary>
-    public sealed class PlanetRenderer : AnimatorEffect<Bitmap>
+    public sealed class PlanetRenderer : AnimatorEffect<SKBitmap>
     {
         /// <summary>
         /// Use these options to customize this <see cref="PlanetRenderer"/>
@@ -86,7 +87,7 @@ namespace StarFox.Interop.EFFECTS
         }
 
         private Color[,] cacheImage;
-        private Bitmap planetTexture;
+        private SKBitmap planetTexture;
         private double planetRotationalSpeedX => Options.RotationalSpeedX;
         private double planetRotationalSpeedY => Options.RotationalSpeedY;
         private double XScroll, YScroll;
@@ -109,12 +110,12 @@ namespace StarFox.Interop.EFFECTS
             AnimatorStatus = AnimatorStatus.NOT_INIT;
         }
 
-        public PlanetRenderer(Bitmap PlanetTexture, PlanetRendererOptions Options = null) : this()
+        public PlanetRenderer(SKBitmap PlanetTexture, PlanetRendererOptions Options = null) : this()
         {
             LoadTexture(PlanetTexture, Options);
         }
 
-        public void LoadTexture(Bitmap PlanetTexture, PlanetRendererOptions Options = null)
+        public void LoadTexture(SKBitmap PlanetTexture, PlanetRendererOptions Options = null)
         {
             if (Options != null)
                 this.Options = Options;
@@ -126,7 +127,7 @@ namespace StarFox.Interop.EFFECTS
 
         private double Distance(Point A, Point B) => Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
 
-        public override Bitmap RenderOnce(TimeSpan DeltaTime)
+        public override SKBitmap RenderOnce(TimeSpan DeltaTime)
         {
             if (IsDisposed) throw new ObjectDisposedException($"{GetType().Name} instance has been disposed, yet is now trying to be used.");
             if (planetTexture == null)

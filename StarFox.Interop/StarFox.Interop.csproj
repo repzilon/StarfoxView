@@ -2,6 +2,7 @@
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
     <TargetFrameworks>net6.0;net5.0;net48;net46;netstandard2.0</TargetFrameworks>
     <NoWarn>NETSDK1138</NoWarn>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' != '17.0' ">
     <TargetFrameworks>netstandard2.0;net46;net40</TargetFrameworks>
@@ -18,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\geometry4Sharp\geometry4Sharp_netstandard_mesh.csproj" />
     <ProjectReference Include="..\EarClipperLib\EarClipperLib.csproj" />
+    <PackageReference Include="SkiaSharp" Version="[1.60.3]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="System.Numerics.Vectors" Version="[4.5.0]" />
@@ -27,14 +29,11 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
-    <PackageReference Include="System.Drawing.Common" Version="[6.0.0]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
-    <PackageReference Include="System.Drawing.Common" Version="[8.0.17]" />
   </ItemGroup>
 </Project>

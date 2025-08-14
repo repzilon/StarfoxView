@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using SkiaSharp;
 using StarFox.Interop.MISC;
 
 // ********************************
@@ -19,10 +20,10 @@ namespace StarFox.Interop.GFX
         {
             //SNES Tile Render Functions
 #if RENDER
-            public static Bitmap Tile2BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
+            public static SKBitmap Tile2BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
             {
                 //SNES/GB
-                Bitmap tile = new Bitmap(8, 8);
+                SKBitmap tile = new SKBitmap(8, 8);
 
                 for (int y = 0; y < 8; y++)
                 {
@@ -36,16 +37,16 @@ namespace StarFox.Interop.GFX
                         int yt = y;
                         if (yflip) yt = 7 - y;
 
-                        tile.SetPixel(xt, yt, pal[colorID % pal.Length]);
+                        tile.SetPixel(xt, yt, SFPalette.ToSkia(pal[colorID % pal.Length]));
                     }
                 }
 
                 return tile;
             }
 
-            public static Bitmap Tile4BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
+            public static SKBitmap Tile4BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
             {
-                Bitmap tile = new Bitmap(8, 8);                
+                SKBitmap tile = new SKBitmap(8, 8);
 
                 for (int y = 0; y < 8; y++)
                 {
@@ -65,17 +66,17 @@ namespace StarFox.Interop.GFX
                         var column = index % 16;
                         var color = pal[index];
                         if (column == 0 && index != 0)
-                            color = Color.Transparent;                        
+                            color = Color.Transparent;
 
-                        tile.SetPixel(xt, yt, color);
+                        tile.SetPixel(xt, yt, SFPalette.ToSkia(color));
                     }
                 }
                 return tile;
             }
 
-            public static Bitmap Tile8BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
+            public static SKBitmap Tile8BPP(byte[] dat, Color[] pal, bool xflip = false, bool yflip = false)
             {
-                Bitmap tile = new Bitmap(8, 8);
+                SKBitmap tile = new SKBitmap(8, 8);
 
                 for (int y = 0; y < 8; y++)
                 {
@@ -95,7 +96,7 @@ namespace StarFox.Interop.GFX
                         int yt = y;
                         if (yflip) yt = 7 - y;
 
-                        tile.SetPixel(xt, yt, pal[colorID % pal.Length]);
+                        tile.SetPixel(xt, yt, SFPalette.ToSkia(pal[colorID % pal.Length]));
                     }
                 }
 
@@ -122,15 +123,15 @@ namespace StarFox.Interop.GFX
             return pal;
         }
 #if RENDER
-        public static Bitmap RenderPalette(Color[] pal)
+        public static SKBitmap RenderPalette(Color[] pal)
         {
-            Bitmap output = new Bitmap(16 * 16, 16 * 16);
+            SKBitmap output = new SKBitmap(16 * 16, 16 * 16);
 
             for (int i = 0; i < Math.Min(pal.Length, 256); i++)
             {
-                using (Graphics g = Graphics.FromImage(output))
-                {
-                    g.FillRectangle(new SolidBrush(pal[i]), (i % 16) * 16, (i / 16) * 16, 16, 16);
+                using (var g = new SKCanvas(output)) {
+	                g.DrawRect((i % 16) * 16, (i / 16) * 16, 16, 16,
+		                new SKPaint() { Style = SKPaintStyle.Fill, Color = SFPalette.ToSkia(pal[i]) });
                 }
             }
 
@@ -139,7 +140,7 @@ namespace StarFox.Interop.GFX
 
         //SNES SuperCG-CAD Renderer
         //CGX
-        public static Bitmap RenderCGX(byte[] cgx, Color[] pal, int palForce = -1)
+        public static SKBitmap RenderCGX(byte[] cgx, Color[] pal, int palForce = -1)
         {
             //dat: CGX file
             //pal: color palette (imported from *.COL)
@@ -162,7 +163,7 @@ namespace StarFox.Interop.GFX
             float ver = float.Parse(System.Text.Encoding.ASCII.GetString(cgx, off_hdr + 0x13, 4), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
             int rev = int.Parse(System.Text.Encoding.ASCII.GetString(cgx, off_hdr + 0x18, 6));
 
-            Bitmap output = new Bitmap(128, (128) * 4);
+            SKBitmap output = new SKBitmap(128, (128) * 4);
 
             for (int i = 0; i < (256 * 4); i++)
             {
@@ -182,75 +183,60 @@ namespace StarFox.Interop.GFX
                     p = palForce;
                 }
 
-                Bitmap tile;
-                switch (fmt)
-                {
-                    case 0: //2bit
-                        tile = SNES.Tile2BPP(Utility.Subarray(cgx, i * 16, 16), Utility.Subarray(pal, (p_b * 128) + (p * 4), 4));
-                        break;
-                    case 1: //4bit
-                        tile = SNES.Tile4BPP(Utility.Subarray(cgx, i * 32, 32), Utility.Subarray(pal, (p_b * 128) + (p * 16), 16));
-                        break;
-                    default:
-                    case 2: //8bit
-                        tile = SNES.Tile8BPP(Utility.Subarray(cgx, i * 64, 64), Utility.Subarray(pal, (p_b * 128) + (p * 128), 256));
-                        break;
+                SKBitmap tile;
+                if (fmt == 0) { //2bit
+	                tile = SNES.Tile2BPP(Utility.Subarray(cgx, i * 16, 16),
+		                Utility.Subarray(pal, (p_b * 128) + (p * 4), 4));
+                } else if (fmt == 1) { //4bit
+	                tile = SNES.Tile4BPP(Utility.Subarray(cgx, i * 32, 32),
+		                Utility.Subarray(pal, (p_b * 128) + (p * 16), 16));
+                } else { //8bit
+	                tile = SNES.Tile8BPP(Utility.Subarray(cgx, i * 64, 64),
+		                Utility.Subarray(pal, (p_b * 128) + (p * 128), 256));
                 }
 
-                using (Graphics g = Graphics.FromImage(output))
-                {
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                    g.DrawImage(tile, x, y, s, s);
+                using (var g = new SKCanvas(output)) {
+	                g.DrawBitmap(tile, x, y, new SKPaint() { IsAntialias = true, FilterQuality = SKFilterQuality.Low });
                 }
             }
 
             return output;
         }
 
-        public static Bitmap RenderCGXTile(int tile, int size, byte[] cgx, Color[] pal, bool xflip = false, bool yflip = false)
-        {
-            Bitmap output = new Bitmap(size, size);
+		public static SKBitmap RenderCGXTile(int tile, int size, byte[] cgx, Color[] pal, bool xflip = false, bool yflip = false)
+		{
+			SKBitmap output = new SKBitmap(size, size);
 
-            int fmt = 0;
-            if (cgx.Length == 0x8500)
-                fmt = 1;
-            else if (cgx.Length == 0x10100)
-                fmt = 2;
+			int fmt = 0;
+			if (cgx.Length == 0x8500)
+				fmt = 1;
+			else if (cgx.Length == 0x10100)
+				fmt = 2;
 
-            for (int y = 0; y < (size / 8); y++)
-            {
-                for (int x = 0; x < (size / 8); x++)
-                {
-                    using (Graphics g = Graphics.FromImage(output))
-                    {
-                        int tilecalc = (tile + (!xflip ? x : ((size / 8) - x - 1)) + (!yflip ? y * 0x10 : ((size / 8) - y - 1) * 0x10)) % 0x400;
-                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                        switch (fmt)
-                        {
-                            case 0:
-                                g.DrawImage(SNES.Tile2BPP(Utility.Subarray(cgx, tilecalc * 16, 16), pal, xflip, yflip), x * 8, y * 8, 8, 8);
-                                break;
-                            case 1:
-                                g.DrawImage(SNES.Tile4BPP(Utility.Subarray(cgx, tilecalc * 32, 32), pal, xflip, yflip), x * 8, y * 8, 8, 8);
-                                break;
-                            default:
-                            case 2:
-                                g.DrawImage(SNES.Tile8BPP(Utility.Subarray(cgx, tilecalc * 64, 64), pal, xflip, yflip), x * 8, y * 8, 8, 8);
-                                break;
-                        }
-                    }
-                }
-            }
+			using (var g = new SKCanvas(output)) {
+				var options = new SKPaint() { IsAntialias = true, FilterQuality = SKFilterQuality.Low };
+				for (int y = 0; y < (size / 8); y++) {
+					for (int x = 0; x < (size / 8); x++) {
+						int tilecalc = (tile + (!xflip ? x : ((size / 8) - x - 1)) + (!yflip ? y * 0x10 : ((size / 8) - y - 1) * 0x10)) % 0x400;
+						if (fmt == 0) {
+							g.DrawBitmap(SNES.Tile2BPP(Utility.Subarray(cgx, tilecalc * 16, 16), pal, xflip, yflip),
+								x * 8, y * 8, options);
+						} else if (fmt == 1) {
+							g.DrawBitmap(SNES.Tile4BPP(Utility.Subarray(cgx, tilecalc * 32, 32), pal, xflip, yflip),
+								x * 8, y * 8, options);
+						} else {
+							g.DrawBitmap(SNES.Tile8BPP(Utility.Subarray(cgx, tilecalc * 64, 64), pal, xflip, yflip),
+								x * 8, y * 8, options);
+						}
+					}
+				}
+			}
 
-            return output;
-        }
+			return output;
+		}
 
-        //SCR
-        public static Bitmap RenderSCR(byte[] scr, byte[] cgx, Color[] pal, bool allvisible = false)
+		//SCR
+		public static SKBitmap RenderSCR(byte[] scr, byte[] cgx, Color[] pal, bool allvisible = false)
         {
             //Get CGX Format
             int fmt = 0;
@@ -269,7 +255,7 @@ namespace StarFox.Interop.GFX
             //Tile Size
             int t = 8 * (scr[off_hdr + 0x42] + 1);
 
-            Bitmap output = new Bitmap(512 * (t / 8), 512 * (t / 8));
+            SKBitmap output = new SKBitmap(512 * (t / 8), 512 * (t / 8));
 
             //Screen ID
             for (int s = 0; s < 4; s++)
@@ -298,27 +284,18 @@ namespace StarFox.Interop.GFX
                     if (!visible)
                         continue;
 
-                    Bitmap chr;
-                    switch (fmt)
-                    {
-                        case 0: //2bit
-                            chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + (color * 4), 4), xflip, yflip);
-                            break;
-                        case 1: //4bit
-                            chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + (color * 16), 16), xflip, yflip);
-                            break;
-                        default:
-                        case 2: //8bit
-                            chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + ((color & 1) * 128), 256), xflip, yflip);
-                            break;
+                    SKBitmap chr;
+                    if (fmt == 0) { //2bit
+	                    chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + (color * 4), 4), xflip, yflip);
+                    } else if (fmt == 1) { //4bit
+	                    chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + (color * 16), 16), xflip, yflip);
+                    } else { //8bit
+	                    chr = RenderCGXTile(tile, z, cgx, Utility.Subarray(pal, (p_b * 128) + ((color & 1) * 128), 256), xflip, yflip);
                     }
 
-                    using (Graphics g = Graphics.FromImage(output))
-                    {
-                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                        g.DrawImage(chr, x, y, z, z);
+                    using (var g = new SKCanvas(output)) {
+	                    g.DrawBitmap(chr, x, y,
+		                    new SKPaint() { IsAntialias = true, FilterQuality = SKFilterQuality.Low });
                     }
                 }
             }
@@ -326,7 +303,7 @@ namespace StarFox.Interop.GFX
             return output;
         }
 
-        public static Bitmap RenderOBJ(int seq, int frame, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank)
+        public static SKBitmap RenderOBJ(int seq, int frame, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank)
         {
             //Get Offset to Footer
             int off_hdr = 0x3000;
@@ -336,7 +313,7 @@ namespace StarFox.Interop.GFX
             return RenderOBJ(entry, obj, cgx, pal, obj_size, cgx_bank);
         }
 
-        public static Bitmap RenderOBJ(int entry, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank)
+        public static SKBitmap RenderOBJ(int entry, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank)
         {
             //Tile Sizes
             int[] tilesizes = { 8, 16, 8, 32, 8, 64, 16, 32, 16, 64, 32, 64 };
@@ -353,14 +330,11 @@ namespace StarFox.Interop.GFX
             byte pal_half = obj[off_hdr + 0x53];
             //byte cgx_bank = obj[off_hdr + 0x56];
 
-            Bitmap output = new Bitmap(256, 256);
+            SKBitmap output = new SKBitmap(256, 256);
 
-            using (Graphics g = Graphics.FromImage(output))
-            {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                g.FillRectangle(new SolidBrush(Color.FromArgb(0, 254, 1, 254)), 0, 0, 256, 256);
+            using (var g = new SKCanvas(output)) {
+	            g.DrawRect(0, 0, 256, 256,
+		            new SKPaint() { IsAntialias = true, Style = SKPaintStyle.Fill, Color = new SKColor(254, 1, 254, 0) });
             }
 
             //Get All Frame Data at once
@@ -385,20 +359,17 @@ namespace StarFox.Interop.GFX
                 //Get 16-color Palette
                 Color[] sprpal = Utility.Subarray(pal, (pal_half * 128) + (color * 16), 16);
                 sprpal[0] = Color.FromArgb(0, sprpal[0].R, sprpal[0].G, sprpal[0].B); //Must be transparent
-                Bitmap chr = RenderCGXTile((cgx_bank * 256) + tile, size, cgx, sprpal, xflip, yflip);
+                SKBitmap chr = RenderCGXTile((cgx_bank * 256) + tile, size, cgx, sprpal, xflip, yflip);
 
-                using (Graphics g = Graphics.FromImage(output))
-                {
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                    g.DrawImage(chr, (128 + x), (128 + y), size, size);
+                using (var g = new SKCanvas(output)) {
+	                g.DrawBitmap(chr, (128 + x), (128 + y),
+		                new SKPaint() { IsAntialias = true, FilterQuality = SKFilterQuality.Low });
                 }
             }
             return output;
         }
 
-        public static bool RenderOBJAnim(int seq, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank, out Bitmap[] frames, out int[] durations)
+        public static bool RenderOBJAnim(int seq, byte[] obj, byte[] cgx, Color[] pal, byte obj_size, byte cgx_bank, out SKBitmap[] frames, out int[] durations)
         {
             int amountframe = 0;
             for (int i = 0; i < 0x40; i += 2)
@@ -410,7 +381,7 @@ namespace StarFox.Interop.GFX
                 }
             }
 
-            frames = new Bitmap[amountframe];
+            frames = new SKBitmap[amountframe];
             durations = new int[amountframe];
 
             if (amountframe == 0)
@@ -425,20 +396,19 @@ namespace StarFox.Interop.GFX
             return true;
         }
 
-        public static Bitmap ScaleBitmap(Bitmap input, int scale)
+        public static SKBitmap ScaleBitmap(SKBitmap input, int scale)
         {
-            Bitmap output = new Bitmap(input.Width * scale, input.Height * scale);
+            SKBitmap output = new SKBitmap(input.Width * scale, input.Height * scale);
 
-            using (Graphics g = Graphics.FromImage(output))
-            {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                g.DrawImage(input, 0, 0, input.Width * scale, input.Height * scale);
+            using (var g = new SKCanvas(output)) {
+                var rctSource = new SKRect(0, 0, input.Width, input.Height);
+                var rctDest = new SKRect(0, 0, input.Width * scale, input.Height * scale);
+                g.DrawBitmap(input, rctSource, rctDest,
+	                new SKPaint() { IsAntialias = true, FilterQuality = SKFilterQuality.Low });
             }
 
             return output;
         }
-#endif        
+#endif
     }
 }
