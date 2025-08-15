@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:CustomControls="clr-namespace:AvaloniaPanNZoom.CustomControls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaPanNZoom.MainWindow"
+        Title="Pan and Zoom on Avalonia">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <CustomControls:PanAndZoomCanvas x:Name="canvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
+</Window>
