@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.3"/>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.3"/>
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.3"/>
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.3"/>
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.3">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Resources\Graphics\Snow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Backgrounds\FireParticlesPanel.axaml.cs">
+      <DependentUpon>FireParticlesPanel.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
