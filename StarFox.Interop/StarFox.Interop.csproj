@@ -19,7 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\geometry4Sharp\geometry4Sharp_netstandard_mesh.csproj" />
     <ProjectReference Include="..\EarClipperLib\EarClipperLib.csproj" />
-    <PackageReference Include="SkiaSharp" Version="[1.60.3]" />
+    <PackageReference Include="SkiaSharp" Version="[2.88.9]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="System.Numerics.Vectors" Version="[4.5.0]" />

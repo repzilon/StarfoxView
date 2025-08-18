@@ -347,18 +347,21 @@ namespace StarFox.Interop.EFFECTS
 			// Copy the RGB values into the array.
 			Marshal.Copy(arrPtr, rgbValues, 0, (int)nintArrayLength);
 
-			var colorType  = image.ColorType;
-			var octetPerPx = (colorType == SKColorType.Index8) ? (byte)1 : (byte)4;
+			// TODO : Put back support for indexed color images, but outside SkiaSharp because
+			// Alphabloat dropped support for them in Skia
+			//var colorType  = image.ColorType;
+			//var octetPerPx = (colorType == SKColorType.Index8) ? (byte)1 : (byte)4;
+			const byte octetPerPx = 4;
 
 			if ((int)nintArrayLength % octetPerPx != 0) {
 				throw new InvalidDataException("Bitmap data needs to be evenly divisible by " + octetPerPx + ".");
 			}
 
 			var w = image.Width;
-			int i = 0, x = 0, y = 0;
+			int i, x = 0, y = 0;
 
 			var imageData = new Color[w, image.Height];
-
+			/*
 			if (octetPerPx == 1) {
 				var palette = image.ColorTable.UnPreMultipledColors;
 				for (i = 0; i < rgbValues.Length; i++) {
@@ -366,13 +369,13 @@ namespace StarFox.Interop.EFFECTS
 					SetPixel(imageData, ToGdiPlus(palette[(byte)(colorByte >> 4)]), ref x, ref y, w);
 					SetPixel(imageData, ToGdiPlus(palette[(byte)(colorByte & 0x0F)]), ref x, ref y, w);
 				}
-			} else {
+			} else {// */
 				for (i = 0; i < rgbValues.Length; i += octetPerPx) {
 					SetPixel(imageData,
 						Color.FromArgb(rgbValues[i + 3], rgbValues[i + 2], rgbValues[i + 1], rgbValues[i]),
 						ref x, ref y, w);
 				}
-			}
+			//}
 
 			return imageData;
 		}
