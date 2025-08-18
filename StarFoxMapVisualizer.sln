@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI-Avalonia", "GUI-Avaloni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Extensions", "Avalonia.Extensions\Avalonia.Extensions.csproj", "{C4B9A3BE-30A8-4996-8106-68DBECB3CA87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarwingMapVisualizer", "StarwingMapVisualizer\StarwingMapVisualizer.csproj", "{625AA01A-7EEE-476E-8FC3-DEE6D24BD643}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{C4B9A3BE-30A8-4996-8106-68DBECB3CA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B9A3BE-30A8-4996-8106-68DBECB3CA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B9A3BE-30A8-4996-8106-68DBECB3CA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +127,7 @@ Global
 		{175E04A4-F286-4462-AF44-02E94D232122} = {592A16B9-EAAA-4F25-B88A-CD8351F9DF2C}
 		{06A9A275-B781-4E81-A937-10B21456B3B2} = {DA9D96FC-07B2-49FA-92EF-88E93F626EFE}
 		{C4B9A3BE-30A8-4996-8106-68DBECB3CA87} = {DA9D96FC-07B2-49FA-92EF-88E93F626EFE}
+		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643} = {DA9D96FC-07B2-49FA-92EF-88E93F626EFE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DC0E0F0-BC90-4228-A9AF-C391B81580F8}
