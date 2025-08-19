@@ -7,8 +7,18 @@
         <entry key="AvaloniaPanNZoom/CustomControls/PanAndZoomCanvas.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/CustomControls/Widget.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/MainWindow.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
+        <entry key="StarwingMapVisualizer/App.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Dialogs/LoadingWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/MainWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Resources/ControlOverride.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Resources/ControlStyle.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Resources/Theme.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Screens/EditScreen.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Screens/LandingScreen.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVizualizer/App.axaml" value="StarwingMapVizualizer/StarwingMapVizualizer.csproj" />
+        <entry key="StarwingMapVizualizer/Dialogs/LoadingWindow.axaml" value="StarwingMapVizualizer/StarwingMapVizualizer.csproj" />
         <entry key="StarwingMapVizualizer/MainWindow.axaml" value="StarwingMapVizualizer/StarwingMapVizualizer.csproj" />
+        <entry key="StarwingMapVizualizer/Screens/LandingScreen.axaml" value="StarwingMapVizualizer/StarwingMapVizualizer.csproj" />
       </map>
     </option>
   </component>

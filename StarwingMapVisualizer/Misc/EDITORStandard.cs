@@ -8,11 +8,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Starfox.Editor;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP.EVT;
 using StarwingMapVisualizer;
 using StarwingMapVisualizer.Dialogs;
+using StarwingMapVisualizer.Screens;
 //using StarwingMapVisualizer.Controls;
 //using StarwingMapVisualizer.Controls.Subcontrols;
-//using StarwingMapVisualizer.Screens;
 
 namespace StarwingMapVisualizer.Misc
 {
@@ -21,14 +23,13 @@ namespace StarwingMapVisualizer.Misc
 	/// </summary>
 	internal static class EDITORStandard
 	{
-		private static bool WelcomeWagonShownOnce;
+		// FIXME : Welcome wagon is skipped on Avalonia to prevent an non-CPU bound hang
+		private static bool WelcomeWagonShownOnce = true;
 
-		/* TODO : Import EditScreen
 		/// <summary>
 		/// There should only ever be one instance of the Edit screen at any given time
 		/// </summary>
 		internal static EditScreen CurrentEditorScreen { get; set; }
-		// */
 
 		private static LoadingWindow _loadingWindow;
 
@@ -38,8 +39,7 @@ namespace StarwingMapVisualizer.Misc
 		/// </summary>
 		public static void ShowLoadingWindow()
 		{
-			// TODO : Import EditScreen for DimEditorScreen
-			//DimEditorScreen();
+			DimEditorScreen();
 			if (_loadingWindow == null) {
 				_loadingWindow = new LoadingWindow();
 			}
@@ -52,20 +52,18 @@ namespace StarwingMapVisualizer.Misc
 		/// </summary>
 		public static void HideLoadingWindow()
 		{
-			// TODO : Import EditScreen for UndimEditorScreen
-			//UndimEditorScreen();
+			UndimEditorScreen();
 
 			_loadingWindow?.Hide();
 		}
 
-		/* TODO : Import EditScreen for DimEditorScreen and UndimEditorScreen
 		/// <summary>
 		/// If an <see cref="EditScreen"/> is added to this program, this will dim it.
 		/// </summary>
 		public static void DimEditorScreen()
 		{
-			if (CurrentEditorScreen != default)
-				CurrentEditorScreen.LoadingSpan.Visibility = Visibility.Visible;
+			if (CurrentEditorScreen != null)
+				CurrentEditorScreen.LoadingSpan.IsVisible = true;
 		}
 
 		/// <summary>
@@ -73,18 +71,16 @@ namespace StarwingMapVisualizer.Misc
 		/// </summary>
 		public static void UndimEditorScreen()
 		{
-			if (CurrentEditorScreen != default)
-				CurrentEditorScreen.LoadingSpan.Visibility = Visibility.Collapsed;
-		}// */
+			if (CurrentEditorScreen != null)
+				CurrentEditorScreen.LoadingSpan.IsVisible = false;
+		}
 
-		/* TODO : Implement EDITORStandard.SwitchEditorView
 		/// <summary>
 		/// Changes the interface to be on the Editor passed as an argument
 		/// </summary>
-		public static async Task SwitchEditorView(EditScreen.ViewMode View) => await CurrentEditorScreen.SwitchView(View);
-		// */
+		public static async Task SwitchEditorView(EditScreen.ViewMode view) => await CurrentEditorScreen.SwitchView(view);
 
-		/* TODO : Import EditScreen for CurrentEditorScreen
+		/* TODO : Import OBJViewer, MAPViewer and ASMViewer
 		/// <summary>
 		/// See: <see cref="SHAPEControl.ShowShape(string, int)"/>
 		/// </summary>
@@ -95,8 +91,7 @@ namespace StarwingMapVisualizer.Misc
 		{
 			if (!await CurrentEditorScreen.OBJViewer.ShowShape(ShapeName, Frame))
 				return false;
-			// TODO : Complete EDITORStandard.ShapeEditor_ShowShapeByName
-			//await SwitchEditorView(EditScreen.ViewMode.OBJ);
+			await SwitchEditorView(EditScreen.ViewMode.OBJ);
 			return true;
 		}
 
@@ -120,34 +115,33 @@ namespace StarwingMapVisualizer.Misc
 		/// <returns></returns>
 		public static async Task AsmEditor_OpenSymbol(ASMChunk Symbol)
 		{
-			// TODO : Complete EDITORStandard.AsmEditor_OpenSymbol
-			//await SwitchEditorView(EditScreen.ViewMode.ASM);
+			await SwitchEditorView(EditScreen.ViewMode.ASM);
 			await CurrentEditorScreen.ASMViewer.OpenSymbol(Symbol);
 		}//*/
 
-		private static async Task<SFOptimizerDataStruct> Editor_BaseDoRefreshMap(SFOptimizerTypeSpecifiers Type,
-			Func<FileInfo, Dictionary<string, string>, Task<bool>> ProcessFunction, string InitialDirectory = null, string KeyFile = null)
+		private static async Task<SFOptimizerDataStruct> Editor_BaseDoRefreshMap(SFOptimizerTypeSpecifiers type,
+			Func<FileInfo, Dictionary<string, string>, Task<bool>> processFunction, string initialDirectory = null, string keyFile = null)
 		{
 		retry:
-			var FilesSelected = await FILEStandard.ShowGenericFileBrowser($"Select ALL of your {Type.ToString().ToUpper()} Files", false, InitialDirectory, true);
-			if (FilesSelected == null) {
+			var filesSelected = await FILEStandard.ShowGenericFileBrowser($"Select ALL of your {type.ToString().ToUpper()} Files", false, initialDirectory, true);
+			if (filesSelected == null) {
 				return null; // User Cancelled
 			}
 
 			var errorBuilder = new StringBuilder();       // ERRORS
-			if (!FilesSelected.Any()) {
+			if (!filesSelected.Any()) {
 				return null;
 			}
 
-			var dirInfo = Path.GetDirectoryName(FilesSelected.First());
+			var dirInfo = Path.GetDirectoryName(filesSelected.First());
 			if (dirInfo == null || !Directory.Exists(dirInfo)) {
 				return null;
 			}
 
 			//TEST SOMETHING OUT
-			if (!FilesSelected.Select(x => Path.GetFileName(x).ToLower()).Contains(KeyFile.ToLower())) {
+			if (!filesSelected.Select(x => Path.GetFileName(x).ToLower()).Contains(keyFile.ToLower())) {
 				if (MessageBox.Show("It looks like the directory you selected doesn't have at least " +
-					$"a {KeyFile.ToUpper()} file in it. Have you selected the {Type.ToString().ToUpper()} directory in your workspace?\n\n" +
+					$"a {keyFile.ToUpper()} file in it. Have you selected the {type.ToString().ToUpper()} directory in your workspace?\n\n" +
 					"Would you like to continue anyway? No will go back to file selection.", "Directory Selection Message",
 					MessageBoxButton.YesNo) != MessageBoxResult.Yes) {
 					goto retry;
@@ -156,10 +150,10 @@ namespace StarwingMapVisualizer.Misc
 			//GET IMPORTS SET
 			FILEStandard.ReadyImporters();
 			var shapesMap = new Dictionary<string, string>();
-			foreach (var file in FilesSelected.Select(x => new FileInfo(x))) // ITERATE OVER DIR FILES
+			foreach (var file in filesSelected.Select(x => new FileInfo(x))) // ITERATE OVER DIR FILES
 			{
 				try {
-					bool result = await ProcessFunction(file, shapesMap);
+					bool result = await processFunction(file, shapesMap);
 					if (!result) {
 						break;
 					}
@@ -167,7 +161,7 @@ namespace StarwingMapVisualizer.Misc
 					errorBuilder.AppendLine($"The file: {file.FullName} could not be exported.\n***\n{ex}\n***"); // ERROR INFO
 				}
 			}
-			return new SFOptimizerDataStruct(Type, dirInfo, shapesMap)
+			return new SFOptimizerDataStruct(type, dirInfo, shapesMap)
 			{
 				ErrorOut = errorBuilder
 			};
@@ -190,8 +184,8 @@ namespace StarwingMapVisualizer.Misc
 				return; // OOPSIES!
 			}
 
-			var FilesSelected = await FILEStandard.ShowGenericFileBrowser($"Select ALL of your SHAPES Files", false, null, true);
-			if ((FilesSelected == null) || (FilesSelected.Length < 1)) {
+			var filesSelected = await FILEStandard.ShowGenericFileBrowser($"Select ALL of your SHAPES Files", false, null, true);
+			if ((filesSelected == null) || (filesSelected.Length < 1)) {
 				return; // User Cancelled
 			}
 
@@ -201,7 +195,7 @@ namespace StarwingMapVisualizer.Misc
 			var exportedFiles = new StringBuilder();    // ALL FILES
 
 			FILEStandard.ReadyImporters();  //GET IMPORTS SET
-			foreach (var file in FilesSelected.Select(x => new FileInfo(x))) {	// ITERATE OVER DIR FILES
+			foreach (var file in filesSelected.Select(x => new FileInfo(x))) {	// ITERATE OVER DIR FILES
 				var bspFile = await FILEStandard.OpenBSPFile(file); // IMPORT THE BSP
 				foreach (var shape in bspFile.Shapes) { // FIND ALL SHAPES
 					try {
@@ -236,16 +230,16 @@ namespace StarwingMapVisualizer.Misc
 		}
 
 		/// <summary>
-		/// Refreshes the map that is provided using the <paramref name="Type"/> parameter
+		/// Refreshes the map that is provided using the <paramref name="type"/> parameter
 		/// </summary>
-		/// <param name="Type"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		internal static async Task<SFOptimizerNode> Editor_RefreshMap(SFOptimizerTypeSpecifiers Type, string InitialDirectory = null)
+		internal static async Task<SFOptimizerNode> Editor_RefreshMap(SFOptimizerTypeSpecifiers type, string initialDirectory = null)
 		{
-			async Task<bool> GetShapeMap(FileInfo File, Dictionary<string, string> Map)
+			async Task<bool> GetShapeMap(FileInfo file, Dictionary<string, string> map)
 			{
-				Dictionary<string, string> shapeMap = Map;
-				var bspFile = await FILEStandard.OpenBSPFile(File); // IMPORT THE BSP
+				Dictionary<string, string> shapeMap = map;
+				var bspFile = await FILEStandard.OpenBSPFile(file); // IMPORT THE BSP
 				foreach (var shape in bspFile.Shapes) {
 					var sName = shape.Header.Name.ToUpper();
 					var fooSName = sName;
@@ -255,30 +249,30 @@ namespace StarwingMapVisualizer.Misc
 						tries++;
 					}
 					sName = fooSName;
-					shapeMap.Add(sName, File.Name);
+					shapeMap.Add(sName, file.Name);
 				}
 				int delta = bspFile.ShapeHeaderEntries.Count - bspFile.Shapes.Count;
 				return true;
 			}
-			async Task<bool> GetLevelMap(FileInfo File, Dictionary<string, string> Map)
+			async Task<bool> GetLevelMap(FileInfo file, Dictionary<string, string> Map)
 			{
 				Dictionary<string, string> stageMap = Map;
-				var mapFile = await FILEStandard.OpenMAPFile(File); // IMPORT THE MAP
+				var mapFile = await FILEStandard.OpenMAPFile(file); // IMPORT THE MAP
 				foreach (var level in mapFile.Scripts) {
 					var sName = level.Key;
-					stageMap.TryAdd(sName, File.Name);
+					stageMap.TryAdd(sName, file.Name);
 				}
 				return true;
 			}
-			async Task<bool> GetMSpriteMap(FileInfo File, Dictionary<string, string> Map)
+			async Task<bool> GetMSpriteMap(FileInfo file, Dictionary<string, string> map)
 			{
-				string ext = File.Extension.ToUpper();
+				string ext = file.Extension.ToUpper();
 				if (ext == ".BIN" || ext == ".DAT") {
-					Map.Add(File.FullName, "");
+					map.Add(file.FullName, "");
 				}
 
 				return true;
-				var defSpr = await FILEStandard.OpenDEFSPRFile(File, true);
+				var defSpr = await FILEStandard.OpenDEFSPRFile(file, true);
 				if (defSpr == null) {
 					return false;
 				}
@@ -286,7 +280,7 @@ namespace StarwingMapVisualizer.Misc
 				// IMPORT THE DEFSPR
 				foreach (var bank in defSpr.Banks) {
 					foreach (var sprite in bank.Value.Sprites)
-						Map.Add(sprite.Key, File.Name);
+						map.Add(sprite.Key, file.Name);
 				}
 				return true;
 			}
@@ -297,16 +291,16 @@ namespace StarwingMapVisualizer.Misc
 
 			SFOptimizerDataStruct dataStruct = null;
 			try {
-				switch (Type) {
+				switch (type) {
 					case SFOptimizerTypeSpecifiers.Shapes:
-						dataStruct = await Editor_BaseDoRefreshMap(Type, GetShapeMap, InitialDirectory, "shapes.asm"); break;
+						dataStruct = await Editor_BaseDoRefreshMap(type, GetShapeMap, initialDirectory, "shapes.asm"); break;
 					case SFOptimizerTypeSpecifiers.Maps:
-						dataStruct = await Editor_BaseDoRefreshMap(Type, GetLevelMap, InitialDirectory, "level1_1.asm"); break;
+						dataStruct = await Editor_BaseDoRefreshMap(type, GetLevelMap, initialDirectory, "level1_1.asm"); break;
 					case SFOptimizerTypeSpecifiers.MSprites:
-						dataStruct = await Editor_BaseDoRefreshMap(Type, GetMSpriteMap, InitialDirectory, "tex_01.bin"); break;
+						dataStruct = await Editor_BaseDoRefreshMap(type, GetMSpriteMap, initialDirectory, "tex_01.bin"); break;
 				}
 			} catch (Exception ex) {
-				AppResources.ShowCrash(ex, false, $"Refreshing the {Type} optimizer");
+				AppResources.ShowCrash(ex, false, $"Refreshing the {type} optimizer");
 			}
 			if (dataStruct == null) {
 				return null;
@@ -320,23 +314,23 @@ namespace StarwingMapVisualizer.Misc
 			var dirNode = AppResources.ImportedProject.SearchDirectory(Path.GetFileName(dataStruct.DirectoryPath)).FirstOrDefault();
 			if (dirNode == null) {
 				AppResources.ShowCrash(new FileNotFoundException("Couldn't find the node that matches this directory in the Code Project."),
-					false, $"Could not refresh {Type} because the directory it corresponds with isn't in this project.");
+					false, $"Could not refresh {type} because the directory it corresponds with isn't in this project.");
 				return null;
 			}
-			var node = dirNode.AddOptimizer(Type.ToString(), dataStruct);
-			MessageBox.Show($"The {Type} Code Project Optimizer has been updated with {dataStruct.ObjectMap.Count} items.");
+			var node = dirNode.AddOptimizer(type.ToString(), dataStruct);
+			MessageBox.Show($"The {type} Code Project Optimizer has been updated with {dataStruct.ObjectMap.Count} items.");
 			return node;
 		}
 
 		/// <summary>
 		/// Opens up the best editor to open an item mapped in the given optimizer type.
 		/// </summary>
-		/// <param name="OptimizerType">The type of <see cref="SFOptimizerNode"/> this item appears in</param>
-		/// <param name="ObjectName">The name of the object in the optimizer: Shapes, Levels, etc.</param>
+		/// <param name="optimizerType">The type of <see cref="SFOptimizerNode"/> this item appears in</param>
+		/// <param name="objectName">The name of the object in the optimizer: Shapes, Levels, etc.</param>
 		/// <exception cref="NotImplementedException"></exception>
-		internal static Task<bool> InvokeOptimizerMapItem(SFOptimizerTypeSpecifiers OptimizerType, string ObjectName)
+		internal static Task<bool> InvokeOptimizerMapItem(SFOptimizerTypeSpecifiers optimizerType, string objectName)
 		{
-			switch (OptimizerType) {
+			switch (optimizerType) {
 				case SFOptimizerTypeSpecifiers.Shapes:
 					// TODO : Implement ShapeEditor_ShowShapeByName
 					//return ShapeEditor_ShowShapeByName(ObjectName);

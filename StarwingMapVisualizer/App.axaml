@@ -7,14 +7,404 @@
         <FluentTheme />
     </Application.Styles>
     <Application.Resources>
-        <ResourceDictionary>
-            <!--
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/ControlStyle.xaml" />
-                <ResourceDictionary Source="/Resources/Theme.xaml" />
-                <ResourceDictionary Source="/Resources/ControlOverride.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+        <!-- ##### BEGIN ControlStyles.xaml ##### -->
+        <FontFamily x:Key="SFFont">avares://StarwingMapVisualizer/Resources#Star Fox/Starwing</FontFamily>
+        <FontFamily x:Key="Atlantis">avares://StarwingMapVisualizer/Resources#Atlantis International</FontFamily>
+        <ScaleTransform x:Key="FontStretchCondensed" ScaleX="0.8" />
+        <ScaleTransform x:Key="FontStretchExpanded" ScaleX="1.1" />
+
+        <ControlTheme x:Key="SFRadioButton" TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
+        </ControlTheme>
+        <!-- TODO : Does not compile
+        <ControlTheme TargetType="RadioButton" BasedOn="{StaticResource SFRadioButton}" />-->
+        <ControlTheme x:Key="TitleText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource SFFont}" />
+            <!-- TODO: Disable font antialiasing
+            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
             -->
-        </ResourceDictionary>
+        </ControlTheme>
+        <ControlTheme x:Key="BodyText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+            <!-- TODO: Disable font antialiasing
+            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
+            -->
+        </ControlTheme>
+        <ControlTheme x:Key="SFButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </ControlTheme>
+        <ControlTheme x:Key="SFToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </ControlTheme>
+        <ControlTheme x:Key="SFTabItemKey" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+            <Setter Property="Background" Value="#FF212121" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </ControlTheme>
+        <ControlTheme TargetType="Window" x:Key="SFDialogModalControlTheme">
+            <!-- TODO: Does not compile
+            <ControlTheme.Resources>
+                <ControlTheme TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Background"
+                            Value="{Binding Background, RelativeSource={RelativeSource AncestorType=Window}}" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Padding" Value="10,1" />
+                </ControlTheme>
+            </ControlTheme.Resources>
+            -->
+            <Setter Property="Background" Value="{DynamicResource WindowColor}" />
+            <Setter Property="SystemDecorations" Value="None" />
+            <Setter Property="CanResize" Value="False" />
+            <Setter Property="Padding" Value="10" />
+            <!-- TODO : Make windows with custom title bar movable on Avalonia
+            <Setter Property="WindowChrome.WindowChrome">
+                <Setter.Value>
+                    <WindowChrome CaptionHeight="32"
+                                  ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+                </Setter.Value>
+            </Setter>
+            -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Window">
+                        <Grid>
+                            <Button Width="{Binding ActualWidth, ElementName=HOST}" IsEnabled="False"
+                                    Background="{TemplateBinding Background}" HorizontalAlignment="Stretch" />
+                            <DockPanel Margin="{TemplateBinding Padding}">
+                                <DockPanel DockPanel.Dock="Top">
+                                    <Image MaxWidth="25" MaxHeight="25" Source="{TemplateBinding Icon}"
+                                           DockPanel.Dock="Left" Margin="0,0,10,0" Stretch="Fill" />
+                                    <TextBlock VerticalAlignment="Center" Text="{TemplateBinding Title}"
+                                               FontFamily="{StaticResource SFFont}" FontSize="12" />
+                                </DockPanel>
+                                <Separator Margin="0,10" DockPanel.Dock="Top" Background="{TemplateBinding Background}" />
+                                <ContentPresenter />
+                            </DockPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme x:Key="SFTabViewerKey" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+            <!-- TODO : Does not compile
+            <ControlTheme.Resources>
+                <ControlTheme TargetType="TabItem" BasedOn="{StaticResource SFTabItemKey}" />
+            </ControlTheme.Resources>
+            -->
+            <Setter Property="Background" Value="#FF212121" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </ControlTheme>
+        <ControlTheme x:Key="SFContentBorder" TargetType="ContentControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContentControl">
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <Rectangle Fill="{TemplateBinding Background}" Margin="5" />
+                            <Border Width="10" HorizontalAlignment="Left" Margin="0,10,0,10">
+                                <Border.Background>
+                                    <ImageBrush Source="/Resources/Image/sf_frame.png" TileMode="Tile" />
+                                </Border.Background>
+                            </Border>
+                            <Border Width="10" HorizontalAlignment="Right" Margin="0,10,0,10"
+                                    RenderOptions.BitmapInterpolationMode="None">
+                                <Border.Background>
+                                    <ImageBrush Source="/Resources/Image/sf_frame.png" TileMode="Tile" />
+                                </Border.Background>
+                            </Border>
+                            <Border Height="10" VerticalAlignment="Top" Margin="10,0,10,0"
+                                    RenderOptions.BitmapInterpolationMode="None">
+                                <Border.Background>
+                                    <ImageBrush Source="/Resources/Image/sf_frame.png" TileMode="Tile">
+                                        <ImageBrush.Transform>
+                                            <TransformGroup>
+                                                <ScaleTransform /> <!-- CenterY="0.5" CenterX="0.5" -->
+                                                <SkewTransform /> <!-- CenterY="0.5" CenterX="0.5" -->
+                                                <RotateTransform Angle="90" CenterX="0.5" CenterY="0.5" />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </ImageBrush.Transform>
+                                    </ImageBrush>
+                                </Border.Background>
+                            </Border>
+                            <Border Height="10" VerticalAlignment="Bottom" Margin="10,0,10,0"
+                                    RenderOptions.BitmapInterpolationMode="None">
+                                <Border.Background>
+                                    <ImageBrush Source="/Resources/Image/sf_frame.png" TileMode="Tile">
+                                        <ImageBrush.Transform>
+                                            <TransformGroup>
+                                                <ScaleTransform /> <!-- CenterY="0.5" CenterX="0.5" -->
+                                                <SkewTransform /> <!-- CenterY="0.5" CenterX="0.5" -->
+                                                <RotateTransform Angle="90" CenterX="0.5" CenterY="0.5" />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </ImageBrush.Transform>
+                                    </ImageBrush>
+                                </Border.Background>
+                            </Border>
+                            <Image RenderOptions.BitmapInterpolationMode="None"
+                                   Source="/Resources/Image/sf_frame_cn.png" VerticalAlignment="Top"
+                                   HorizontalAlignment="Left" Width="10" Height="10" Stretch="Fill" />
+                            <Image RenderOptions.BitmapInterpolationMode="None"
+                                   Source="/Resources/Image/sf_frame_cn.png" VerticalAlignment="Top"
+                                   HorizontalAlignment="Right" Width="10" Height="10" Stretch="Fill"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="-1" />
+                                        <SkewTransform />
+                                        <RotateTransform Angle="0" />
+                                        <TranslateTransform />
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image RenderOptions.BitmapInterpolationMode="None"
+                                   Source="/Resources/Image/sf_frame_cn.png" VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Left" Width="10" Height="10" Stretch="Fill"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="-1" />
+                                        <SkewTransform />
+                                        <RotateTransform Angle="0" />
+                                        <TranslateTransform />
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                            <Image RenderOptions.BitmapInterpolationMode="None"
+                                   Source="/Resources/Image/sf_frame_cn.png" VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" Width="10" Height="10" Stretch="Fill"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="-1" ScaleX="-1" />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform />
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                            <ContentPresenter Margin="10" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme TargetType="Window" x:Key="SFDialogModalMenuControlTheme"
+                      BasedOn="{StaticResource SFDialogModalControlTheme}">
+            <!-- TODO : Does not compile
+            <ControlTheme.Resources>
+                <ControlTheme TargetType="MenuItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="MenuItem">
+                                <Button Background="{Binding Background, ElementName=HOST}"
+                                        Foreground="{Binding Foreground, ElementName=HOST}"
+                                        FontFamily="{StaticResource Atlantis}" FontSize="18">
+                                    <ContentPresenter ContentTemplate="Header" />
+                                </Button>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </ControlTheme>
+                <ControlTheme TargetType="Menu">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Menu">
+                                <Grid>
+                                    <StackPanel IsItemsHost="True">
+
+                                    </StackPanel>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </ControlTheme>
+            </ControlTheme.Resources>
+            -->
+        </ControlTheme>
+        <!--Circle Buttons-->
+        <ControlTemplate x:Key="CircularButtonTemplate" TargetType="Button">
+            <Grid>
+                <Ellipse Fill="{TemplateBinding Background}" />
+                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Grid>
+        </ControlTemplate>
+        <ControlTheme x:Key="ModernCircleButtonControlTheme" TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Width" Value="50" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="Padding" Value="13" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template" Value="{StaticResource CircularButtonTemplate}" />
+        </ControlTheme>
+        <Polygon x:Key="PlayTriangle" x:Shared="False" Margin="5,0,0,0"
+                 Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                 Stretch="Uniform">
+            <!-- TODO : Does not compile
+            <Polygon.Points>
+                <Point X="0" Y="0" />
+                <Point X="1.5" Y="1" />
+                <Point X="0" Y="2" />
+            </Polygon.Points>
+            -->
+        </Polygon>
+        <!--PLAY BUTTON ControlTheme-->
+        <ControlTheme x:Key="PlayButtonControlTheme" TargetType="Button"
+                      BasedOn="{StaticResource ModernCircleButtonControlTheme}">
+            <Setter Property="Content">
+                <Setter.Value>
+                    <ContentControl Content="{StaticResource PlayTriangle}" />
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme TargetType="ContentControl" x:Key="ContractableMenuControlTheme">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContentControl">
+                        <Grid>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ContentPresenter />
+                            </ScrollViewer>
+                            <Button
+                                Content="{Binding ContractContent, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                                VerticalAlignment="Bottom" HorizontalAlignment="Right" Padding="10,5" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme TargetType="Button" x:Key="SFChangePaletteButton">
+            <Setter Property="Background" Value="DarkTurquoise" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Button Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Image/palette.png" />
+                                <ContentControl FontFamily="Inter" FontSize="12"
+                                                Foreground="{TemplateBinding Foreground}">
+                                    <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"
+                                                      Margin="5,0,0,0" />
+                                </ContentControl>
+                            </StackPanel>
+                        </Button>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <!-- ##### END ControlStyles.xaml ##### -->
+
+        <!-- ##### BEGIN Theme.xaml ##### -->
+        <SolidColorBrush Color="DarkOrange" x:Key="ProjectNodeColor" />
+        <SolidColorBrush Color="Orange" x:Key="FolderNodeColor" />
+        <SolidColorBrush Color="#FFFFDA2C" x:Key="FileNodeColor" />
+        <SolidColorBrush Color="DeepSkyBlue" x:Key="MacroColor" />
+        <SolidColorBrush Color="#FF00FF9C" x:Key="PaletteNodeColor" />
+        <SolidColorBrush Color="#FF00A76E" x:Key="VibrantGreen" />
+        <SolidColorBrush Color="#FF006FC5" x:Key="ColorTableNodeColor" />
+        <SolidColorBrush Color="Salmon" x:Key="ScreenNodeColor" />
+        <SolidColorBrush Color="Coral" x:Key="SpriteNodeColor" />
+        <SolidColorBrush Color="#FFB686FF" x:Key="DefineColor" />
+        <SolidColorBrush Color="Orange" x:Key="MacroInvokeColor" />
+        <SolidColorBrush Color="Pink" x:Key="MacroInvokeParameterColor" />
+        <SolidColorBrush Color="#FF006FC5" x:Key="WindowColor" />
+        <SolidColorBrush Color="#FF314152" x:Key="WindowBackgroundColor" />
+        <SolidColorBrush Color="#FF333333" x:Key="WindowAccentBackgroundColor" />
+        <ImageBrush x:Key="TransparentImageKey" TileMode="Tile" Stretch="None"
+                    Source="/Resources/Image/transparent.png" Opacity=".1" />
+        <!-- Viewport="0,0,6,6" ViewportUnits="Absolute" -->
+        <!-- ##### END Theme.xaml ##### -->
+
+        <!-- ##### BEGIN ControlOverride.xaml ##### -->
+        <SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC" />
+        <ControlTheme x:Key="NakedTabControl" TargetType="TabControl">
+            <Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}" />
+            <Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Grid x:Name="templateRoot" ClipToBounds="true"
+                              KeyboardNavigation.TabNavigation="Local">
+                            <Border x:Name="contentPanel" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" Grid.Column="0" Grid.Row="1"
+                                    KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                                <!-- TODO : ContentSource="SelectedContent" -->
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        <!-- TODO : DataGrid is internal in Avalonia?
+        <ControlTheme TargetType="DataGrid" x:Key="VerticalDataGrid">
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <TransformGroup>
+                        <RotateTransform Angle="90" />
+                        <MatrixTransform Matrix="-1,0,0,1,0,0" />
+                    </TransformGroup>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnHeaderControlTheme">
+                <Setter.Value>
+                    <ControlTheme TargetType="{x:Type DataGridColumnHeader}"
+                           BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                        <Setter Property="LayoutTransform">
+                            <Setter.Value>
+                                <TransformGroup>
+                                    <RotateTransform Angle="-90" />
+                                    <ScaleTransform ScaleX="1" ScaleY="-1" />
+                                </TransformGroup>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Background"
+                                Value="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                    </ControlTheme>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="CellControlTheme">
+                <Setter.Value>
+                    <ControlTheme TargetType="DataGridCell">
+                        <Setter Property="LayoutTransform">
+                            <Setter.Value>
+                                <TransformGroup>
+                                    <RotateTransform Angle="-90" />
+                                    <ScaleTransform ScaleX="1" ScaleY="-1" />
+                                </TransformGroup>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Background"
+                                Value="{Binding Background, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                    </ControlTheme>
+                </Setter.Value>
+            </Setter>
+        </ControlTheme>
+        -->
+        <!-- ##### END ControlOverride.xaml ##### -->
     </Application.Resources>
 </Application>

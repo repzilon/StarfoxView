@@ -41,6 +41,20 @@
   <ItemGroup>
     <AvaloniaResource Include="Resources\Image\SectorY.png" />
     <AvaloniaResource Include="Resources\SFviewLogo.png" />
-    <Resource Include="Resources\Star-Fox-Starwing.ttf" />
+    <AvaloniaResource Include="Resources\Image\colTable.png" />
+    <AvaloniaResource Include="Resources\Image\folder_full.png" />
+    <AvaloniaResource Include="Resources\Image\macro.png" />
+    <AvaloniaResource Include="Resources\Image\page.png" />
+    <AvaloniaResource Include="Resources\Image\palette.png" />
+    <AvaloniaResource Include="Resources\Image\screenIcon.png" />
+    <AvaloniaResource Include="Resources\Image\sf_small.png" />
+    <AvaloniaResource Include="Resources\Image\spriteicon.png" />
+    <AvaloniaResource Include="Resources\Background.png" />
+    <AvaloniaResource Include="Resources\AtlantisInternational-jen0.ttf" />
+    <AvaloniaResource Include="Resources\Star-Fox-Starwing.ttf" />
+    <AvaloniaResource Include="Resources\Tribute.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\Image\sf_frame_cn.png" />
   </ItemGroup>
 </Project>

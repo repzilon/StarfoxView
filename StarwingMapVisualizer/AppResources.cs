@@ -53,7 +53,7 @@ namespace StarwingMapVisualizer
 
 		public static IEnumerable<MAPFile> OpenMAPFiles => ImportedProject?.OpenMAPFiles;
 
-		public static bool IsFileIncluded(FileInfo File) => ImportedProject?.IsFileIncluded(File) ?? false;
+		public static bool IsFileIncluded(FileInfo file) => ImportedProject?.IsFileIncluded(file) ?? false;
 
 		/// <summary>
 		/// The project imported by the user, if one has been imported already
@@ -64,12 +64,12 @@ namespace StarwingMapVisualizer
 		/// <summary>
 		/// Attempts to load a project from the given source code folder
 		/// </summary>
-		/// <param name="ProjectDirectory"></param>
+		/// <param name="projectDirectory"></param>
 		/// <returns></returns>
-		public static async Task<bool> TryImportProject(DirectoryInfo ProjectDirectory)
+		public static async Task<bool> TryImportProject(DirectoryInfo projectDirectory)
 		{
 			try {
-				var codeProject = new SFCodeProject(ProjectDirectory.FullName);
+				var codeProject = new SFCodeProject(projectDirectory.FullName);
 				await codeProject.EnumerateAsync(); // populate the project with files and folders
 				ImportedProject = codeProject;
 			} catch (Exception ex) {
@@ -85,10 +85,10 @@ namespace StarwingMapVisualizer
 		/// <summary>
 		/// Shows the CrashWindow with the given parameters
 		/// </summary>
-		/// <param name="Exception"></param>
-		/// <param name="Fatal"></param>
-		/// <param name="Tip"></param>
-		internal static bool? ShowCrash(Exception Exception, bool Fatal, string Tip)
+		/// <param name="exception"></param>
+		/// <param name="fatal"></param>
+		/// <param name="tip"></param>
+		internal static bool? ShowCrash(Exception exception, bool fatal, string tip)
 		{
 			// TODO : Implement AppResources.ShowCrash
 			throw new NotImplementedException();
