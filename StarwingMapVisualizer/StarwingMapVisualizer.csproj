@@ -9,6 +9,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- BuiltInComInteropSupport is true by default, use false for Native AOT with Avalonia -->
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <ApplicationIcon>Resources\Image\SFViewLogoSmall.ico</ApplicationIcon>
     <!-- Do not enable Native AOT yet
     <PublishAot>true</PublishAot>
     <TrimMode>link</TrimMode>
@@ -53,8 +54,9 @@
     <AvaloniaResource Include="Resources\AtlantisInternational-jen0.ttf" />
     <AvaloniaResource Include="Resources\Star-Fox-Starwing.ttf" />
     <AvaloniaResource Include="Resources\Tribute.png" />
+    <AvaloniaResource Include="Resources\Image\sf_frame_cn.png" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Resources\Image\sf_frame_cn.png" />
+    <Content Include="Resources\Image\SFViewLogoSmall.ico" />
   </ItemGroup>
 </Project>
