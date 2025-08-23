@@ -104,8 +104,7 @@ namespace Starfox.Editor
 		/// <param name="FileName"></param>
 		/// <returns></returns>
 		public IEnumerable<SFCodeProjectNode> SearchFile(string FileName, bool IgnoreHyphens = false) =>
-			FileNodes.Where(x => Path.GetFileName(IgnoreHyphens ? x.Key.Replace("-", "") : x.Key).ToLower()
-			== FileName.ToLower()).Select(y => y.Value);
+			FileNodes.Where(x => String.Equals(Path.GetFileName(IgnoreHyphens ? x.Key.Replace("-", "") : x.Key), FileName, StringComparison.OrdinalIgnoreCase)).Select(y => y.Value);
 		/// <summary>
 		/// Searches for all directories with matching name (not fullpath)
 		/// </summary>
@@ -152,12 +151,12 @@ namespace Starfox.Editor
 					DirectoryNodes.Add(mDirName, newNode);
 				if (ParentNode != null)
 					newNode = ParentNode.AddDirectory(Directory); // make a new node that represents this folder in the parent node
-				foreach (var folder in Directory.EnumerateDirectories()) // find every folder inside this one
+				foreach (var folder in Directory.EnumerateDirectories().OrderBy(x => x.Name)) // find every folder inside this one
 					processDirectory(folder, newNode); // add it to this node
-				foreach (var file in Directory.EnumerateFiles()) // find every file inside this one
+				foreach (var file in Directory.EnumerateFiles().OrderBy(x=> x.Name)) // find every file inside this one
 					processFile(file, newNode); // add the file to this node
 
-				// Keep CCR files in tree where there is no matching CGX file and 
+				// Keep CCR files in tree where there is no matching CGX file and
 				// keep PCR files where there is no matching SCR file
 				var lstTrash = new List<SFCodeProjectNode>();
 				foreach (var child in newNode.ChildNodes) {

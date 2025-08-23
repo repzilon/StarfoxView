@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="StarwingMapVisualizer.Dialogs.AboutBox"
+        Title="About SFView" WindowStartupLocation="CenterOwner"
+        Icon="/Resources/Image/sf_small.png" SizeToContent="Height" Foreground="White"
+        Width="415" Classes="SFDialogModalStyle">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{Binding Background, ElementName=HOST}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
+    <!-- TODO : Support custom title bar and border?
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF00FE0A" Offset="1"/>
+            <GradientStop Color="#FF0011FF" Offset="0"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0,216" >
+                <GradientStop Color="#FF0011FF" Offset="0"/>
+                <GradientStop Color="#FF00FE0A" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <DockPanel Margin="5">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+                <Image DockPanel.Dock="Left" Width="150" Source="/Resources/SFviewLogo.png" RenderOptions.BitmapInterpolationMode="None"  VerticalAlignment="Top"/>
+                <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" Name="BlurbTextBlock" >
+                <Run FontWeight="Bold">Thanks for trying out SFView!</Run> <LineBreak/>
+                <Run>This tool was created by Jeremy Glazebrook "Bisquick" with much help from the StarFox-EX team and some from Repzilon! This tool would not be possible without their assistance.</Run> <LineBreak/>
+                <Run>Want to see more from me? </Run> <LineBreak/>
+                <HyperlinkButton x:Name="GithubLink" Click="GithubLink_Click">Check me out on GitHub!</HyperlinkButton><LineBreak/>
+                </TextBlock>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,5" >
+                <Border Padding="10,2" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowColor}" DockPanel.Dock="Right" PointerReleased="Button_Click" HorizontalAlignment="Right">
+                    <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Thanks!</TextBlock>
+                </Border>
+                <Border Padding="10,2" Margin="0,0,5,0" Cursor="Hand" CornerRadius="5" Background="{DynamicResource WindowBackgroundColor}" DockPanel.Dock="Right" HorizontalAlignment="Right" PointerReleased="GC_MouseLeftButtonUp">
+                    <TextBlock Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center">Run GC</TextBlock>
+                </Border>
+                <TextBlock x:Name="lblMemory" VerticalAlignment="Center"></TextBlock>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Window>

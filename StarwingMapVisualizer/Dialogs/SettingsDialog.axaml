@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="StarwingMapVisualizer.Dialogs.SettingsDialog"
+        Title="Editor Settings" Height="450" Width="400" Foreground="White" Classes="SFDialogModalStyle"
+        Background="{StaticResource WindowBackgroundColor}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Width="75" IsCancel="True" Click="CancelButton_Click">Cancel</Button>
+            <Button x:Name="OKButton" Margin="10,0" Width="75" IsDefault="True" Click="OKButton_Click">OK</Button>
+            <Button x:Name="ApplyButton" Width="75" Click="ApplyButton_Click">Apply</Button>
+        </StackPanel>
+        <TabControl Name="SettingsTabs" Margin="0,0,0,10"> <!-- Classes="SFTabViewerKey" -->
+            <TabItem Header="TEST">
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

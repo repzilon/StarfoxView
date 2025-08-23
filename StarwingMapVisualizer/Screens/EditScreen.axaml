@@ -8,16 +8,7 @@
         <Style Selector="HeaderedContentControl.GroupBox">
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*">
                         <!-- Header -->
                         <Border
                             ZIndex="1"
@@ -31,9 +22,9 @@
 
                         <!-- Content Area -->
                         <Border
-                            Grid.RowSpan="2"
+                            Grid.Row="0" Grid.RowSpan="2"
                             Padding="0,5,0,0"
-                            Grid.ColumnSpan="2"
+                            Grid.ColumnSpan="2" Grid.Column="0"
                             CornerRadius="4"
                             Margin="0,10,0,0"
                             BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
@@ -47,12 +38,10 @@
                 </ControlTemplate>
             </Setter>
         </Style>
-    </UserControl.Styles>
-    <UserControl.Resources>
-        <ControlTheme TargetType="TreeViewItem" x:Key="BaseTreeStyle">
+        <Style Selector="TreeViewItem">
             <Setter Property="Margin" Value="0,5" />
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="ProjectTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.ProjectTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource ProjectNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -65,8 +54,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="FolderTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.FolderTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource FolderNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -79,8 +68,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="FileTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.FileTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource FileNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -93,8 +82,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="FileImportTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.FileImportTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource DefineColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -107,8 +96,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="PaletteTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.PaletteTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource PaletteNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -121,8 +110,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="ColorTableTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.ColorTableTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource ColorTableNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -135,8 +124,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="ScreenTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.ScreenTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource ScreenNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -149,8 +138,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="TreeViewItem" x:Key="SpriteTreeStyle" BasedOn="{StaticResource BaseTreeStyle}">
+        </Style>
+        <Style Selector="TreeViewItem.SpriteTreeStyle">
             <Setter Property="Foreground" Value="{StaticResource SpriteNodeColor}" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
@@ -163,8 +152,8 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-    </UserControl.Resources>
+        </Style>
+    </UserControl.Styles>
 
     <Grid ClipToBounds="True">
         <Grid.ColumnDefinitions>
@@ -180,13 +169,13 @@
         <!--MENU BAR-->
         <Border Grid.ColumnSpan="3" Background="#FF333333">
             <Menu Background="{x:Null}" Foreground="White" Name="MenuStrip" Margin="10,0" VerticalAlignment="Center">
-                <Menu.Resources>
-                    <ControlTheme TargetType="MenuItem" x:Key="Base" BasedOn="{StaticResource {x:Type MenuItem}}">
+                <Menu.Styles>
+                    <Style Selector="MenuItem.Base">
                         <Setter Property="Foreground" Value="{Binding Foreground, ElementName=MenuStrip}" />
                         <!--<Setter Property="Width" Value="40"/>-->
-                    </ControlTheme>
-                </Menu.Resources>
-                <MenuItem Header="File"> <!-- Style="{StaticResource Base}" -->
+                    </Style>
+                </Menu.Styles>
+                <MenuItem Header="File" Classes="Base">
                     <MenuItem Header="Open..." Name="OpenItem" Click="OpenItem_Click" />
                     <Separator />
                     <MenuItem Header="Open Project Folder" Click="OpenProjectFolderItem_Click" />
@@ -197,13 +186,13 @@
                     <Separator />
                     <MenuItem Header="Exit" Name="ExitItem" Click="ExitItem_Click" />
                 </MenuItem>
-                <MenuItem Header="View"> <!-- Style="{StaticResource Base}" -->
+                <MenuItem Header="View" Classes="Base">
                     <MenuItem Header="Level Backgrounds (Context Viewer)" Click="BGSASMViewerButton_Click" />
                     <MenuItem Header="Level Select Screen" Click="LevelSelectItem_Click" />
                     <Separator />
                     <MenuItem Header="Refresh Workspace" />
                 </MenuItem>
-                <MenuItem Header="Editor"> <!-- Style="{StaticResource Base}" -->
+                <MenuItem Header="Editor" Classes="Base">
                     <MenuItem Header="Export All 3D Data to .sfshape format..." Click="ExportAll3DButton_Click" />
                     <MenuItem Header="Export All 3D Data to .obj format..." Click="ExportAll3DObjButton_Click" />
                     <Separator />
@@ -212,17 +201,17 @@
                     <Separator />
                     <MenuItem Header="Settings..." Click="SettingsMenuItem_Click" />
                 </MenuItem>
-                <MenuItem Header="Go" Name="GoItem" SubmenuOpened="GoItem_Load"> <!-- Style="{StaticResource Base}" -->
+                <MenuItem Header="Go" Name="GoItem" SubmenuOpened="GoItem_Load" Classes="Base">
                     <MenuItem Header="Map..." />
                     <MenuItem Header="Shape..." />
                 </MenuItem>
-                <MenuItem Header="About..." Name="AboutMenuItem" Click="AboutMenuItem_Click" /> <!-- Style="{StaticResource Base}" -->
+                <MenuItem Header="About..." Name="AboutMenuItem" Click="AboutMenuItem_Click" Classes="Base" />
             </Menu>
         </Border>
         <Grid DockPanel.Dock="Top" Grid.Column="1" Grid.ColumnSpan="2">
             <TextBlock x:Name="TitleBlock" DockPanel.Dock="Top" Margin="20,0,0,0"
-                       Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Assembly Viewer" />
-            <!-- Style="{StaticResource TitleText}" -->
+                       Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Assembly Viewer"
+                       Classes="TitleText" />
         </Grid>
         <Grid Background="{DynamicResource WindowAccentBackgroundColor}" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -232,24 +221,19 @@
             </Grid.RowDefinitions>
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0"
-                           Foreground="White" Text="My Workspace:" /> <!-- Style="{StaticResource TitleText}" -->
-                <ContentControl DockPanel.Dock="Top"  Margin="10,10,10,10"
+                           Foreground="White" Text="My Workspace:" Classes="TitleText" />
+                <ContentControl DockPanel.Dock="Top" Margin="10,10,10,10"
                                 Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
                     <TreeView FontSize="22" x:Name="SolutionExplorerView" BorderThickness="0" Background="{x:Null}"
-                              FontFamily="{StaticResource Atlantis}" > <!-- TextOptions.TextRenderingMode="Grayscale" -->
-                        <!-- TODO : TreeView styling
-                        <TreeView.Resources>
-                            <ControlTheme TargetType="TreeViewItem" BasedOn="{StaticResource ProjectTreeStyle}" />
-                        </TreeView.Resources>
-                        -->
-                        <TreeViewItem IsExpanded="True" FontWeight="Bold"> <!-- Style="{StaticResource ProjectTreeStyle}" -->
-                            <TreeViewItem Header="Folder" /> <!-- Style="{StaticResource FolderTreeStyle}" -->
-                            <TreeViewItem Header="File" /> <!-- Style="{StaticResource FileTreeStyle}" -->
-                            <TreeViewItem Header="Import" /> <!--Style="{StaticResource FileImportTreeStyle}"  -->
-                            <TreeViewItem Header="Palette" /> <!-- Style="{StaticResource PaletteTreeStyle}" -->
-                            <TreeViewItem Header="Color Table" /> <!-- Style="{StaticResource ColorTableTreeStyle}" -->
-                            <TreeViewItem Header="Graphics" /> <!-- Style="{StaticResource SpriteTreeStyle}" -->
-                            <TreeViewItem Header="Screens" /> <!-- Style="{StaticResource ScreenTreeStyle}" -->
+                              FontFamily="{StaticResource Atlantis}"> <!-- TextOptions.TextRenderingMode="Grayscale" -->
+                        <TreeViewItem IsExpanded="True" FontWeight="Bold" Classes="ProjectTreeStyle">
+                            <TreeViewItem Header="Folder" Classes="FolderTreeStyle" />
+                            <TreeViewItem Header="File" Classes="FileTreeStyle" />
+                            <TreeViewItem Header="Import" Classes="FileImportTreeStyle" />
+                            <TreeViewItem Header="Palette" Classes="PaletteTreeStyle" />
+                            <TreeViewItem Header="Color Table" Classes="ColorTableTreeStyle" />
+                            <TreeViewItem Header="Graphics" Classes="SpriteTreeStyle" />
+                            <TreeViewItem Header="Screens" Classes="ScreenTreeStyle" />
                         </TreeViewItem>
                     </TreeView>
                 </ContentControl>
@@ -258,9 +242,9 @@
                           Background="{Binding Background, ElementName=MainSplitter}" ResizeDirection="Rows" />
             <DockPanel Grid.Row="2">
                 <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0"
-                           Foreground="White" Text="Symbols:" /> <!-- Style="{StaticResource TitleText}" -->
-                <HeaderedContentControl Classes="GroupBox" Header="VIEW OPTIONS" FontFamily="{StaticResource Atlantis}" FontSize="18"
-                          DockPanel.Dock="Top" Margin="10,10,10,0">
+                           Foreground="White" Text="Symbols:" Classes="TitleText" />
+                <HeaderedContentControl Classes="GroupBox" Header="VIEW OPTIONS" FontFamily="{StaticResource Atlantis}"
+                                        FontSize="18" DockPanel.Dock="Top" Margin="10,10,10,0">
                     <StackPanel>
                         <ComboBox x:Name="MacroFileCombo" Margin="10" SelectionChanged="FilterFileChanged" />
                         <WrapPanel DockPanel.Dock="Top" HorizontalAlignment="Center" Orientation="Horizontal">
@@ -291,10 +275,12 @@
             </DockPanel>
         </Grid>
         <GridSplitter x:Name="MainSplitter" Width="2" Grid.Column="1" Grid.Row="1"
-                      HorizontalAlignment="Left" ResizeDirection="Columns" Background="#FF888888" /> <!-- Panel.ZIndex="1" -->
+                      HorizontalAlignment="Left" ResizeDirection="Columns" Background="#FF888888" />
+        <!-- Panel.ZIndex="1" -->
         <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" RenderOptions.BitmapInterpolationMode="None">
             <Grid.Background>
-                <ImageBrush Stretch="Fill" TileMode="FlipX" Source="/Resources/Background.png" /> <!-- Viewport="0,0,.5,.5" -->
+                <ImageBrush Stretch="Fill" TileMode="FlipX" Source="/Resources/Background.png" />
+                <!-- Viewport="0,0,.5,.5" -->
             </Grid.Background>
             <Rectangle VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="2"
                        Fill="{Binding Background, ElementName=MainSplitter}" />
@@ -305,17 +291,15 @@
             <DockPanel Margin="10,5,0,0">
                 <StackPanel DockPanel.Dock="Top" x:Name="ViewModeStrip" Margin="10" Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <!-- TODO : StackPanel.Resources
-                    <StackPanel.Resources>
-                        <ControlTheme TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                    <StackPanel.Styles>
+                        <Style Selector="ToggleButton">
                             <Setter Property="Background" Value="#FF3B5E69" />
                             <Setter Property="Padding" Value="10,0" />
                             <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
                             <Setter Property="FontSize" Value="20" />
                             <Setter Property="Foreground" Value="White" />
-                        </ControlTheme>
-                    </StackPanel.Resources>
-                    -->
+                        </Style>
+                    </StackPanel.Styles>
                     <ToggleButton x:Name="ViewBRRButton" IsCheckedChanged="ViewBRRButton_Checked">
                         SOUNDS
                     </ToggleButton>
@@ -336,31 +320,31 @@
                     </ToggleButton>
                 </StackPanel>
                 <ContentControl x:Name="MainViewerBorder" IsVisible="False" DockPanel.Dock="Top"
-                                 Margin="0,0,10,10" Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
-                    <TabControl x:Name="ViewModeHost"> <!-- Style="{DynamicResource NakedTabControl}" -->
+                                Margin="0,0,10,10" Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
+                    <TabControl x:Name="ViewModeHost"> <!-- Style="{StaticResource NakedTabControl}" -->
                         <TabItem Name="ASMTab">
-                             <!-- <controls:ASMControl x:Name="ASMViewer" /> -->
-                             <TextBlock></TextBlock>
+                            <!-- <controls:ASMControl x:Name="ASMViewer" /> -->
+                            <TextBlock>Assembly code viewer will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="MAPTab">
-                             <!-- <controls:MAPControl x:Name="MAPViewer" /> -->
-                             <TextBlock>Assembly code viewer will go here</TextBlock>
+                            <!-- <controls:MAPControl x:Name="MAPViewer" /> -->
+                            <TextBlock>Map script timeline will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="OBJTab">
-                             <!-- <controls:SHAPEControl x:Name="OBJViewer" /> -->
-                             <TextBlock>Shapes control will go here</TextBlock>
+                            <!-- <controls:SHAPEControl x:Name="OBJViewer" /> -->
+                            <TextBlock>Shapes control will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="GFXTab">
-                             <!-- <controls:GFXControl x:Name="GFXViewer" /> -->
-                             <TextBlock>2D graphics viewer will go here</TextBlock>
+                            <!-- <controls:GFXControl x:Name="GFXViewer" /> -->
+                            <TextBlock>2D graphics viewer will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="MSGTab">
-                             <!-- <controls1:MSGViewer x:Name="MSGViewer" /> -->
-                             <TextBlock>Communications messages will go here</TextBlock>
+                            <!-- <controls1:MSGViewer x:Name="MSGViewer" /> -->
+                            <TextBlock>Communications messages will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="BRRTab">
-                             <!-- <controls1:BRRViewer x:Name="BRRViewer" /> -->
-                             <TextBlock>Audio files explorer will go here</TextBlock>
+                            <!-- <controls1:BRRViewer x:Name="BRRViewer" /> -->
+                            <TextBlock>Audio files explorer will go here</TextBlock>
                         </TabItem>
                     </TabControl>
                 </ContentControl>

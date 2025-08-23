@@ -13,5 +13,44 @@
             </Grid>
         </ControlTemplate>
     </Window.Template>
-    <screens:LandingScreen/>
+    <screens:LandingScreen />
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="File"> <!-- Style="{StaticResource Base}" -->
+                <NativeMenu>
+                    <NativeMenuItem Header="Open..." /> <!-- Name="OpenItem" Click="OpenItem_Click" -->
+                    <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Open Project Folder"  /> <!-- Click="OpenProjectFolderItem_Click" -->
+                    <NativeMenuItem  Header="Close Project" /> <!-- Name="CloseProjectMenuItem" Click="CloseProjectMenuItem_Click"  -->
+                    <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Convert .sfscreen file..."  /> <!-- Name="ConvertSfscreenItem" Click="ConvertSfscreenItem_OnClick" -->
+                    <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Exit"  /> <!-- Name="ExitItem" Click="ExitItem_Click" -->
+                </NativeMenu>
+            </NativeMenuItem>
+            <NativeMenuItem Header="View"> <!-- Style="{StaticResource Base}" -->
+                <NativeMenu>
+                    <NativeMenuItem Header="Level Backgrounds (Context Viewer)"  /> <!-- Click="BGSASMViewerButton_Click" -->
+                    <NativeMenuItem Header="Level Select Screen" /> <!-- Click="LevelSelectItem_Click" -->
+                    <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Refresh Workspace" />
+                </NativeMenu>
+            </NativeMenuItem>
+            <NativeMenuItem Header="Editor"> <!-- Style="{StaticResource Base}" -->
+                <NativeMenu>
+                    <NativeMenuItem Header="Export All 3D Data to .sfshape format..." /> <!-- Click="ExportAll3DButton_Click" -->
+                    <NativeMenuItem Header="Export All 3D Data to .obj format..." /> <!-- Click="ExportAll3DObjButton_Click" -->
+                    <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Refresh Editor SHAPES Map..." /> <!-- Click="SHAPEMapRefreshButton_Click" -->
+                    <NativeMenuItem Header="Refresh Editor STAGES Map..." /> <!-- Click="STAGEMapRefreshButton_Click" -->
+                </NativeMenu>
+            </NativeMenuItem>
+            <NativeMenuItem Header="Go"> <!-- Style="{StaticResource Base}" Name="GoItem" SubmenuOpened="GoItem_Load" -->
+                <NativeMenu>
+                    <NativeMenuItem Header="Map..." />
+                    <NativeMenuItem Header="Shape..." />
+                </NativeMenu>
+            </NativeMenuItem>
+        </NativeMenu>
+    </NativeMenu.Menu>
 </Window>

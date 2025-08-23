@@ -15,6 +15,7 @@ using StarFox.Interop.ASM;
 using StarFox.Interop.ASM.TYP;
 using StarFox.Interop.BSP;
 using StarFox.Interop.GFX;
+using StarFox.Interop.GFX.COLTAB;
 using StarFox.Interop.GFX.DAT.MSPRITES;
 using StarFox.Interop.MAP;
 using StarFox.Interop.MSG;
@@ -202,15 +203,13 @@ namespace StarwingMapVisualizer.Screens
 					Tag        = Node
 				};
 				ToolTip.SetTip(node, Node.FilePath);
-				//node.SetResourceReference(TreeViewItem.StyleProperty, "ProjectTreeStyle");
+				node.Classes.Add("ProjectTreeStyle");
+
 				foreach (var child in Node.ChildNodes) {
-					switch (child.Type) {
-						case SFCodeProjectNodeTypes.Directory:
-							await AddDirectory(node, child);
-							break;
-						case SFCodeProjectNodeTypes.File:
-							await AddFile(node, child);
-							break;
+					if (child.Type == SFCodeProjectNodeTypes.Directory) {
+						await AddDirectory(node, child);
+					} else if (child.Type == SFCodeProjectNodeTypes.File) {
+						await AddFile(node, child);
 					}
 				}
 
@@ -229,8 +228,7 @@ namespace StarwingMapVisualizer.Screens
 				ToolTip.SetTip(thisTreeNode, String.Format("{0} subdirectories and {1} files (not recursive)",
 					dirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.Directory),
 					dirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.File)));
-				// TODO : thisTreeNode.SetResourceReference
-				//thisTreeNode.SetResourceReference(StyleProperty, "FolderTreeStyle");
+				thisTreeNode.Classes.Add("FolderTreeStyle");
 				CreateIncludeDirectoryAsBRRContextMenu(dirNode, menu);
 				CreateExploreContextMenu(dirNode, menu);
 				foreach (var child in dirNode.ChildNodes) {
@@ -241,8 +239,7 @@ namespace StarwingMapVisualizer.Screens
 					}
 				}
 
-				if (expandedHeaders.Contains(dirNode.FilePath)) // was expanded
-				{
+				if (expandedHeaders.Contains(dirNode.FilePath)) { // was expanded
 					thisTreeNode.IsExpanded = true;
 				}
 
@@ -264,8 +261,7 @@ namespace StarwingMapVisualizer.Screens
 				switch (fileNode.RecognizedFileType) {
 					case SFCodeProjectFileTypes.Palette:
 					retry:
-						// TODO : All item.SetResourceReference in ImportCodeProject.AddFile
-						//item.SetResourceReference(StyleProperty, "PaletteTreeStyle");
+						item.Classes.Add("PaletteTreeStyle");
 						if (!AppResources.IsFileIncluded(fileInfo)) {
 							if (await FILEStandard.IncludeFile<object>(fileInfo) != null) {
 								goto retry;
@@ -277,14 +273,14 @@ namespace StarwingMapVisualizer.Screens
 
 						break;
 					case SFCodeProjectFileTypes.SCR:
-						//item.SetResourceReference(StyleProperty, "ScreenTreeStyle");
+						item.Classes.Add("ScreenTreeStyle");
 						if (AppResources.OpenFiles.ContainsKey(fileInfo.FullName)) {
 							CreateClosableContextMenu(fileNode, in contextMenu);
 						}
 
 						break;
 					case SFCodeProjectFileTypes.CGX:
-						//item.SetResourceReference(StyleProperty, "SpriteTreeStyle");
+						item.Classes.Add("SpriteTreeStyle");
 						if (AppResources.OpenFiles.ContainsKey(fileInfo.FullName)) {
 							CreateClosableContextMenu(fileNode, in contextMenu);
 						}
@@ -292,10 +288,10 @@ namespace StarwingMapVisualizer.Screens
 						break;
 					case SFCodeProjectFileTypes.Include:
 						if (!AppResources.IsFileIncluded(fileInfo)) {
-							//item.SetResourceReference(StyleProperty, "FileTreeStyle");
+							item.Classes.Add("FileTreeStyle");
 							CreateINCContextMenu(fileNode, in contextMenu);
 						} else {
-							//item.SetResourceReference(StyleProperty, "FileImportTreeStyle");
+							item.Classes.Add("FileImportTreeStyle");
 						}
 
 						break;
@@ -303,11 +299,11 @@ namespace StarwingMapVisualizer.Screens
 						// allow other files to be included under certain circumstances
 						var include = AppResources.ImportedProject?.GetInclude(fileInfo);
 						if (include != null) {
-							//item.SetResourceReference(StyleProperty, include is COLTABFile ? "ColorTableTreeStyle" : "FileImportTreeStyle");
+							item.Classes.Add(include is COLTABFile ? "ColorTableTreeStyle" : "FileImportTreeStyle");
 						} else {
 							CreateINCContextMenu(fileNode, in contextMenu);
 							CreateCOLTABContextMenu(fileNode, in contextMenu);
-							//item.SetResourceReference(StyleProperty, "FileTreeStyle");
+							item.Classes.Add("FileTreeStyle");
 						}
 
 						break;
@@ -862,9 +858,8 @@ namespace StarwingMapVisualizer.Screens
 
 		private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			// TODO : Import SettingsDialog
-			//var settings = new SettingsDialog();
-			//settings.Show();
+			var settings = new SettingsDialog();
+			settings.Show();
 		}
 
 		/// <summary>
@@ -922,8 +917,7 @@ namespace StarwingMapVisualizer.Screens
 
 		private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			// TODO: Import AboutBox
-			//new AboutBox().ShowDialog(Application.Current.MainWindow());
+			new AboutBox().ShowDialog(Application.Current.MainWindow());
 		}
 
 		private void OpenProjectFolderItem_Click(object sender, RoutedEventArgs e)

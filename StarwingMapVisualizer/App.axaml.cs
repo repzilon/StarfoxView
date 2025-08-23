@@ -1,6 +1,9 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using StarwingMapVisualizer.Dialogs;
+using StarwingMapVisualizer.Misc;
 
 namespace StarwingMapVisualizer
 {
@@ -9,6 +12,17 @@ namespace StarwingMapVisualizer
 		public override void Initialize()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		private void AppAbout_OnClick(object sender, EventArgs e)
+		{
+			new AboutBox().ShowDialog(Current.MainWindow());
+		}
+
+		private void AppPreferences_OnClick(object sender, EventArgs e)
+		{
+			var settings = new SettingsDialog();
+			settings.Show();
 		}
 
 		public override void OnFrameworkInitializationCompleted()

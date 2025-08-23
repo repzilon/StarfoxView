@@ -1,10 +1,59 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="StarwingMapVisualizer.App"
-             RequestedThemeVariant="Dark">
+             RequestedThemeVariant="Dark" Name="SFView">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About SFView…" Click="AppAbout_OnClick" />
+            <NativeMenuItem Header="Preferences…" Click="AppPreferences_OnClick" />
+        </NativeMenu>
+    </NativeMenu.Menu>
     <Application.Styles>
         <FluentTheme />
+        <Style Selector="RadioButton">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+        </Style>
+        <Style Selector="TextBlock.TitleText">
+            <Setter Property="FontFamily" Value="{DynamicResource SFFont}" />
+            <!-- TODO: Disable font antialiasing
+            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
+            -->
+        </Style>
+        <Style Selector="TextBlock.BodyText">
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+            <!-- TODO: Disable font antialiasing
+            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
+            -->
+        </Style>
+        <Style Selector="Button.SFButton">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </Style>
+        <Style Selector="ToggleButton.SFToggleButton">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </Style>
+        <Style Selector="TabItem.SFTabItemKey">
+            <Setter Property="Background" Value="#FF212121" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+        <Style Selector="TabControl">
+            <Setter Property="Background" Value="#FF212121" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
+            <Setter Property="FontSize" Value="22" />
+        </Style>
     </Application.Styles>
     <Application.Resources>
         <!-- ##### BEGIN ControlStyles.xaml ##### -->
@@ -13,45 +62,6 @@
         <ScaleTransform x:Key="FontStretchCondensed" ScaleX="0.8" />
         <ScaleTransform x:Key="FontStretchExpanded" ScaleX="1.1" />
 
-        <ControlTheme x:Key="SFRadioButton" TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="22" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
-        </ControlTheme>
-        <!-- TODO : Does not compile
-        <ControlTheme TargetType="RadioButton" BasedOn="{StaticResource SFRadioButton}" />-->
-        <ControlTheme x:Key="TitleText" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource SFFont}" />
-            <!-- TODO: Disable font antialiasing
-            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
-            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
-            -->
-        </ControlTheme>
-        <ControlTheme x:Key="BodyText" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
-            <Setter Property="FontSize" Value="22" />
-            <!-- TODO: Disable font antialiasing
-            <Setter Property="TextOptions.TextRenderingMode" Value="Grayscale" />
-            <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
-            -->
-        </ControlTheme>
-        <ControlTheme x:Key="SFButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
-            <Setter Property="FontSize" Value="22" />
-        </ControlTheme>
-        <ControlTheme x:Key="SFToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
-            <Setter Property="FontSize" Value="22" />
-        </ControlTheme>
-        <ControlTheme x:Key="SFTabItemKey" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-            <Setter Property="Background" Value="#FF212121" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="ClipToBounds" Value="True" />
-        </ControlTheme>
         <ControlTheme TargetType="Window" x:Key="SFDialogModalControlTheme">
             <!-- TODO: Does not compile
             <ControlTheme.Resources>
@@ -95,17 +105,6 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme x:Key="SFTabViewerKey" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
-            <!-- TODO : Does not compile
-            <ControlTheme.Resources>
-                <ControlTheme TargetType="TabItem" BasedOn="{StaticResource SFTabItemKey}" />
-            </ControlTheme.Resources>
-            -->
-            <Setter Property="Background" Value="#FF212121" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontFamily" Value="{StaticResource Atlantis}" />
-            <Setter Property="FontSize" Value="22" />
         </ControlTheme>
         <ControlTheme x:Key="SFContentBorder" TargetType="ContentControl">
             <Setter Property="Template">
