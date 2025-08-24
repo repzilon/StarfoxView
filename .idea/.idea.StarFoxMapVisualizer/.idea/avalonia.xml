@@ -8,7 +8,11 @@
         <entry key="AvaloniaPanNZoom/CustomControls/Widget.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/MainWindow.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="StarwingMapVisualizer/App.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/Subcontrols/FileImportMenu.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls2/CommunicationMessageControl.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls2/MSGViewer.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Dialogs/AboutBox.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Dialogs/CrashWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Dialogs/LoadingWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Dialogs/SettingsDialog.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/MainWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls1="clr-namespace:StarwingMapVisualizer.Controls2"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="StarwingMapVisualizer.Screens.EditScreen">
     <UserControl.Styles>
@@ -339,8 +340,7 @@
                             <TextBlock>2D graphics viewer will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="MSGTab">
-                            <!-- <controls1:MSGViewer x:Name="MSGViewer" /> -->
-                            <TextBlock>Communications messages will go here</TextBlock>
+                            <controls1:MSGViewer x:Name="MSGViewer" />
                         </TabItem>
                         <TabItem Name="BRRTab">
                             <!-- <controls1:BRRViewer x:Name="BRRViewer" /> -->

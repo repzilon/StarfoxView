@@ -59,4 +59,11 @@
   <ItemGroup>
     <Content Include="Resources\Image\SFViewLogoSmall.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\Image\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\Image\faces.png" />
+    <AvaloniaResource Include="Resources\Image\missingfaces.png" />
+  </ItemGroup>
 </Project>

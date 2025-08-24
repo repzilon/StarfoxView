@@ -192,7 +192,7 @@ namespace StarwingMapVisualizer.Screens
 				var importItem = new MenuItem() {
 					Header = message
 				};
-				importItem.Click += async delegate { OpenExternal.Folder(fileNode.FilePath); };
+				importItem.Click += delegate { OpenExternal.Folder(fileNode.FilePath); };
 				contextMenu.Items.Add(importItem);
 			}
 
@@ -348,7 +348,8 @@ namespace StarwingMapVisualizer.Screens
 		/// <para>Will update the interface to match the new Mode</para>
 		/// </summary>
 		/// <returns></returns>
-		public DispatcherOperation HandleViewModes() => Dispatcher.UIThread.InvokeAsync(/*async*/ delegate {
+		public Task HandleViewModes() => Dispatcher.UIThread.InvokeAsync(async delegate {
+			Console.WriteLine("EditScreen.HandleViewModes start in ui thread");
 			//FIRST LOAD
 			MainViewerBorder.IsVisible = true;
 
@@ -408,8 +409,7 @@ namespace StarwingMapVisualizer.Screens
 					TitleBlock.Text           = "Graphics Viewer";
 					break;
 				case ViewMode.MSG:
-					// TODO: Refresh communications viewer
-					//await MSGViewer.RefreshFiles();
+					await MSGViewer.RefreshFiles();
 					ViewModeHost.SelectedItem = MSGTab;
 					ViewMSGButton.IsChecked   = true;
 					TitleBlock.Text           = "Message Viewer";
@@ -429,6 +429,7 @@ namespace StarwingMapVisualizer.Screens
 			ViewGFXButton.IsCheckedChanged += ViewGFXButton_Checked;
 			ViewMSGButton.IsCheckedChanged += ViewMSGButton_Checked;
 			ViewBRRButton.IsCheckedChanged += ViewBRRButton_Checked;
+			Console.WriteLine("EditScreen.HandleViewModes end in ui thread");
 		});
 
 		/// <summary>
@@ -557,7 +558,9 @@ namespace StarwingMapVisualizer.Screens
 			}
 
 			// GET DEFAULT ACTION
-			if (isMap) { // IF THIS IS A MAP -- SWITCH VIEW, INCUR UPDATE. THE MAP VIEW WILL SEE THE NEWLY ADDED FILE
+			Console.WriteLine("EditScreen.FileSelected get default action");
+			if (isMap) {
+				// IF THIS IS A MAP -- SWITCH VIEW, INCUR UPDATE. THE MAP VIEW WILL SEE THE NEWLY ADDED FILE
 				CurrentMode = ViewMode.MAP;
 				await HandleViewModes();
 			} else if (isObj) {
@@ -578,8 +581,11 @@ namespace StarwingMapVisualizer.Screens
 				//await ASMViewer.OpenFileContents(file, asmfile); // tell the ASMControl to look at the new file
 			}
 
+			Console.WriteLine("EditScreen.FileSelected update interface");
 			await UpdateInterface();
+			Console.WriteLine("EditScreen.FileSelected hide loaing window");
 			EDITORStandard.HideLoadingWindow();
+			Console.WriteLine("EditScreen.FileSelected set macrofile combo box");
 			MacroFileCombo.SelectedValue = Path.GetFileNameWithoutExtension(file.Name);
 		}
 

@@ -4,11 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
 using StarFox.Interop.MAP;
 using StarwingMapVisualizer.Dialogs;
+using StarwingMapVisualizer.Misc;
 
 namespace StarwingMapVisualizer
 {
@@ -90,14 +93,15 @@ namespace StarwingMapVisualizer
 		/// <param name="tip"></param>
 		internal static bool? ShowCrash(Exception exception, bool fatal, string tip)
 		{
-			// TODO : Implement AppResources.ShowCrash
-			throw new NotImplementedException();
-			/*
-			CrashWindow window = new CrashWindow(Exception, Fatal, Tip) {
+			Console.Error.WriteLine("SFVIEW CRASH");
+			Console.Error.WriteLine("============");
+			Console.Error.WriteLine(tip);
+			Console.Error.WriteLine(exception);
+
+			CrashWindow window = new CrashWindow(exception, fatal, tip) {
 				WindowStartupLocation = WindowStartupLocation.CenterScreen
 			};
-			return window.ShowDialog();
-			// */
+			return window.ShowDialog<bool?>(Application.Current.MainWindow()).Result;
 		}
 	}
 }

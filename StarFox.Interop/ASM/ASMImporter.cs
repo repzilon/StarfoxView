@@ -87,7 +87,7 @@ namespace StarFox.Interop.ASM
 			var reader = new StreamReader(stream, charSet, true);
 			charSet = reader.CurrentEncoding;
 			while (!reader.EndOfStream) {
-				var chunk = ProcChunk(filePath, Context, reader­, ref charSet); // process this line as a new chunk
+				var chunk = ProcChunk(filePath, Context, reader, ref charSet); // process this line as a new chunk
 				if (chunk != null) {
 					newFile.Chunks.Add(chunk);
 				}
@@ -120,7 +120,7 @@ namespace StarFox.Interop.ASM
 			// IMPORTANT : returns the byte position, which is needed to seek inside the base FileStream
 			// This is different from character position, and both will drift away with a variable-length
 			// character coding such as UTF-8.
-			long position = fs.GetActualPosition(); 
+			long position = fs.GetActualPosition();
 
 			var rawLine = fs.ReadLine();
 			var header = rawLine.RemoveEscapes(); // read line

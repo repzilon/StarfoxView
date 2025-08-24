@@ -201,39 +201,6 @@
                 </Setter.Value>
             </Setter>
         </ControlTheme>
-        <ControlTheme TargetType="Window" x:Key="SFDialogModalMenuControlTheme"
-                      BasedOn="{StaticResource SFDialogModalControlTheme}">
-            <!-- TODO : Does not compile
-            <ControlTheme.Resources>
-                <ControlTheme TargetType="MenuItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="MenuItem">
-                                <Button Background="{Binding Background, ElementName=HOST}"
-                                        Foreground="{Binding Foreground, ElementName=HOST}"
-                                        FontFamily="{StaticResource Atlantis}" FontSize="18">
-                                    <ContentPresenter ContentTemplate="Header" />
-                                </Button>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </ControlTheme>
-                <ControlTheme TargetType="Menu">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="Menu">
-                                <Grid>
-                                    <StackPanel IsItemsHost="True">
-
-                                    </StackPanel>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </ControlTheme>
-            </ControlTheme.Resources>
-            -->
-        </ControlTheme>
         <!--Circle Buttons-->
         <ControlTemplate x:Key="CircularButtonTemplate" TargetType="Button">
             <Grid>

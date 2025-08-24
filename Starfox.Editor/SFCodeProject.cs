@@ -13,7 +13,6 @@ using static StarFox.Interop.GFX.CAD;
 
 namespace Starfox.Editor
 {
-
 	/// <summary>
 	/// Represents a StarFox Editor Code Project
 	/// </summary>

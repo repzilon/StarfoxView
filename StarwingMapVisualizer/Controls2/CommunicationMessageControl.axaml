@@ -1,0 +1,48 @@
+<ContentControl xmlns="https://github.com/avaloniaui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                x:Class="StarwingMapVisualizer.Controls2.CommunicationMessageControl" Name="HOST"
+                MinHeight="38" Foreground="White" BorderBrush="#FF003B71">
+    <ContentControl.Template>
+        <ControlTemplate TargetType="ContentControl">
+            <Grid Background="{TemplateBinding Background}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+                <Viewbox RenderOptions.BitmapInterpolationMode="None" VerticalAlignment="Top">
+                    <Grid>
+                        <Border Width="30" Height="38">
+                            <Border.Background>
+                                <ImageBrush Source="/Resources/Image/missingfaces.png" />
+                            </Border.Background>
+                        </Border>
+                        <Border Width="30" Height="38" IsVisible="{Binding MugshotVisibility, ElementName=HOST}">
+                            <Border.Background>
+                                <ImageBrush Source="/Resources/Image/faces.png"
+                                            SourceRect="{Binding ImageRect, ElementName=HOST}" />
+                            </Border.Background>
+                        </Border>
+                    </Grid>
+                </Viewbox>
+                <Viewbox RenderOptions.BitmapInterpolationMode="None" Grid.Column="1" VerticalAlignment="Top">
+                    <ContentControl x:Name="FontHost" FontFamily="{Binding GameFont, ElementName=HOST}">
+                        <Grid>
+                            <TextBlock Margin="5,0,0,0" Width="126" TextWrapping="Wrap"
+                                       Foreground="{TemplateBinding BorderBrush}" Text="{TemplateBinding Content}" />
+                            <TextBlock Margin="3,-1,0,0" Width="126" TextWrapping="Wrap"
+                                       Foreground="{TemplateBinding Foreground}" Text="{TemplateBinding Content}" />
+                        </Grid>
+                    </ContentControl>
+                </Viewbox>
+            </Grid>
+        </ControlTemplate>
+    </ContentControl.Template>
+    <ContentControl.Styles>
+        <Style Selector="ContentControl">
+            <Setter Property="Content" Value="all ships check in!!" />
+        </Style>
+    </ContentControl.Styles>
+</ContentControl>

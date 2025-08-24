@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Starfox.Editor;
 using StarFox.Interop;
 using StarFox.Interop.ASM;
@@ -18,7 +19,7 @@ using StarFox.Interop.MAP;
 using StarFox.Interop.MSG;
 using StarFox.Interop.SPC;
 //using StarwingMapVisualizer.Controls;
-//using StarwingMapVisualizer.Controls.Subcontrols;
+using StarwingMapVisualizer.Controls.Subcontrols;
 using StarwingMapVisualizer.Dialogs;
 
 namespace StarwingMapVisualizer.Misc
@@ -46,27 +47,33 @@ namespace StarwingMapVisualizer.Misc
 		/// </summary>
 		/// <param name="File"></param>
 		/// <returns></returns>
-		public static async Task<T> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default) where T : class
+		public static async Task<T> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default)
+		where T : class
 		{
 			if (!AppResources.IsFileIncluded(File)) {
+				Console.WriteLine("Including  " + File.Name);
 				switch (File.GetSFFileType()) {
 					case SFCodeProjectFileTypes.Include:
 					case SFCodeProjectFileTypes.Assembly:
 						var asmFile = await ParseFile(File, ContextualFileType);
 						if (asmFile == default) return default; // USER CANCEL
-						AppResources.Includes.Add(asmFile); // INCLUDE FILE FOR SYMBOL LINKING
+						AppResources.Includes.Add(asmFile);     // INCLUDE FILE FOR SYMBOL LINKING
+						Console.WriteLine($"Included   {File.Name,-12} for symbol linking");
 						return asmFile as T;
 					case SFCodeProjectFileTypes.Palette:
 						using (var file = File.OpenRead()) {
 							var palette = CAD.COL.Load(file);
 							if (palette == default) return default;
 							AppResources.ImportedProject.Palettes.Add(File.FullName, palette);
+							Console.WriteLine($"Included   {File.Name,-12} as palette");
 							return palette as T;
 						}
 				}
 			} else return AppResources.Includes.First(x => x.OriginalFilePath == File.FullName) as T;
+
 			return default;
 		}
+
 		public static void IncludeFile(ASMFile asmFile)
 		{
 			if (!AppResources.IsFileIncluded(new FileInfo(asmFile.OriginalFilePath))) {
@@ -74,6 +81,7 @@ namespace StarwingMapVisualizer.Misc
 				AppResources.Includes.Add(asmFile);
 			}
 		}
+
 		public static bool SearchProjectForFile(string FileName, out FileInfo File, bool IgnoreHyphens = false)
 		{
 			File = null;
@@ -84,6 +92,7 @@ namespace StarwingMapVisualizer.Misc
 			File = new FileInfo(results.First().FilePath);
 			return true;
 		}
+
 		/// <summary>
 		/// Common helper function that will set imports on all <see cref="CodeImporter{T}"/>s
 		/// to be <see cref="AppResources.Includes"/>
@@ -99,6 +108,7 @@ namespace StarwingMapVisualizer.Misc
 			DEFSPRImport.SetImports(AppResources.Includes.ToArray());
 			TRNImport.SetImports(AppResources.Includes.ToArray());
 		}
+
 		/// <summary>
 		/// Performs the Auto-Include function, which will ask the importer what includes it needs
 		/// and automatically includes them to this project file
@@ -107,7 +117,8 @@ namespace StarwingMapVisualizer.Misc
 		/// <param name="File"></param>
 		/// <param name="importer"></param>
 		/// <returns></returns>
-		private static async Task<bool> HandleImportMessages<T>(FileInfo File, CodeImporter<T> importer) where T : IImporterObject
+		private static async Task<bool> HandleImportMessages<T>(FileInfo File, CodeImporter<T> importer)
+		where T : IImporterObject
 		{
 			async Task AutoIncludeNow(string message, IEnumerable<string> ExpectedIncludes)
 			{
@@ -122,12 +133,14 @@ namespace StarwingMapVisualizer.Misc
 					}
 				}
 
+				/* TODO : Invoke ShowNotification in the UI thread correctly
 				if (autoIncluded.Any()) {
 					EDITORStandard.ShowNotification($"Auto-Include included these files to the project:\n" +
-								$" {string.Join(", ", autoIncluded)}");
-				}
+													$" {string.Join(", ", autoIncluded)}");
+				}// */
 				//** END AUTO INCLUDE
 			}
+
 			var message2 = importer.CheckWarningMessage(File.FullName);
 			await AutoIncludeNow(message2, importer.ExpectedIncludes);
 			ReadyImporters();
@@ -136,6 +149,7 @@ namespace StarwingMapVisualizer.Misc
 				if (MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
 					return false;
 			}
+
 			return true;
 		}
 
@@ -161,8 +175,10 @@ namespace StarwingMapVisualizer.Misc
 					await IncludeFile<ASMFile>(file);
 				}
 			}
+
 			return true;
 		}
+
 		/// <summary>
 		/// Returns a palette from the file reference provided
 		/// </summary>
@@ -174,8 +190,10 @@ namespace StarwingMapVisualizer.Misc
 				var success = await IncludeFile<object>(File) != default;
 				if (!success) return null;
 			}
+
 			return AppResources.ImportedProject.Palettes[File.FullName];
 		}
+
 		/// <summary>
 		/// Opens the <see cref="PaletteView"/> window with the palette file name provided
 		/// </summary>
@@ -187,6 +205,7 @@ namespace StarwingMapVisualizer.Misc
 				var success = await IncludeFile<object>(File) != default;
 				if (!success) return;
 			}
+
 			var col = AppResources.ImportedProject.Palettes[File.FullName];
 			/* TODO : Import PaletteView
 			var view = new PaletteView()
@@ -197,6 +216,7 @@ namespace StarwingMapVisualizer.Misc
 			view.Show();
 			//*/
 		}
+
 		/// <summary>
 		/// If the file is in <see cref="AppResources.OpenFiles"/>, the file will be closed
 		/// </summary>
@@ -208,8 +228,10 @@ namespace StarwingMapVisualizer.Misc
 				AppResources.ImportedProject.CloseFile(File.FullName);
 				return true;
 			}
+
 			return false;
 		}
+
 		/// <summary>
 		/// Opens the specified BSP File, if it's already open, will return the file.
 		/// </summary>
@@ -218,11 +240,13 @@ namespace StarwingMapVisualizer.Misc
 		/// <returns></returns>
 		public static async Task<BSPFile> OpenBSPFile(FileInfo File, bool ForceReload = false)
 		{
-			if (AppResources.ImportedProject.OpenFiles.TryGetValue(File.FullName, out var fileInstance)) { // FILE IS OPEN
+			if (AppResources.ImportedProject.OpenFiles.TryGetValue(File.FullName, out var fileInstance)) {
+				// FILE IS OPEN
 				if (fileInstance is BSPFile && !ForceReload) return fileInstance as BSPFile; // RETURN IT
-																							 // WE HAVE TO RELOAD IT, SO CLOSE IT
+				// WE HAVE TO RELOAD IT, SO CLOSE IT
 				CloseFileIfOpen(File);
 			}
+
 			//3D IMPORT LOGIC
 			if (!await HandleImportMessages(File, BSPImport)) return default;
 			//**AUTO-INCLUDE COLTABS.ASM
@@ -232,6 +256,7 @@ namespace StarwingMapVisualizer.Misc
 			var file = await BSPImport.ImportAsync(File.FullName);
 			return file;
 		}
+
 		/// <summary>
 		/// Opens the specified <see cref="MAPFile"/> and returns a reference to it
 		/// </summary>
@@ -253,7 +278,7 @@ namespace StarwingMapVisualizer.Misc
 			var errors = importer.ErrorOut.ToString();
 			if (!string.IsNullOrWhiteSpace(errors)) {
 				MessageBox.Show(errors + "\nThe file was still imported -- use caution when viewing for inaccuracies.",
-									"Errors Occured when Importing " + file.Name);
+					"Errors Occured when Importing " + file.Name);
 			}
 		}
 
@@ -275,8 +300,10 @@ namespace StarwingMapVisualizer.Misc
 
 			//MSG IMPORT LOGIC
 			if (!await HandleImportMessages(File, MSGImport)) return default;
+			Console.WriteLine($"Importing {File.Name,-12}");
 			MSGImport.TranslationTable = trn ?? AppResources.Includes.OfType<TRNFile>().LastOrDefault();
 			var rObj = await MSGImport.ImportAsync(File.FullName);
+			Console.WriteLine($"Imported  {File.Name,-12}");
 			ShowPossibleErrors(MSGImport, File);
 			return rObj;
 		}
@@ -284,7 +311,9 @@ namespace StarwingMapVisualizer.Misc
 		public static async Task<TRNFile> OpenTRNFile(FileInfo File)
 		{
 			if (!await HandleImportMessages(File, TRNImport)) return default;
+			Console.WriteLine($"Importing  {File.Name,-12}");
 			var rObj = await TRNImport.ImportAsync(File.FullName);
+			Console.WriteLine($"Imported   {File.Name,-12}");
 			ShowPossibleErrors(TRNImport, File);
 			return rObj;
 		}
@@ -299,28 +328,37 @@ namespace StarwingMapVisualizer.Misc
 		/// <param name="ContextualFileType">Will skip the Dialog asking what kind of file this is parsing by using this value
 		/// <para>If <see langword="default"/>, a dialog is displayed.</para></param>
 		/// <returns></returns>
-		private static async Task<ASMFile> ParseFile(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default)
+		private static async Task<ASMFile> ParseFile(FileInfo File,
+		SFFileType.ASMFileTypes? ContextualFileType = default)
 		{
 			//GET IMPORTS SET
 			ReadyImporters();
 			//DO FILE PARSE NOW
-			ASMFile asmfile = default;
-			var fileType = File.GetSFFileType();
+			ASMFile asmfile  = default;
+			var     fileType = File.GetSFFileType();
 			if ((fileType == SFCodeProjectFileTypes.Assembly) ||
-			(fileType == SFCodeProjectFileTypes.Include)) // assembly file
-			{ // DOUBT AS TO FILE TYPE
-			  //CREATE THE MENU WINDOW
-				SFFileType.ASMFileTypes selectFileType = SFFileType.ASMFileTypes.ASM;
+				(fileType == SFCodeProjectFileTypes.Include)) // assembly file
+			{                                                 // DOUBT AS TO FILE TYPE
+				//CREATE THE MENU WINDOW
+				SFFileType.ASMFileTypes selectFileType;
 				if (!ContextualFileType.HasValue) {
-					throw new NotImplementedException();
-					/* TODO : Import FileImportMenu
-					var importMenu = new FileImportMenu()
-					{
-						Owner = Application.Current.MainWindow
-					};
-					if (!importMenu.ShowDialog() ?? true) return default; // USER CANCEL
-					selectFileType = importMenu.FileType;
-					// */
+					// In Avalonia, you must call your dialogs in the UI thread, never in a task worker thread
+					var op =  Dispatcher.UIThread.InvokeAsync<Task<SFFileType.ASMFileTypes?>>(async () => {
+						var importMenu = new FileImportMenu();
+						var result     = await importMenu.ShowDialog<bool>(Application.Current.MainWindow());
+						if (result) {
+							return importMenu.FileType;
+						} else {
+							return null; // USER CANCEL
+						}
+					});
+					var x              = await op;
+					var typeFromDialog = await x;
+					if (typeFromDialog.HasValue) {
+						selectFileType = typeFromDialog.Value;
+					} else {
+						return null;
+					}
 				} else selectFileType = ContextualFileType.Value;
 
 				if (selectFileType == SFFileType.ASMFileTypes.ASM) {
@@ -339,6 +377,7 @@ namespace StarwingMapVisualizer.Misc
 					return default;
 				}
 			}
+
 			if (asmfile == default) return default;
 			if (!AppResources.OpenFiles.ContainsKey(File.FullName))
 				AppResources.OpenFiles.Add(File.FullName, asmfile);
@@ -351,16 +390,17 @@ namespace StarwingMapVisualizer.Misc
 		/// <param name="DefinitionASMName"></param>
 		/// <returns></returns>
 		/// <exception cref="FileNotFoundException"></exception>
-		public static async Task<MSpritesDefinitionFile> EnsureMSpritesDefinitionOpen(string DefinitionASMName = "DEFSPR.ASM")
+		public static async Task<MSpritesDefinitionFile> EnsureMSpritesDefinitionOpen(
+		string DefinitionASMName = "DEFSPR.ASM")
 		{
 			var mSpriteDef = AppResources.OpenFiles.Values.OfType<MSpritesDefinitionFile>().FirstOrDefault();
 			if (mSpriteDef == null) { // there isn't one, try adding it now
 				var hit = AppResources.ImportedProject.SearchFile(DefinitionASMName).FirstOrDefault();
-				if (hit != default) // Can't find DEFSPR.ASM
-					mSpriteDef = await OpenDEFSPRFile // found it, trying to add it
-						(new FileInfo(hit.FilePath));
+				if (hit != default)                   // Can't find DEFSPR.ASM
+					mSpriteDef = await OpenDEFSPRFile(new FileInfo(hit.FilePath)); // found it, trying to add it
 			}
-			if (mSpriteDef == null) // could't add it
+
+			if (mSpriteDef == null) // couldn't add it
 				throw new FileNotFoundException($"{DefinitionASMName} could not be found or is otherwise unreadable.");
 			return mSpriteDef;
 		}
@@ -372,17 +412,22 @@ namespace StarwingMapVisualizer.Misc
 		/// </summary>
 		/// <param name="file"></param>
 		/// <returns></returns>
-		public static async Task<MSpritesDefinitionFile> OpenDEFSPRFile(FileInfo file, bool IgnoreSFOptimMissing = false)
+		public static async Task<MSpritesDefinitionFile> OpenDEFSPRFile(FileInfo file,
+		bool IgnoreSFOptimMissing = false)
 		{
-			if (AppResources.OpenFiles.TryGetValue(file.FullName, out var DefSpr)) return DefSpr as MSpritesDefinitionFile;
+			if (AppResources.OpenFiles.TryGetValue(file.FullName, out var DefSpr))
+				return DefSpr as MSpritesDefinitionFile;
 			//DEFSPR IMPORT LOGIC
 			if (!IgnoreSFOptimMissing) {
-				if (AppResources.ImportedProject?.GetOptimizerByTypeOrDefault(SFOptimizerTypeSpecifiers.MSprites) == null) {
-					MessageBox.Show("You have chosen to open an MSprites definition file, yet you haven't created the MSpritesMap.\n\n" +
+				if (AppResources.ImportedProject?.GetOptimizerByTypeOrDefault(SFOptimizerTypeSpecifiers.MSprites) ==
+					null) {
+					MessageBox.Show(
+						"You have chosen to open an MSprites definition file, yet you haven't created the MSpritesMap.\n\n" +
 						"Please do that first and then try this function again.");
 					return default;
 				}
 			}
+
 			if (!await HandleImportMessages(file, DEFSPRImport)) return default;
 			var rObj = await DEFSPRImport.ImportAsync(file.FullName);
 			ShowPossibleErrors(DEFSPRImport, file);
@@ -405,13 +450,13 @@ namespace StarwingMapVisualizer.Misc
 		/// <param name="initialDirectory"></param>
 		/// <param name="multiselect"></param>
 		/// <returns></returns>
-		internal static async Task<string[]> ShowGenericFileBrowser(string title, bool folderBrowser = false, string initialDirectory = null, bool multiselect = false)
+		internal static async Task<string[]> ShowGenericFileBrowser(string title, bool folderBrowser = false,
+		string initialDirectory = null, bool multiselect = false)
 		{
 			if (initialDirectory == null) initialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName;
 
 			var topLevel = TopLevel.GetTopLevel(Application.Current.MainWindow());
-			var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-			{
+			var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {
 				Title         = title,
 				AllowMultiple = multiselect,
 				// TODO : Support initialDirectory in ShowGenericFileBrowsers
@@ -449,12 +494,12 @@ namespace StarwingMapVisualizer.Misc
 			//Load the SFOptimizer
 			if (!project.Optimizers.Any())
 				throw new Exception("There aren't any optimizers added to this project yet.\n" +
-					"Use the Refresh <Type>Map button to create this.");
+									"Use the Refresh <Type>Map button to create this.");
 			//Find the one that is a STAGE MAP
 			var sfOptim = project.GetOptimizerByTypeOrDefault(Type);
 			if (sfOptim == default)
 				throw new Exception($"This project has Optimizers, but none of them are for {Type}.\n" +
-					"Use the Refresh <Type>Map button to create this.");
+									"Use the Refresh <Type>Map button to create this.");
 			return sfOptim;
 		}
 
@@ -467,7 +512,7 @@ namespace StarwingMapVisualizer.Misc
 		{
 			var HeaderName = LevelMacroName;
 			var stageOptim = GetOptimizerByType(SFOptimizerTypeSpecifiers.Maps);
-			var stageMap = stageOptim.OptimizerData.ObjectMap;
+			var stageMap   = stageOptim.OptimizerData.ObjectMap;
 			//Try to find the file that contains the stage we want
 			if (!stageMap.TryGetValue(HeaderName, out var FileName)) return default;
 			var path = Path.Combine(Path.GetDirectoryName(stageOptim.FilePath), FileName);
