@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -82,10 +83,14 @@ namespace StarwingMapVisualizer.Controls2
 
 		public void SetCompatibleFonts(bool Compatible = true)
 		{
-			/* TODO : Find a Japanese font for other OS and load SFFont for English
-			GameFont = Compatible ? new FontFamily("Meiryo") : FindResource("SFFont") as FontFamily;
+			if (!Compatible) {
+				GameFont = this.FindResource("SFFont") as FontFamily;
+			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+				GameFont = new FontFamily("Hiragino Sans");
+			} else {
+				GameFont = new FontFamily("Meiryo");
+			}
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameFont)));
-			// */
 		}
 
 		private void ImageMissing()

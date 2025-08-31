@@ -226,7 +226,7 @@
                 <ContentControl DockPanel.Dock="Top" Margin="10,10,10,10"
                                 Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
                     <TreeView FontSize="22" x:Name="SolutionExplorerView" BorderThickness="0" Background="{x:Null}"
-                              FontFamily="{StaticResource Atlantis}"> <!-- TextOptions.TextRenderingMode="Grayscale" -->
+                              FontFamily="{StaticResource Atlantis}" RenderOptions.TextRenderingMode="Antialias">
                         <TreeViewItem IsExpanded="True" FontWeight="Bold" Classes="ProjectTreeStyle">
                             <TreeViewItem Header="Folder" Classes="FolderTreeStyle" />
                             <TreeViewItem Header="File" Classes="FileTreeStyle" />
@@ -249,11 +249,6 @@
                     <StackPanel>
                         <ComboBox x:Name="MacroFileCombo" Margin="10" SelectionChanged="FilterFileChanged" />
                         <WrapPanel DockPanel.Dock="Top" HorizontalAlignment="Center" Orientation="Horizontal">
-                            <!-- TODO : WrapPanel styling
-                            <WrapPanel.Resources>
-                                <ControlTheme TargetType="RadioButton" BasedOn="{StaticResource SFRadioButton}" />
-                            </WrapPanel.Resources>
-                            -->
                             <RadioButton x:Name="MacroFilterRadio" IsChecked="True"
                                          Foreground="{StaticResource MacroColor}" IsCheckedChanged="FilterChanged">
                                 MACROS

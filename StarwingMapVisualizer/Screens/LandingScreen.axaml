@@ -5,20 +5,17 @@
              xmlns:backgrounds="clr-namespace:Avalonia.Extensions.Backgrounds;assembly=Avalonia.Extensions"
              mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
              x:Class="StarwingMapVisualizer.Screens.LandingScreen">
-    <!-- TODO : Page background
-    <Page.Background>
-        <ImageBrush Source="/Resources/Image/SectorY.png" Stretch="UniformToFill" />
-    </Page.Background>
-    -->
     <Grid>
+        <Grid.Background>
+            <ImageBrush Source="/Resources/Image/SectorY.png" Stretch="UniformToFill" />
+        </Grid.Background>
         <backgrounds:SpacePanel />
         <StackPanel Margin="100,50" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Viewbox MaxWidth="451">
                 <Image Source="/Resources/SFviewLogo.png" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="None" />
             </Viewbox>
-            <!-- TODO : Style="{StaticResource TitleText}" for TextBlock -->
             <TextBlock Foreground="White" Margin="0,50,0,10" Text="INCLUDE SOURCE FILES TO GET STARTED"
-                       HorizontalAlignment="Center" />
+                       HorizontalAlignment="Center" Classes="TitleText" />
             <Button x:Name="GetStartedButton" HorizontalAlignment="Center" Padding="50,10"
                     FontFamily="{StaticResource SFFont}" RenderOptions.EdgeMode="Aliased" Background="#FF787880"
                     Foreground="#FF99FDFC" FontSize="18" Click="GetStartedButton_Click">

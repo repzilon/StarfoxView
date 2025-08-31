@@ -61,9 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Resources\Image\play.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AvaloniaResource Include="Resources\Image\faces.png" />
     <AvaloniaResource Include="Resources\Image\missingfaces.png" />
+    <AvaloniaResource Include="Resources\Image\sf_frame.png" />
   </ItemGroup>
 </Project>
