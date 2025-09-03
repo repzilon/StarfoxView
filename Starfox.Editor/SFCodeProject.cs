@@ -201,7 +201,7 @@ namespace Starfox.Editor
 		public bool EnsureOptimizers(out SFOptimizerTypeSpecifiers[] TypesMissing)
 		{
 			var list = new List<SFOptimizerTypeSpecifiers>();
-#if NETFRAMEWORK || NETSTANDARD
+#if NETFRAMEWORK || NETSTANDARD || NETCOREAPP3_0 || NETCOREAPP3_1 || NETCOREAPP2_1
 			foreach (var type in Utility.GetValues<SFOptimizerTypeSpecifiers>()) {
 #else
 			foreach (var type in Enum.GetValues<SFOptimizerTypeSpecifiers>()) {

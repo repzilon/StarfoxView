@@ -57,7 +57,7 @@ namespace StarFox.Interop.ASM
 			Context.CurrentFilePath = FilePath;
 			var newFile = Context.CurrentFile = new ASMFile(FilePath);
 			Context.CurrentLine = 0;
-#if NETFRAMEWORK || NETSTANDARD
+#if NETFRAMEWORK || NETSTANDARD || NETCOREAPP3_0 || NETCOREAPP3_1 || NETCOREAPP2_1
 			var charSet = Encoding.Default;
 #else
 			var charSet = Encoding.Latin1;
