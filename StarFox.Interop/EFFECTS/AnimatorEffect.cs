@@ -421,7 +421,7 @@ namespace StarFox.Interop.EFFECTS
 				}
 			}
 
-			renderOut.InstallPixels(info, gcHandle.AddrOfPinnedObject(), info.RowBytes, null,
+			renderOut.InstallPixels(info, gcHandle.AddrOfPinnedObject(), info.RowBytes,
 				delegate { gcHandle.Free(); }, null);
 			return renderOut;
 		}

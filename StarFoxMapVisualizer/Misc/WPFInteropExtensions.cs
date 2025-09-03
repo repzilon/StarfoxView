@@ -37,7 +37,7 @@ namespace StarFoxMapVisualizer.Misc
         {
 			MemoryStream ms = new MemoryStream();
 			SKManagedWStream skms = new SKManagedWStream(ms, false);
-			SKPixmap.Encode(skms, src, TransparentEnabled ? SKEncodedImageFormat.Png : SKEncodedImageFormat.Bmp, 100);
+			src.Encode(skms, TransparentEnabled ? SKEncodedImageFormat.Png : SKEncodedImageFormat.Bmp, 100);
 	        BitmapImage image = new BitmapImage();
 	        image.CacheOption = BitmapCacheOption.OnLoad;
 	        image.BeginInit();
