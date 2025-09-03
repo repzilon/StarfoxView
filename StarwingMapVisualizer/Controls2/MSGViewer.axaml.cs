@@ -181,7 +181,11 @@ namespace StarwingMapVisualizer.Controls2
 
 				loops++;
 				if (loops >= maxLoops) {                 // we've met the max animations, lets close up
+#if NETFRAMEWORK
+					animationTimer.Dispose();
+#else
 					await animationTimer.DisposeAsync(); // get rid of it
+#endif
 					animationTimer = null;
 					return;
 				}

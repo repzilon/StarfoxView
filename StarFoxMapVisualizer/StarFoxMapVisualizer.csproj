@@ -1,10 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
-    <TargetFrameworks>net6.0-windows7.0;net5.0-windows7.0;net48;net46</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows;net6.0-windows7.0;net5.0-windows7.0;netcoreapp3.1;net48;net46</TargetFrameworks>
     <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' != '17.0' ">
-    <TargetFrameworks>net46;net40</TargetFrameworks>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '16.0' ">
+    <TargetFrameworks>net46;net48;netcoreapp3.1;net5.0-windows7.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <TargetFrameworks>net46</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -13,6 +16,7 @@
     <FileVersion>0.6.1</FileVersion>
     <ApplicationIcon>Resources\SFViewLogoSmall.ico</ApplicationIcon>
     <AssemblyVersion>0.6.1</AssemblyVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="References\**" />
@@ -60,10 +64,6 @@
     <Content Include="Resources\SFViewLogoSmall.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="References\Microsoft.WindowsDesktop.App\3.1.32\PresentationFramework.Classic.dll" />
-    <None Include="References\Microsoft.WindowsDesktop.App\8.0.18\PresentationFramework.Classic.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\HL\HL.csproj" />
     <ProjectReference Include="..\PanCanvas\WpfPanAndZoom.csproj" />
     <ProjectReference Include="..\Starfox.Editor\Starfox.Editor.csproj" />
@@ -73,14 +73,6 @@
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
     <PackageReference Include="SkiaSharp" Version="[2.88.9]" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <PackageReference Include="NAudio" Version="[1.10.0]" />
-    <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
-    <Content Include="References\Framework64\v4.0.30319\WPF\PresentationFramework.Classic.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>%(Filename)%(Extension)</Link>
-    </Content>
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
     <PackageReference Include="AvalonEdit" Version="[6.1.3.50]" />
@@ -88,6 +80,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>%(Filename)%(Extension)</Link>
     </Content>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -97,8 +93,20 @@
       <Link>%(Filename)%(Extension)</Link>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows7.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <PackageReference Include="NAudio" Version="[2.0.1]" />
+    <PackageReference Include="AvalonEdit" Version="[6.1.1]" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="AvalonEdit" Version="[6.2.0.78]" />
+    <Content Include="References\Microsoft.WindowsDesktop.App\3.1.32\PresentationFramework.Classic.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0-windows7.0'">
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="AvalonEdit" Version="[6.2.0.78]" />
     <Content Include="References\Microsoft.WindowsDesktop.App\5.0.17\PresentationFramework.Classic.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -112,6 +120,35 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>%(Filename)%(Extension)</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+    <Content Include="References\Microsoft.WindowsDesktop.App\8.0.18\PresentationFramework.Classic.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <None Remove="*.xaml" />
+    <None Remove="*\*.xaml" />
+    <None Remove="Controls\Subcontrols\*.xaml" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="*\*.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Subcontrols\*.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\AtlantisInternational-jen0.ttf" />
@@ -142,10 +179,5 @@
     <Resource Include="Resources\SFViewLogoSmall.ico" />
     <Resource Include="Resources\Star-Fox-Starwing.ttf" />
     <Resource Include="Resources\Tribute.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controls\Subcontrols\BINImportMenu.xaml.cs"></Compile>
-    <Compile Update="Controls\Subcontrols\GenericMenuDialog.xaml.cs"></Compile>
-    <Compile Update="Controls\Subcontrols\BPPDepthMenu.xaml.cs"></Compile>
   </ItemGroup>
 </Project>

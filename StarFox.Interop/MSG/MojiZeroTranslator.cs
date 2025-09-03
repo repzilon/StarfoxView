@@ -86,7 +86,7 @@ namespace StarFox.Interop.MSG
 		public static string Decode(string mojiText, TRNFile translator)
 		{
 			StringBuilder stbJapanese = new StringBuilder(mojiText.Length);
-#if NETFRAMEWORK || NETSTANDARD
+#if NETFRAMEWORK || NETSTANDARD || NETCOREAPP3_0 || NETCOREAPP3_1 || NETCOREAPP2_1
 			var charSet = Encoding.Default;
 #else
 			var charSet = Encoding.Latin1;

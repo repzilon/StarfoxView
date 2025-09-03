@@ -9,9 +9,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using Starfox.Editor;
-using StarFox.Interop.ASM;
-using StarFox.Interop.MAP.EVT;
-using StarwingMapVisualizer;
+#if NETFRAMEWORK
+using StarFox.Interop;
+#endif
 using StarwingMapVisualizer.Dialogs;
 using StarwingMapVisualizer.Screens;
 //using StarwingMapVisualizer.Controls;
