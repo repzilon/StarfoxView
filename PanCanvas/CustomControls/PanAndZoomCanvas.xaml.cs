@@ -4,6 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+#if NET40
+using System.Windows.Navigation;
+#endif
 using System.Windows.Shapes;
 
 namespace WpfPanAndZoom.CustomControls
@@ -22,7 +25,7 @@ namespace WpfPanAndZoom.CustomControls
         static PanAndZoomCanvas currentlyDragging = null;
         static bool Dragging = false;
 
-        #region Variables
+		#region Variables
         private readonly MatrixTransform _transform = new MatrixTransform();
         private Point _initialMousePosition;
 
@@ -33,9 +36,13 @@ namespace WpfPanAndZoom.CustomControls
         private Color _lineColor = Colors.Green;
         private Color _backgroundColor = Color.FromArgb(0xFF, 0x33, 0x33, 0x33);
         private List<Line> _gridLines = new List<Line>();
-        #endregion
+		#endregion
 
+#if NET40
+	    public event EventHandler<ReturnEventArgs<Point>> LocationChanged;
+#else
         public event EventHandler<Point> LocationChanged;
+#endif
 
         /// <summary>
         /// The current position of the camera in this virtual 2D space
@@ -157,7 +164,7 @@ namespace WpfPanAndZoom.CustomControls
             if (e.ChangedButton == MouseButton.Right)
             {
                 if (Children.Contains((UIElement)e.Source))
-                {                    
+                {
                     _selectedElement = (UIElement)e.Source;
                     if (_selectedElement is IDraggable draggable && draggable.Draggable)
                     {
@@ -191,7 +198,11 @@ namespace WpfPanAndZoom.CustomControls
                 child.RenderTransform = _transform;
             }
 
+#if NET40
+	        LocationChanged?.Invoke(this, new ReturnEventArgs<Point>(Location));
+#else
             LocationChanged?.Invoke(this, Location);
+#endif
         }
         public void MoveCanvas(Point Offset) => MoveCanvas(new Vector(Offset.X,Offset.Y));
         public void SetCanvasLocation(Point Location)

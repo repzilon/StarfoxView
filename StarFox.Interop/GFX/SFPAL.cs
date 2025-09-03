@@ -237,7 +237,7 @@ namespace StarFox.Interop.GFX
 			if ((ColorByte >= 0) && (ColorByte <= 9)) {
 				collite = LerpColor(GetColorByIndex(karFirstIndexes[ColorByte]), GetColorByIndex(karSecondIndexes[ColorByte]));
 			} else {
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETCOREAPP2_1
 				collite = Backporting.FromHtml("#FFFFFF");
 #else
 				collite = ColorTranslator.FromHtml("#FFFFFF");
@@ -258,7 +258,7 @@ namespace StarFox.Interop.GFX
                     "#7C11A3", //= Shaded Red/blue (Purple)
                     "#2F9E28", //= Shaded Green/Dark Green
                 };
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETCOREAPP2_1
 				collite = Backporting.FromHtml((ColorByte >= 0) && (ColorByte <= 9) ? karFallback[ColorByte] : "#FFFFFF");
 #else
 				collite = ColorTranslator.FromHtml((ColorByte >= 0) && (ColorByte <= 9) ? karFallback[ColorByte]: "#FFFFFF");

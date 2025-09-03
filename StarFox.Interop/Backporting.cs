@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -34,7 +34,7 @@ namespace StarFox.Interop
 		}
 #endif
 
-#if NETFRAMEWORK || NETSTANDARD || NET5_0
+#if NETFRAMEWORK || NETSTANDARD || NET5_0 || NETCOREAPP3_0 || NETCOREAPP3_1 || NETCOREAPP2_1
 		internal static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> self, Func<T, K> criterion)
 		{
 			if (criterion == null) {
@@ -55,7 +55,7 @@ namespace StarFox.Interop
 			return x.Take(checked(last - first + 1)).ToArray();
 		}
 
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETCOREAPP2_1
 		internal static Color FromHtml(string htmlCode)
 		{
 			if (String.IsNullOrEmpty(htmlCode)) {

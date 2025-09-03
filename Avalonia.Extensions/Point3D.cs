@@ -27,7 +27,12 @@ namespace Avalonia.Extensions
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(X, Y, Z);
+			unchecked {
+				var hashCode = X.GetHashCode();
+				hashCode = (hashCode * 397) ^ Y.GetHashCode();
+				hashCode = (hashCode * 397) ^ Z.GetHashCode();
+				return hashCode;
+			}
 		}
 
 		public static bool operator ==(Point3D left, Point3D right)

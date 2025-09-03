@@ -376,7 +376,7 @@ namespace Avalonia.Extensions.Controls
 		{
 #if NETFRAMEWORK
 			try {
-				CustomConverters.Add(PropertyType, new RangeCustomConverter(ValuePropertyName, MaxValuePropertyName, MinValuePropertyName));
+				CustomConverters.Add(propertyType, new RangeCustomConverter(valuePropertyName, maxValuePropertyName, minValuePropertyName));
 				return true;
 			} catch (Exception) {
 				return false;

@@ -91,7 +91,7 @@ namespace StarFox.Interop.MSG
 
 			if (MojiZeroTranslator.IsUtf8ReadInLatin1(second)) {
 				// Upstream UltraStarFox 1 version > 2.2 as of August 2025 switched to UTF-8 without BOM and without header
-#if NETFRAMEWORK || NETSTANDARD
+#if NETFRAMEWORK || NETSTANDARD || NETCOREAPP3_0 || NETCOREAPP3_1 || NETCOREAPP2_1
 				var charSet = Encoding.Default;
 #else
 				var charSet = Encoding.Latin1;
