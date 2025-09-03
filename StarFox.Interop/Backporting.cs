@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+#if NETSTANDARD2_0 || NETCOREAPP2_1
+using System.Drawing;
+using System.Globalization;
+#endif
 using System.Linq;
 
 namespace StarFox.Interop

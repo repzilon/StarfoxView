@@ -235,6 +235,7 @@ namespace StarFox.Interop.GFX
 				collite = Backporting.FromHtml("#FFFFFF");
 #else
 				collite = ColorTranslator.FromHtml("#FFFFFF");
+#endif
 			}
 
 			if (false) {
