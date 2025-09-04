@@ -18,7 +18,7 @@
         </Border>
         <Grid Grid.Row="1">
             <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.25">
+                <LinearGradientBrush EndPoint="0,50" StartPoint="0,0" Opacity="0.25">
                     <GradientStop Color="Black" />
                     <GradientStop Color="#00000000" Offset="1" />
                 </LinearGradientBrush>
@@ -35,15 +35,16 @@
                 <Button Height="25" Width="25" Background="{DynamicResource WindowBackgroundColor}" Padding="0,0">
                     <Image Source="/Resources/Image/play.png" />
                 </Button>
-                <Button Margin="10,0" Padding="8,0,0,0" Height="26" Foreground="White"
-                        Background="{DynamicResource WindowBackgroundColor}" Width="58" Content="Add..." />
+                <Button Margin="10,0" Foreground="White" Padding="10,0"
+                        Background="{DynamicResource WindowBackgroundColor}" Height="25" Content="Add..."
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Top" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10">
                 SOUND: <Run Name="SoundLabel" />
             </TextBlock>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" Grid.Row="2">
-            <StackPanel Name="MessagesItemsHost" Orientation="Horizontal" Margin="0,10"> <!-- TODO : CanHorizontallyScroll="True" CanVerticallyScroll="False" -->
+            <StackPanel Name="MessagesItemsHost" Orientation="Horizontal" Margin="0,10">
                 <StackPanel.Styles>
                     <Style Selector="ListBox">
                         <Setter Property="Background" Value="{x:Null}" />
@@ -55,54 +56,65 @@
                         <Setter Property="Cursor" Value="Hand" />
                         <Setter Property="Padding" Value="20,0" />
                         <Setter Property="Height" Value="40" />
-                        <Setter Property="Background" Value="#3F00CA7C" />
+                        <Setter Property="Background" Value="#25384e" />
                         <Setter Property="Foreground" Value="White" />
+                        <Setter Property="BorderThickness" Value="1" />
                     </Style>
                     <Style Selector="ListBoxItem:pointerover">
-                        <Setter Property="Background" Value="#3F001E40" />
+                        <Setter Property="Background" Value="#304c63" />
                         <Setter Property="Foreground" Value="White" />
+                        <Setter Property="BorderBrush" Value="#2a7fac" />
                     </Style>
-                </StackPanel.Styles>
-                <!-- TODO : HeaderedContentControl transform
-                <StackPanel.Resources>
-                    <ControlTheme TargetType="HeaderedContentControl">
-                        <Setter Property="Width" Value="400" />
+                    <Style Selector="ListBoxItem:focus">
+                        <Setter Property="Background" Value="#2e5772" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="BorderBrush" Value="#26a0da" />
+                    </Style>
+                    <Style Selector="HeaderedContentControl">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="HeaderedContentControl">
                                     <DockPanel>
-                                        <Grid DockPanel.Dock="Left">
+                                        <Grid DockPanel.Dock="Top">
+                                            <!-- TODO : HeaderedContentControl rotate transform
                                             <Grid.RenderTransform>
                                                 <RotateTransform Angle="-90" />
                                             </Grid.RenderTransform>
+                                            -->
                                             <Rectangle VerticalAlignment="Center" Height="2" StrokeThickness="0"
-                                                       Fill="White" />
+                                                       Fill="White" Margin="2,0" />
                                             <ContentControl FontFamily="{StaticResource Atlantis}" FontSize="36">
-                                                <Border HorizontalAlignment="Center" Padding="10,5"
+                                                <Border HorizontalAlignment="Center" Padding="10,0,10,5"
                                                         Background="{Binding Background, ElementName=HOST}">
-                                                    <ContentPresenter />  TODO: ContentSource="Header"
+                                                    <ContentPresenter Content="{TemplateBinding Header}" />
                                                 </Border>
                                             </ContentControl>
                                         </Grid>
                                         <ScrollViewer HorizontalScrollBarVisibility="Hidden"
-                                                      VerticalScrollBarVisibility="Auto">
-                                            <ContentPresenter />
+                                                      VerticalScrollBarVisibility="Auto" DockPanel.Dock="Bottom">
+                                            <ContentPresenter Content="{TemplateBinding Content}" />
                                         </ScrollViewer>
                                     </DockPanel>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                    </ControlTheme>
-                </StackPanel.Resources>
-                -->
+                    </Style>
+                </StackPanel.Styles>
                 <HeaderedContentControl Header="FOX">
                     <ListBox>
-                        TEST MESSAGE
+                        <ListBoxItem>US VW Jetta Mk 1</ListBoxItem>
+                        <ListBoxItem>Naked Snake squad</ListBoxItem>
                     </ListBox>
                 </HeaderedContentControl>
                 <HeaderedContentControl Header="FALCO">
                     <ListBox>
-                        TEST MESSAGE
+                        <ListBoxItem>Amadeus, Amadeus</ListBoxItem>
+                        <ListBoxItem>... A-madeus</ListBoxItem>
+                        <ListBoxItem>Amadeus, Amadeus</ListBoxItem>
+                        <ListBoxItem>... A-madeus</ListBoxItem>
+                        <ListBoxItem>Amadeus, Amadeus</ListBoxItem>
+                        <ListBoxItem>... A-madeus</ListBoxItem>
+                        <ListBoxItem>Oh oh oh Amadeus</ListBoxItem>
                     </ListBox>
                 </HeaderedContentControl>
             </StackPanel>

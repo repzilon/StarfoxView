@@ -40,7 +40,7 @@
     </ContentControl.Template>
     <ContentControl.Style>
         <Style TargetType="ContentControl">
-            <Setter Property="Content" Value="all ships check in!!asdhgasjdkhga"/>
+            <Setter Property="Content" Value="all ships check in!!"/>
         </Style>
     </ContentControl.Style>
 </ContentControl>

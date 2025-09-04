@@ -36,7 +36,7 @@ namespace StarwingMapVisualizer.Controls2
 		private void ResizeActorColumns()
 		{
 			var parentScroller = (ScrollViewer)MessagesItemsHost.Parent;
-			var height         = parentScroller.Height;
+			var height         = parentScroller.Bounds.Height;
 			if (!Double.IsNaN(height)) {
 				height = Math.Max(89, height - 25); // -25 for the horizontal scroll bar below
 				foreach (var control in MessagesItemsHost.Children) {

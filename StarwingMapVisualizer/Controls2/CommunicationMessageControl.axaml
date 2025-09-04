@@ -4,7 +4,7 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                 x:Class="StarwingMapVisualizer.Controls2.CommunicationMessageControl" Name="HOST"
-                MinHeight="38" Foreground="White" BorderBrush="#FF003B71">
+                MinHeight="39" Foreground="White" BorderBrush="#FF003B71">
     <ContentControl.Template>
         <ControlTemplate TargetType="ContentControl">
             <Grid Background="{TemplateBinding Background}">
@@ -14,12 +14,12 @@
                 </Grid.ColumnDefinitions>
                 <Viewbox RenderOptions.BitmapInterpolationMode="None" VerticalAlignment="Top">
                     <Grid>
-                        <Border Width="30" Height="38">
+                        <Border Width="31" Height="39">
                             <Border.Background>
                                 <ImageBrush Source="/Resources/Image/missingfaces.png" />
                             </Border.Background>
                         </Border>
-                        <Border Width="30" Height="38" IsVisible="{Binding MugshotVisibility, ElementName=HOST}">
+                        <Border Width="31" Height="39" IsVisible="{Binding MugshotVisibility, ElementName=HOST}">
                             <Border.Background>
                                 <ImageBrush Source="/Resources/Image/faces.png"
                                             SourceRect="{Binding ImageRect, ElementName=HOST}" />

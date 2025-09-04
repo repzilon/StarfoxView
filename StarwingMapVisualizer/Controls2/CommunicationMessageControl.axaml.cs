@@ -8,7 +8,7 @@ namespace StarwingMapVisualizer.Controls2
 {
 	public partial class CommunicationMessageControl : ContentControl, INotifyPropertyChanged
 	{
-		public Rect ImageRect { get; set; } = new Rect(0, 0, 31, 39);
+		public RelativeRect ImageRect { get; set; } = new RelativeRect(0, 0, 31, 39, RelativeUnit.Absolute);
 		public bool MugshotVisibility { get; set; }
 		public FontFamily GameFont { get; set; }
 
@@ -77,7 +77,7 @@ namespace StarwingMapVisualizer.Controls2
 			MugshotVisibility = true;
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MugshotVisibility)));
 
-			ImageRect = new Rect(baseX + Frame * (charWidth + 1), baseY, charWidth, charHeight);
+			ImageRect = new RelativeRect(baseX + Frame * (charWidth + 1), baseY, charWidth, charHeight, RelativeUnit.Absolute);
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageRect)));
 		}
 
