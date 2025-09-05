@@ -17,7 +17,7 @@ namespace StarwingMapVisualizer
 		// Avalonia configuration, don't remove; also used by visual designer.
 		private static AppBuilder BuildAvaloniaApp()
 		{
-			return AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace();
+			return AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace();
 		}
 	}
 }
