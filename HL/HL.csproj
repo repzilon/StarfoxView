@@ -25,8 +25,7 @@
     <RepositoryUrl>https://github.com/Dirkster99/HL</RepositoryUrl>
     <PackageId>Dirkster.HL</PackageId>
     <Authors>https://github.com/Dirkster99/HL</Authors>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>avalonedit dark-theme light-theme theming highlighting</PackageTags>
     <PackageReleaseNotes>Mutlitargetting NetCore3 and Net 4.0</PackageReleaseNotes>
@@ -92,15 +91,4 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows7.0'">
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
   </ItemGroup>
-
-  <!-- NuGet Packaging -->
-  <ItemGroup>
-    <None Include="LICENSE" Pack="true" PackagePath="" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="LICENSE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
