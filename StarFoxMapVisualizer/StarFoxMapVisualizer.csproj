@@ -71,7 +71,6 @@
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
     <ProjectReference Include="..\TextEditLib\TextEditLib.csproj" />
     <ProjectReference Include="..\WPF.UI.Extensions\WPF.UI.Extensions.csproj" />
-    <PackageReference Include="SkiaSharp" Version="[2.88.9]" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="NAudio" Version="[1.10.0]" />
