@@ -223,7 +223,7 @@ namespace StarwingMapVisualizer.Screens
 					Header      = Path.GetFileName(dirNode.FilePath),
 					Tag         = dirNode,
 					ContextMenu = menu,
-					Margin      = new Thickness(0, 2, 0, 2)
+					Margin      = new Thickness(0)
 				};
 				ToolTip.SetTip(thisTreeNode, String.Format("{0} subdirectories and {1} files (not recursive)",
 					dirNode.ChildNodes.Count(x => x.Type == SFCodeProjectNodeTypes.Directory),
@@ -254,7 +254,7 @@ namespace StarwingMapVisualizer.Screens
 					Header      = fileInfo.Name,
 					Tag         = fileNode,
 					ContextMenu = contextMenu,
-					Margin      = new Thickness(0, 2, 0, 2)
+					Margin      = new Thickness(0)
 				};
 				ToolTip.SetTip(item, $"{fileInfo.Length:n0} bytes");
 				CreateExploreContextMenu(fileNode, contextMenu);

@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Avalonia.Extensions/Controls/PropertyViewer.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="AvaloniaPanNZoom/App.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/CustomControls/PanAndZoomCanvas.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/CustomControls/Widget.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />

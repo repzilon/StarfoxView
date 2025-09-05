@@ -5,7 +5,9 @@
         mc:Ignorable="d" d:DesignHeight="450"
         x:Class="StarwingMapVisualizer.Controls.Subcontrols.FileImportMenu"
         Width="250" Title="OPEN FILE" Foreground="White" SizeToContent="Height"
-        WindowStartupLocation="CenterOwner" Classes="SFDialogModalStyle SFDialogModalMenuStyle">
+        WindowStartupLocation="CenterOwner" Classes="SFDialogModalStyle SFDialogModalMenuStyle"
+        Background="{StaticResource WindowColor}"
+        CanResize="False" CanMaximize="False" CanMinimize="False">
     <DockPanel>
         <DockPanel.Styles>
             <Style Selector="Button">
@@ -14,6 +16,7 @@
                 <Setter Property="FontFamily" Value="{DynamicResource Atlantis}" />
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
             </Style>
         </DockPanel.Styles>
         <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,10">You're opening an ASM file, what kind of file is this?</TextBlock>

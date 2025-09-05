@@ -6,7 +6,7 @@
         x:Class="StarwingMapVisualizer.Dialogs.AboutBox"
         Title="About SFView" WindowStartupLocation="CenterOwner"
         Icon="/Resources/Image/sf_small.png" SizeToContent="Height" Foreground="White"
-        Width="415" Classes="SFDialogModalStyle">
+        Width="415" Classes="SFDialogModalStyle" CanResize="False" CanMaximize="False" CanMinimize="False">
     <Window.Styles>
         <Style Selector="Button">
             <Setter Property="Background" Value="{Binding Background, ElementName=HOST}"/>

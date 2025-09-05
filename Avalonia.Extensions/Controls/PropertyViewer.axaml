@@ -5,29 +5,29 @@
              xmlns:local="clr-namespace:Avalonia.Extensions.Controls"
              mc:Ignorable="d" d:DesignWidth="200"
              x:Class="Avalonia.Extensions.Controls.PropertyViewer">
-    <!-- TODO : Correct problem with .Resources of StackPanel.Resources
-    <StackPanel.Resources>
-        <ControlTheme TargetType="TextBlock">
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontStyle" Value="Normal" />
             <Setter Property="Margin" Value="0,0,0,10" />
-        </ControlTheme>
-        <ControlTheme TargetType="TextBox">
+        </Style>
+        <Style Selector="TextBox">
             <Setter Property="Margin" Value="0,0,0,5" />
+            <!-- TODO : Tooltip support in PropertyViewer
             <Setter Property="ToolTip">
                 <Setter.Value>
                     <ToolTip Background="DarkRed" BorderBrush="White" Foreground="White" Placement="Right" />
                 </Setter.Value>
             </Setter>
-        </ControlTheme>
-        <ControlTheme TargetType="Button">
+            -->
+        </Style>
+        <Style Selector="Button">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="Regular" />
             <Setter Property="Margin" Value="0,0,0,0" />
-        </ControlTheme>
-    </StackPanel.Resources>
-    -->
+        </Style>
+    </UserControl.Styles>
     <local:PropertyViewerItem />
 </UserControl>
