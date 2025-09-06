@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Image x:Key="Image_OpenFile"  Source="/TextEditLib;component/Resources/Icons/OpenFile.ico" />
+
+    <Image x:Key="Image_Copy" Source="/TextEditLib;component/Resources/Icons/Copy.ico" />
+    <Image x:Key="Image_Cut" Source="/TextEditLib;component/Resources/Icons/Cut.ico" />
+    <Image x:Key="Image_Paste" Source="/TextEditLib;component/Resources/Icons/Paste.ico" />
+
+    <Image x:Key="Image_Delete" Source="/TextEditLib;component/Resources/Icons/Delete.ico" />
+
+    <Image x:Key="Image_Undo" Source="/TextEditLib;component/Resources/Icons/Undo.ico" />
+    <Image x:Key="Image_Redo" Source="/TextEditLib;component/Resources/Icons/Redo.ico" />
+</ResourceDictionary>

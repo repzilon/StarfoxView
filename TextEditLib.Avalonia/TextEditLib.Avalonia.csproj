@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
+    <TargetFrameworks>net8.0;net6.0;net5.0;netcoreapp3.1;net48</TargetFrameworks>
+    <NoWarn>NETSDK1138</NoWarn>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <!-- BuiltInComInteropSupport is true by default, use false for Native AOT with Avalonia -->
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <!-- Do not enable Native AOT yet
+    <PublishAot>true</PublishAot>
+    <TrimMode>link</TrimMode>
+    -->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '16.0' ">
+    <TargetFrameworks>net48;netcoreapp3.1;net5.0</TargetFrameworks>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Copy.ico">
+      <Link>Resources\Icons\Copy.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Copy_16x.svg">
+      <Link>Resources\Icons\Copy_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Cut.ico">
+      <Link>Resources\Icons\Cut.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Cut_16x.svg">
+      <Link>Resources\Icons\Cut_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Delete.ico">
+      <Link>Resources\Icons\Delete.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Delete_16x.svg">
+      <Link>Resources\Icons\Delete_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\OpenFile.ico">
+      <Link>Resources\Icons\OpenFile.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\OpenFile_16x.svg">
+      <Link>Resources\Icons\OpenFile_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Paste.ico">
+      <Link>Resources\Icons\Paste.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Paste_16x.svg">
+      <Link>Resources\Icons\Paste_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Redo.ico">
+      <Link>Resources\Icons\Redo.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Redo_16x.svg">
+      <Link>Resources\Icons\Redo_16x.svg</Link>
+    </Content>
+    <AvaloniaResource Include="..\TextEditLib\Resources\Icons\Undo.ico">
+      <Link>Resources\Icons\Undo.ico</Link>
+    </AvaloniaResource>
+    <Content Include="..\TextEditLib\Resources\Icons\Undo_16x.svg">
+      <Link>Resources\Icons\Undo_16x.svg</Link>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,128 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:reskeys="clr-namespace:TextEditLib.Themes"
+        xmlns:local="clr-namespace:TextEditLib"
+        xmlns:rendering="https://github.com/avaloniaui/avaloniaedit">
+    <Style Selector="local|TextEdit">
+        <!--  AvalonEdit does not support RTL, so ensure we use LTR by default  -->
+        <Setter Property="FlowDirection" Value="LeftToRight" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorBackground}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorForeground}}" />
+        <Setter Property="LineNumbersForeground"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorLineNumbersForeground}}" />
+        <Setter Property="EditorCurrentLineBackground"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorCurrentLineBackgroundBrushKey}}" />
+        <Setter Property="EditorCurrentLineBorder"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorCurrentLineBorderBrushKey}}" />
+        <Setter Property="EditorCurrentLineBorderThickness"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorCurrentLineBorderThicknessKey}}" />
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <!-- TODO : Add command names (would be identical to English Header) -->
+                    <MenuItem Header="Cut">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Cut}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Copy">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Copy}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Paste">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Paste}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Delete">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Delete}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <Separator />
+
+                    <MenuItem Header="Undo">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Undo}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Redo">
+                        <MenuItem.Icon>
+                            <Image Height="16" Source="{DynamicResource Image_Redo}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TextEdit}">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <ScrollViewer Name="PART_ScrollViewer" Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                            IsScrollChainingEnabled="True"
+                            Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextArea}"
+                            Focusable="False" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+                    </Border>
+                    <!-- TODO : TextEditor triggers
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="WordWrap" Value="True">
+                            <Setter TargetName="PART_ScrollViewer" Property="HorizontalScrollBarVisibility"
+                                    Value="Disabled" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                    -->
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style Selector="rendering|TextView">
+        <Setter Property="NonPrintableCharacterBrush"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorNonPrintableCharacterBrush}}" />
+        <Setter Property="LinkTextForegroundBrush"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorLinkTextForegroundBrush}}" />
+        <!--  Style hyperlink displayed within text in text editor  -->
+        <Setter Property="LinkTextBackgroundBrush"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorLinkTextBackgroundBrush}}" />
+    </Style>
+    <Style Selector="rendering|TextArea">
+        <!--<Setter Property="FocusVisualStyle" Value="{x:Null}" />-->
+        <Setter Property="SelectionBrush"
+                Value="{DynamicResource {x:Static reskeys:ResourceKeys.EditorSelectionBrush}}" />
+        <Setter Property="SelectionBorder">
+            <Setter.Value>
+                <Pen Thickness="1"
+                     Brush="{DynamicResource {x:Static reskeys:ResourceKeys.EditorSelectionBorder}}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="SelectionCornerRadius" Value="0" />
+        <!-- TODO : Get selection foreground color
+        <Setter Property="SelectionForeground"
+                Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+        -->
+        <Setter Property="SelectionForeground" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type rendering:TextArea}">
+                    <DockPanel Focusable="False">
+                        <ItemsControl DockPanel.Dock="Left" Focusable="False"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=LeftMargins}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ContentPresenter Focusable="False"
+                                          Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextView}" />
+                        <!-- Panel.ZIndex="-1" -->
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</Styles>

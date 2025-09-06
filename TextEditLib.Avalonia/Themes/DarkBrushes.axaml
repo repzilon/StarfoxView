@@ -1,0 +1,64 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:reskeys="clr-namespace:TextEditLib.Themes">
+    <!--
+		Accent Color Brush Definition
+		- Look for references on ControlAccentBrushKey to find where this is being set in code
+	-->
+    <Color x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys}, ResourceId=ControlAccentColorKey}">#1ba1e2</Color>
+
+    <SolidColorBrush options:Freeze="true"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=ControlAccentBrushKey}"
+                     Color="{DynamicResource {x:Static reskeys:ResourceKeys.ControlAccentColorKey}}" />
+
+    <SolidColorBrush options:Freeze="true" Color="#FF181818"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorBackground}" />
+
+    <SolidColorBrush options:Freeze="true" Color="#FFFFFFFF"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorForeground}" />
+
+    <SolidColorBrush options:Freeze="true" Color="#ff929292"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorLineNumbersForeground}" />
+
+    <SolidColorBrush options:Freeze="true" Opacity="0.75"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorSelectionBrush}"
+                     Color="{DynamicResource {x:Static reskeys:ResourceKeys.ControlAccentColorKey}}" />
+
+    <SolidColorBrush options:Freeze="true" Opacity="0.75"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorSelectionBorder}"
+                     Color="{DynamicResource {x:Static reskeys:ResourceKeys.ControlAccentColorKey}}" />
+
+    <SolidColorBrush options:Freeze="true" Color="#2FFFFFFF"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorNonPrintableCharacterBrush}" />
+
+    <SolidColorBrush options:Freeze="true" Color="#FFAAAAFF"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorLinkTextForegroundBrush}" />
+
+    <!--  Style hyperlink displayed within text in text editor  -->
+    <SolidColorBrush options:Freeze="true" Color="Transparent"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorLinkTextBackgroundBrush}" />
+
+
+    <!--  Current Line Highlighting Keys  -->
+    <SolidColorBrush options:Freeze="true" Color="#2FCCCDCE"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorCurrentLineBackgroundBrushKey}" />
+
+    <SolidColorBrush options:Freeze="true" Opacity=".6" Color="#2FCCCDCE"
+                     x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+									 ResourceId=EditorCurrentLineBorderBrushKey}" />
+
+    <!--System:Double x:Key="{reskeys:ComponentResourceKey TypeInTargetAssembly={x:Type reskeys:ResourceKeys},
+                     ResourceId=EditorCurrentLineBorderThicknessKey}">3</System:Double-->
+    <!--  Current Line Highlighting Keys  -->
+</ResourceDictionary>

@@ -47,6 +47,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries-AvaloniaEdit", "L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL-Avalonia", "HL-Avalonia\HL-Avalonia.csproj", "{313F0852-C693-445B-8B96-C906CD2BCEDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditLib.Avalonia", "TextEditLib.Avalonia\TextEditLib.Avalonia.csproj", "{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{313F0852-C693-445B-8B96-C906CD2BCEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{313F0852-C693-445B-8B96-C906CD2BCEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{313F0852-C693-445B-8B96-C906CD2BCEDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +143,7 @@ Global
 		{C4B9A3BE-30A8-4996-8106-68DBECB3CA87} = {DA9D96FC-07B2-49FA-92EF-88E93F626EFE}
 		{625AA01A-7EEE-476E-8FC3-DEE6D24BD643} = {DA9D96FC-07B2-49FA-92EF-88E93F626EFE}
 		{313F0852-C693-445B-8B96-C906CD2BCEDA} = {AF5227FC-C2C6-4480-84BE-7C5195D7B2DD}
+		{BB7FB8F2-E20E-409B-AAA5-3C2E846AA11F} = {AF5227FC-C2C6-4480-84BE-7C5195D7B2DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DC0E0F0-BC90-4228-A9AF-C391B81580F8}
