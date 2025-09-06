@@ -1,8 +1,13 @@
 namespace HL.Manager
 {
 	using HL.HighlightingTheme;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+	using AvaloniaEdit.Highlighting.Xshd;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
 	using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+#endif
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;

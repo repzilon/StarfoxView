@@ -2,12 +2,19 @@ namespace HL.Manager
 {
 	using HL.Resources;
 	using HL.Xshtd;
+#if Avalonia
+	using Avalonia.Media;
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+#if !Avalonia
 	using System.Windows;
 	using System.Windows.Media;
+#endif
 	using System.Xml;
 	using System.Xml.Schema;
 
@@ -247,20 +254,27 @@ namespace HL.Manager
 			return color;
 		}
 
+#if !Avalonia
 		internal readonly static ColorConverter ColorConverter = new ColorConverter();
 		internal readonly static FontWeightConverter FontWeightConverter = new FontWeightConverter();
 		internal readonly static FontStyleConverter FontStyleConverter = new FontStyleConverter();
+#endif
 
 		static HighlightingBrush ParseColor(IXmlLineInfo lineInfo, string color)
 		{
 			if (string.IsNullOrEmpty(color))
 				return null;
 			if (color.StartsWith("SystemColors.", StringComparison.Ordinal))
+#if Avalonia
+				throw new PlatformNotSupportedException("Old-style Windows system colors are no supported on Avalonia.");
+#else
 				return GetSystemColorBrush(lineInfo, color);
+#endif
 			else
 				return FixedColorHighlightingBrush((Color?)ColorConverter.ConvertFromInvariantString(color));
 		}
 
+#if !Avalonia
 		internal static SystemColorHighlightingBrush GetSystemColorBrush(IXmlLineInfo lineInfo, string name)
 		{
 			Debug.Assert(name.StartsWith("SystemColors.", StringComparison.Ordinal));
@@ -270,6 +284,7 @@ namespace HL.Manager
 				throw Error(lineInfo, "Cannot find '" + name + "'.");
 			return new SystemColorHighlightingBrush(property);
 		}
+#endif
 
 		static HighlightingBrush FixedColorHighlightingBrush(Color? color)
 		{
@@ -280,16 +295,24 @@ namespace HL.Manager
 		{
 			if (string.IsNullOrEmpty(fontWeight))
 				return null;
+#if Avalonia
+			return (FontWeight)Enum.Parse(typeof(FontWeight), fontWeight, true);
+#else
 			return (FontWeight?)FontWeightConverter.ConvertFromInvariantString(fontWeight);
+#endif
 		}
 
 		static FontStyle? ParseFontStyle(string fontStyle)
 		{
 			if (string.IsNullOrEmpty(fontStyle))
 				return null;
+#if Avalonia
+			return (FontStyle)Enum.Parse(typeof(FontStyle), fontStyle, true);
+#else
 			return (FontStyle?)FontStyleConverter.ConvertFromInvariantString(fontStyle);
+#endif
 		}
-		#endregion
+#endregion
 
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> elements)
 		{

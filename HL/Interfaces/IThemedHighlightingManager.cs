@@ -2,14 +2,18 @@ namespace HL.Interfaces
 {
 	using HL.Manager;
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// Defines a Highlighting Manager that associates syntax highlighting definitions with file extentions
 	/// (*.cs -> 'C#') with consideration of the current WPF App theme
-	/// 
+	///
 	/// Extension  App Theme   SyntaxHighlighter
 	/// (*.cs  +   'Dark')  -> 'C#' (with color definitions for 'Dark')
 	/// </summary>
@@ -55,7 +59,7 @@ namespace HL.Interfaces
 		/// <summary>
 		/// Resets the highlighting theme based on the name of the WPF App Theme
 		/// (eg: WPF APP Theme 'Dark' -> Resolve highlighting 'C#' to 'Dark'->'C#')
-		/// 
+		///
 		/// Throws an <see cref="IndexOutOfRangeException"/> if the WPF APP theme is not known.
 		/// </summary>
 		/// <param name="name"></param>

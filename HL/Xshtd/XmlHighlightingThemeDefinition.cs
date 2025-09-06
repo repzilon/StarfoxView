@@ -2,14 +2,18 @@ namespace HL.Xshtd
 {
 	using HL.HighlightingTheme;
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System.Collections.Generic;
 	using System.Diagnostics;
 
 	/// <summary>
 	/// Implements a highlighting theme definition object that provides all run-time
 	/// relevant properties and methods to work with themes in the context of highlightings.
-	/// 
+	///
 	/// <see cref="XhstdThemeDefinition"/> for equivalent Xml persistance layer object.
 	/// </summary>
 	internal class XmlHighlightingThemeDefinition : IHighlightingThemeDefinition
@@ -184,7 +188,7 @@ namespace HL.Xshtd
 			/// <summary>
 			/// Implements the visitor for a named color (<see cref="XshtdColor"/> object)
 			/// that is contained in a <see cref="XshtdSyntaxDefinition"/> object.
-			/// 
+			///
 			/// Method checks if given color name is unique and adds the color into the internal
 			/// collection of inique colors if it is.
 			/// </summary>

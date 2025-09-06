@@ -1,0 +1,174 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '17.0' ">
+    <TargetFrameworks>net8.0;net6.0;net5.0;netcoreapp3.1;net48</TargetFrameworks>
+    <NoWarn>NETSDK1138</NoWarn>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <!-- BuiltInComInteropSupport is true by default, use false for Native AOT with Avalonia -->
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <!-- Do not enable Native AOT yet
+    <PublishAot>true</PublishAot>
+    <TrimMode>link</TrimMode>
+    -->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '16.0' ">
+    <TargetFrameworks>net48;netcoreapp3.1;net5.0</TargetFrameworks>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <LangVersion>7.3</LangVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
+    <FileVersion>1.0.4</FileVersion>
+    <Company>Open Source</Company>
+    <Product>StarfoxView</Product>
+    <Copyright>2025</Copyright>
+    <Description>Color theme library for AvaloniaEdit</Description>
+
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/repzilon/StarfoxView</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/repzilon/StarfoxView</RepositoryUrl>
+    <PackageId>Repzilon.AvaloniaEdit.HL</PackageId>
+    <Authors>Repzilon</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>avaloniaedit dark-theme light-theme theming highlighting</PackageTags>
+    <PackageReleaseNotes>Mutlitargetting NetCore3 and Net 4.0</PackageReleaseNotes>
+    <AssemblyName>AvaloniaEdit.HL</AssemblyName>
+    <RootNamespace>HL</RootNamespace>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>TRACE;Avalonia</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DefineConstants>TRACE;Avalonia</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\HL\HighlightingTheme\GlobalStyle.cs">
+      <Link>HighlightingTheme\GlobalStyle.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\HighlightingTheme\SyntaxDefinition.cs">
+      <Link>HighlightingTheme\SyntaxDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Interfaces\IHLTheme.cs">
+      <Link>Interfaces\IHLTheme.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Interfaces\IThemedHighlightingManager.cs">
+      <Link>Interfaces\IThemedHighlightingManager.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\BusyManager.cs">
+      <Link>Manager\BusyManager.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\DefaultHighlightingManager.cs">
+      <Link>Manager\DefaultHighlightingManager.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\DelayLoadedHighlightingDefinition.cs">
+      <Link>Manager\DelayLoadedHighlightingDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\HighlightingLoader.cs">
+      <Link>Manager\HighlightingLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\HighlightingThemeLoader.cs">
+      <Link>Manager\HighlightingThemeLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\HLTheme.cs">
+      <Link>Manager\HLTheme.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\ThemedHighlightingManager.cs">
+      <Link>Manager\ThemedHighlightingManager.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\V2Loader.cs">
+      <Link>Manager\V2Loader.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\XmlHighlightingDefinition.cs">
+      <Link>Manager\XmlHighlightingDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Manager\XshtdLoader.cs">
+      <Link>Manager\XshtdLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Resources\HLResources.cs">
+      <Link>Resources\HLResources.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\interfaces\IFreezable.cs">
+      <Link>Xshtd\interfaces\IFreezable.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\interfaces\IHighlightingDefinitionReferenceResolver.cs">
+      <Link>Xshtd\interfaces\IHighlightingDefinitionReferenceResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\interfaces\IHighlightingThemeDefinition.cs">
+      <Link>Xshtd\interfaces\IHighlightingThemeDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\IXshtdVisitor.cs">
+      <Link>Xshtd\IXshtdVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XhstdThemeDefinition.cs">
+      <Link>Xshtd\XhstdThemeDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XmlHighlightingThemeDefinition.cs">
+      <Link>Xshtd\XmlHighlightingThemeDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XshtdColor.cs">
+      <Link>Xshtd\XshtdColor.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XshtdElement.cs">
+      <Link>Xshtd\XshtdElement.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XshtdGlobalStyle.cs">
+      <Link>Xshtd\XshtdGlobalStyle.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XshtdGlobalStyles.cs">
+      <Link>Xshtd\XshtdGlobalStyles.cs</Link>
+    </Compile>
+    <Compile Include="..\HL\Xshtd\XshtdSyntaxDefinition.cs">
+      <Link>Xshtd\XshtdSyntaxDefinition.cs</Link>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\HL\images\icon.png">
+      <Link>images\icon.png</Link>
+    </None>
+    <EmbeddedResource Include="..\HL\Modes\ModeV2.xsd">
+      <Link>Modes\ModeV2.xsd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Modes\ModeV2_htd.xsd">
+      <Link>Modes\ModeV2_htd.xsd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\CPP-Mode.xshd">
+      <Link>Resources\Light\CPP-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\CSharp-Mode.xshd">
+      <Link>Resources\Light\CSharp-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\DOSBATCH.xshd">
+      <Link>Resources\Light\DOSBATCH.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\GSUandSCPUAssembly.xshd">
+      <Link>Resources\Light\GSUandSCPUAssembly.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\MarkDown-Mode.xshd">
+      <Link>Resources\Light\MarkDown-Mode.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Light\XmlDoc.xshd">
+      <Link>Resources\Light\XmlDoc.xshd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Themes\Dark.xshtd">
+      <Link>Resources\Themes\Dark.xshtd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Themes\TrueBlue.xshtd">
+      <Link>Resources\Themes\TrueBlue.xshtd</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\HL\Resources\Themes\VS2019_Dark.xshtd">
+      <Link>Resources\Themes\VS2019_Dark.xshtd</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

@@ -1,7 +1,11 @@
 namespace HL.HighlightingTheme
 {
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using Avalonia.Media;
+#else
 	using System.Windows.Media;
+#endif
 
 	/// <summary>
 	/// Implements an object that holds general color and style definitions for the
@@ -44,7 +48,7 @@ namespace HL.HighlightingTheme
 		#region properties
 		/// <summary>
 		/// Typed name of <seealso cref="GlobalStyle"/> object
-		/// 
+		///
 		/// (eg 'DefaultStyle', 'NonPrintableCharacter' ...,
 		/// (this is usually the key in a collection of these styles)
 		/// </summary>

@@ -4,10 +4,16 @@ namespace HL.Manager
 	using System.Diagnostics;
 	using System.Reflection;
 	using System.Runtime.Serialization;
+#if Avalonia
+	using Avalonia.Media;
+	using AvaloniaEdit.Highlighting;
+    using AvaloniaEdit.Rendering;
+#else
 	using System.Windows;
-	using System.Windows.Media;
 	using ICSharpCode.AvalonEdit.Highlighting;
 	using ICSharpCode.AvalonEdit.Rendering;
+	using System.Windows.Media;
+#endif
 
 	/// <summary>
 	/// HighlightingBrush implementation that finds a brush using a resource.
@@ -24,7 +30,11 @@ namespace HL.Manager
 			this.property = property;
 		}
 
+#if Avalonia
+		public override IBrush GetBrush(ITextRunConstructionContext context)
+#else
 		public override Brush GetBrush(ITextRunConstructionContext context)
+#endif
 		{
 			return (Brush)property.GetValue(null, null);
 		}
@@ -49,9 +59,7 @@ namespace HL.Manager
 		public override bool Equals(object obj)
 		{
 			SystemColorHighlightingBrush other = obj as SystemColorHighlightingBrush;
-			if (other == null)
-				return false;
-			return object.Equals(this.property, other.property);
+			return other != null && object.Equals(this.property, other.property);
 		}
 
 		public override int GetHashCode()
@@ -59,5 +67,4 @@ namespace HL.Manager
 			return property.GetHashCode();
 		}
 	}
-
 }

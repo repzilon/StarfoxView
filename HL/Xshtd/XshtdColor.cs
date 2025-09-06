@@ -1,23 +1,29 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
 namespace HL.Xshtd
 {
+#if Avalonia
+	using Avalonia.Media;
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Runtime.Serialization;
 	using System.Security.Permissions;
@@ -54,11 +60,23 @@ namespace HL.Xshtd
 			this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
 			this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
 
-			if (info.GetBoolean("HasWeight"))
+			if (info.GetBoolean("HasWeight")) {
+#if Avalonia
+				this.FontWeight = (FontWeight)info.GetInt32("Weight");
+#else
 				this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
+#endif
+			}
 
-			if (info.GetBoolean("HasStyle"))
+			if (info.GetBoolean("HasStyle")) {
+#if Avalonia
+				this.FontStyle = (FontStyle)Enum.Parse(typeof(FontStyle), info.GetString("Style"), true);
+#else
 				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+#endif
+			}
+
+
 
 			this.ExampleText = info.GetString("ExampleText");
 
@@ -127,8 +145,13 @@ namespace HL.Xshtd
 
 			info.AddValue("HasWeight", this.FontWeight.HasValue);
 
-			if (this.FontWeight.HasValue)
+			if (this.FontWeight.HasValue) {
+#if Avalonia
+				info.AddValue("Weight", (int)this.FontWeight);
+#else
 				info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
+#endif
+			}
 
 			info.AddValue("HasStyle", this.FontStyle.HasValue);
 

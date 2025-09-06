@@ -2,7 +2,9 @@
 {
 	using System;
 	using System.Collections.Generic;
+#if !Avalonia
 	using ICSharpCode.AvalonEdit.Utils;
+#endif
 
 	/// <summary>
 	/// A &lt;GlobalStyles&gt; element.

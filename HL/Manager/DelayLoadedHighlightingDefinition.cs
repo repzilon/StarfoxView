@@ -1,6 +1,10 @@
 namespace HL.Manager
 {
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Collections.Generic;
 

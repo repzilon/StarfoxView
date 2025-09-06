@@ -4,7 +4,11 @@
 	using HL.HighlightingTheme;
 	using HL.Xshtd;
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 
 	/// <summary>
 	/// Defines a highlighting theme which is based on a WPF theme (eg. 'Light')
@@ -24,7 +28,7 @@
 		/// <summary>
 		/// Gets the prefix of the XSHD resources that should be used to lookup
 		/// the actual resource for this theme.
-		/// 
+		///
 		/// This property is null for a derived highlighting theme since finding its
 		/// base highlighting should by performed through <see cref="HLBaseKey"/>
 		/// and the corresponding <see cref="HLBasePrefix"/> property of that entry.
@@ -34,7 +38,7 @@
 		/// <summary>
 		/// Gets the name of theme (eg. 'Dark' or 'Light' which is used as
 		/// the base of a derived highlighting theme.
-		/// 
+		///
 		/// This property has the same value as the <see cref="Key"/> property
 		/// if the highlighting is GENERIC (since these highlightings come without
 		/// additional theme resources).

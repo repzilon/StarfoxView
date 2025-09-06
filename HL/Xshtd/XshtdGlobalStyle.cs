@@ -1,7 +1,11 @@
 ﻿namespace HL.Xshtd
 {
 	using System;
+#if Avalonia
+	using Avalonia.Media;
+#else
 	using System.Windows.Media;
+#endif
 
 	/// <summary>
 	/// An element contained in a &lt;GlobalStyles&gt; element.

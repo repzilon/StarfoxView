@@ -4,7 +4,11 @@ namespace HL.Manager
 	using HL.Resources;
 	using HL.Xshtd;
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
@@ -35,7 +39,7 @@ namespace HL.Manager
 		#region ctors
 		/// <summary>
 		/// Class constructor for GENERIC highlighting definitions.
-		/// 
+		///
 		/// Generic highlighting definitions ar usually defined in xshd
 		/// files and stand on their own (do not need additional processing/resources
 		/// to compute highlighting rules and formating information).
@@ -57,7 +61,7 @@ namespace HL.Manager
 
 		/// <summary>
 		/// Class constructor for derived highlighting themes.
-		/// 
+		///
 		/// Derived highlighting themes have a base highlighting (eg 'Light')
 		/// and an 'overwritting' highlighting themes definition using an xshTd file resource.
 		/// </summary>
@@ -103,7 +107,7 @@ namespace HL.Manager
 		/// <summary>
 		/// Gets the prefix of the XSHD resources that should be used to lookup
 		/// the actual resource for this theme.
-		/// 
+		///
 		/// This property is null for a derived highlighting theme since finding its
 		/// base highlighting should by performed through <see cref="HLBaseKey"/>
 		/// and the corresponding <see cref="HLBasePrefix"/> property of that entry.
@@ -113,7 +117,7 @@ namespace HL.Manager
 		/// <summary>
 		/// Gets the name of theme (eg. 'Dark' or 'Light' which is used as
 		/// the base of a derived highlighting theme.
-		/// 
+		///
 		/// This property has the same value as the <see cref="Key"/> property
 		/// if the highlighting is GENERIC (since these highlightings come without
 		/// additional theme resources).
@@ -234,7 +238,7 @@ namespace HL.Manager
 		{
 			lock (lockObj)
 			{
-				// Perform an update if this highlighting happens to be available already 
+				// Perform an update if this highlighting happens to be available already
 				var itemInList = allHighlightings.FirstOrDefault(i => name == i.Name);
 				if (itemInList != null)
 					allHighlightings.Remove(itemInList);

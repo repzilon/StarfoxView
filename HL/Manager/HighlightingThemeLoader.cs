@@ -2,7 +2,11 @@ namespace HL.Manager
 {
 	using HL.Xshtd;
 	using HL.Xshtd.interfaces;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+#endif
 	using System;
 	using System.Xml;
 	using System.Xml.Schema;

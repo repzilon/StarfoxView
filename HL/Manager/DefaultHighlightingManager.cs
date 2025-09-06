@@ -2,7 +2,13 @@ namespace HL.Manager
 {
 	using HL.HighlightingTheme;
 	using HL.Resources;
+#if Avalonia
+	using AvaloniaEdit.Highlighting;
+	using AvaloniaEdit.Highlighting.Xshd;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
+	using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+#endif
 	using System;
 	using System.Diagnostics;
 	using System.IO;
@@ -83,7 +89,7 @@ namespace HL.Manager
 			{
 #if DEBUG
 				// don't use lazy-loading in debug builds, show errors immediately
-				ICSharpCode.AvalonEdit.Highlighting.Xshd.XshdSyntaxDefinition xshd;
+				XshdSyntaxDefinition xshd;
 				using (Stream s = HLResources.OpenStream(GetPrefix(CurrentTheme.HLBaseKey), resourceName))
 				{
 					using (XmlTextReader reader = new XmlTextReader(s))
@@ -144,7 +150,7 @@ namespace HL.Manager
 		{
 			Func<IHighlightingDefinition> func = delegate
 			{
-				ICSharpCode.AvalonEdit.Highlighting.Xshd.XshdSyntaxDefinition xshd;
+				XshdSyntaxDefinition xshd;
 				using (Stream s = HLResources.OpenStream(GetPrefix(CurrentTheme.HLBaseKey), resourceName))
 				{
 					using (XmlTextReader reader = new XmlTextReader(s))

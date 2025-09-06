@@ -1,13 +1,21 @@
 namespace HL.Manager
 {
 	using HL.Resources;
+#if Avalonia
+	using Avalonia.Media;
+	using AvaloniaEdit.Highlighting;
+	using AvaloniaEdit.Highlighting.Xshd;
+#else
 	using ICSharpCode.AvalonEdit.Highlighting;
 	using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+#endif
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+#if !Avalonia
 	using System.Windows;
 	using System.Windows.Media;
+#endif
 	using System.Xml;
 	using System.Xml.Schema;
 
@@ -310,20 +318,25 @@ namespace HL.Manager
 			return color;
 		}
 
+#if !Avalonia
 		internal readonly static ColorConverter ColorConverter = new ColorConverter();
-		internal readonly static FontWeightConverter FontWeightConverter = new FontWeightConverter();
-		internal readonly static FontStyleConverter FontStyleConverter = new FontStyleConverter();
+#endif
 
 		static HighlightingBrush ParseColor(IXmlLineInfo lineInfo, string color)
 		{
 			if (string.IsNullOrEmpty(color))
 				return null;
 			if (color.StartsWith("SystemColors.", StringComparison.Ordinal))
+#if Avalonia
+				throw new PlatformNotSupportedException("Old-style Windows system colors are no supported on Avalonia.");
+#else
 				return GetSystemColorBrush(lineInfo, color);
+#endif
 			else
 				return FixedColorHighlightingBrush((Color?)ColorConverter.ConvertFromInvariantString(color));
 		}
 
+#if !Avalonia
 		internal static SystemColorHighlightingBrush GetSystemColorBrush(IXmlLineInfo lineInfo, string name)
 		{
 			Debug.Assert(name.StartsWith("SystemColors.", StringComparison.Ordinal));
@@ -333,6 +346,7 @@ namespace HL.Manager
 				throw Error(lineInfo, "Cannot find '" + name + "'.");
 			return new SystemColorHighlightingBrush(property);
 		}
+#endif
 
 		static HighlightingBrush FixedColorHighlightingBrush(Color? color)
 		{
@@ -341,19 +355,19 @@ namespace HL.Manager
 			return new SimpleHighlightingBrush(color.Value);
 		}
 
-		static FontWeight? ParseFontWeight(string fontWeight)
+		private static FontWeight? ParseFontWeight(string fontWeight)
 		{
 			if (string.IsNullOrEmpty(fontWeight))
 				return null;
-			return (FontWeight?)FontWeightConverter.ConvertFromInvariantString(fontWeight);
+			return (FontWeight)Enum.Parse(typeof(FontWeight), fontWeight, ignoreCase: true);
 		}
 
-		static FontStyle? ParseFontStyle(string fontStyle)
+		private static FontStyle? ParseFontStyle(string fontStyle)
 		{
 			if (string.IsNullOrEmpty(fontStyle))
 				return null;
-			return (FontStyle?)FontStyleConverter.ConvertFromInvariantString(fontStyle);
+			return (FontStyle)Enum.Parse(typeof(FontStyle), fontStyle, ignoreCase: true);
 		}
-		#endregion
+#endregion
 	}
 }
