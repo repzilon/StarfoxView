@@ -9,7 +9,14 @@
         <entry key="AvaloniaPanNZoom/CustomControls/Widget.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="AvaloniaPanNZoom/MainWindow.axaml" value="AvaloniaPanNZoom/AvaloniaPanNZoom.csproj" />
         <entry key="StarwingMapVisualizer/App.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/LevelContextViewer.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/MAPControl.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/MapEventNodeControl.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/Subcontrols/BPPDepthMenu.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/Subcontrols/BackgroundRendererViewOptions.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Controls/Subcontrols/FileImportMenu.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/Subcontrols/GenericMenuDialog.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Controls/Subcontrols/LevelContextViewerControl.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Controls2/CommunicationMessageControl.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Controls2/MSGViewer.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Dialogs/AboutBox.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
@@ -17,6 +24,7 @@
         <entry key="StarwingMapVisualizer/Dialogs/LoadingWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Dialogs/SettingsDialog.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/MainWindow.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
+        <entry key="StarwingMapVisualizer/Renderers/BackgroundRenderer.axaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Resources/ControlOverride.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Resources/ControlStyle.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />
         <entry key="StarwingMapVisualizer/Resources/Theme.xaml" value="StarwingMapVisualizer/StarwingMapVisualizer.csproj" />

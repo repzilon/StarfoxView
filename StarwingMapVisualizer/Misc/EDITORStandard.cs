@@ -9,6 +9,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using Starfox.Editor;
+using StarFox.Interop.ASM;
+using StarFox.Interop.MAP.EVT;
 #if NETFRAMEWORK
 using StarFox.Interop;
 #endif
@@ -82,7 +84,7 @@ namespace StarwingMapVisualizer.Misc
 		public static async Task SwitchEditorView(EditScreen.ViewMode view) =>
 			await CurrentEditorScreen.SwitchView(view);
 
-		/* TODO : Import OBJViewer, MAPViewer and ASMViewer
+		/* TODO : Import OBJViewer
 		/// <summary>
 		/// See: <see cref="SHAPEControl.ShowShape(string, int)"/>
 		/// </summary>
@@ -95,7 +97,7 @@ namespace StarwingMapVisualizer.Misc
 				return false;
 			await SwitchEditorView(EditScreen.ViewMode.OBJ);
 			return true;
-		}
+		}// */
 
 		/// <summary>
 		/// This function is used when the user selects a MapNode in the MAPControl.
@@ -110,6 +112,7 @@ namespace StarwingMapVisualizer.Misc
 		public static Task<bool> MapEditor_MapNodeSelected(MAPEvent MapEvent, Type Component) =>
 			CurrentEditorScreen.MAPViewer.MapNodeSelected(MapEvent, Component);
 
+		/* TODO : Import ASMViewer
 		/// <summary>
 		/// Opens the ASMViewer in the editor to the passed <see cref="ASMChunk"/>
 		/// </summary>
@@ -119,7 +122,7 @@ namespace StarwingMapVisualizer.Misc
 		{
 			await SwitchEditorView(EditScreen.ViewMode.ASM);
 			await CurrentEditorScreen.ASMViewer.OpenSymbol(Symbol);
-		}//*/
+		}// */
 
 		private static async Task<SFOptimizerDataStruct> Editor_BaseDoRefreshMap(SFOptimizerTypeSpecifiers type,
 		Func<FileInfo, Dictionary<string, string>, Task<bool>> processFunction, string initialDirectory = null,
@@ -237,8 +240,7 @@ namespace StarwingMapVisualizer.Misc
 
 			strExportEnded += "\nDo you want to open the directory and copy its location to the clipboard?";
 			if (MessageBox.Show(strExportEnded, "Complete", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
-				await TopLevel.GetTopLevel(Application.Current.MainWindow()).Clipboard
-					.SetTextAsync(SHAPEStandard.DefaultShapeExtractionDirectory);
+				await AvaloniaBridge.Clipboard().SetTextAsync(SHAPEStandard.DefaultShapeExtractionDirectory);
 				OpenExternal.Folder(strExportDir);
 			}
 

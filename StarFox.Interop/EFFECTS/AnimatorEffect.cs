@@ -347,7 +347,7 @@ namespace StarFox.Interop.EFFECTS
 			// Copy the RGB values into the array.
 			Marshal.Copy(arrPtr, rgbValues, 0, (int)nintArrayLength);
 
-			// TODO : Put back support for indexed color images, but outside SkiaSharp because
+			// TODO : Put back support for indexed color images, but in separate project because
 			// Alphabloat dropped support for them in Skia
 			//var colorType  = image.ColorType;
 			//var octetPerPx = (colorType == SKColorType.Index8) ? (byte)1 : (byte)4;

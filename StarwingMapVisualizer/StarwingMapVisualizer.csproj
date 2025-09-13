@@ -39,6 +39,7 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.5" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Extensions\Avalonia.Extensions.csproj" />
+    <ProjectReference Include="..\AvaloniaPanNZoom\AvaloniaPanNZoom.csproj" />
     <ProjectReference Include="..\Starfox.Editor\Starfox.Editor.csproj" />
     <ProjectReference Include="..\StarFox.Interop\StarFox.Interop.csproj" />
   </ItemGroup>
@@ -76,5 +78,6 @@
     <AvaloniaResource Include="Resources\Image\faces.png" />
     <AvaloniaResource Include="Resources\Image\missingfaces.png" />
     <AvaloniaResource Include="Resources\Image\sf_frame.png" />
+    <AvaloniaResource Include="Resources\Image\view3d.png" />
   </ItemGroup>
 </Project>

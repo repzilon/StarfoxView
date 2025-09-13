@@ -369,12 +369,15 @@ namespace StarwingMapVisualizer.Screens
 			ViewMSGButton.IsChecked = false;
 			ViewBRRButton.IsChecked = false;
 
+			Console.WriteLine("EditScreen.HandleViewModes before pausing viewers");
 			//VIEW MODES ENABLED
 			ViewModeHost.IsVisible = true;
 			// TODO : Pause viewers in HandleViewModes
-			//MAPViewer.Pause();
+			MAPViewer.Pause();
 			//ASMViewer.Pause();
 			//OBJViewer.Pause();
+			Console.WriteLine("EditScreen.HandleViewModes after pausing viewers, CurrentMode is " + CurrentMode);
+
 			switch (CurrentMode) {
 				default:
 				case ViewMode.NONE:
@@ -388,8 +391,7 @@ namespace StarwingMapVisualizer.Screens
 					TitleBlock.Text           = "Assembly Viewer";
 					break;
 				case ViewMode.MAP:
-					// TODO: Unpause map viewer
-					//MAPViewer.Unpause();
+					MAPViewer.Unpause();
 					ViewModeHost.SelectedItem = MAPTab;
 					ViewMapButton.IsChecked   = true;
 					TitleBlock.Text           = "Map Event Node Viewer";
@@ -402,7 +404,7 @@ namespace StarwingMapVisualizer.Screens
 					TitleBlock.Text           = "Shape Viewer";
 					break;
 				case ViewMode.GFX:
-					// TODO : Refrrsh 2D image viewer
+					// TODO : Refresh 2D image viewer
 					//GFXViewer.RefreshFiles();
 					ViewModeHost.SelectedItem = GFXTab;
 					ViewGFXButton.IsChecked   = true;
@@ -489,8 +491,7 @@ namespace StarwingMapVisualizer.Screens
 				// */
 				return null;
 			} else if (enuSFT == SFCodeProjectFileTypes.CCR) { // EXTRACT COMPRESSED GRAPHICS
-				// TODO : Import GFXStandard for Extract CCR
-				//await GFXStandard.ExtractCCR(file);
+				await GFXStandard.ExtractCCR(file);
 				EDITORStandard.HideLoadingWindow();
 				await this.UpdateInterface(true); // Files changed!
 				return true;
@@ -501,8 +502,7 @@ namespace StarwingMapVisualizer.Screens
 				return true;
 			} else if (file.GetSFFileType() == SFCodeProjectFileTypes.SCR) { // screens
 				//OPEN THE SCR FILE
-				// TODO : Import GFXStandard for OpenSCR
-				//GFXStandard.OpenSCR(file);
+				GFXStandard.OpenSCR(file);
 				EDITORStandard.HideLoadingWindow();
 				await this.UpdateInterface();
 				this.CurrentMode = ViewMode.GFX;
@@ -510,8 +510,7 @@ namespace StarwingMapVisualizer.Screens
 				return true;
 			} else if (file.GetSFFileType() == SFCodeProjectFileTypes.CGX) { // graphics
 				//OPEN THE CGX FILE
-				// TODO : Import GFXStandard for OpenCGX
-				//await GFXStandard.OpenCGX(file);
+				await GFXStandard.OpenCGX(file);
 				EDITORStandard.HideLoadingWindow();
 				await this.UpdateInterface();
 				this.CurrentMode = ViewMode.GFX;
@@ -601,10 +600,10 @@ namespace StarwingMapVisualizer.Screens
 			MacroFileCombo.ItemsSource =
 				AppResources.Includes.Select(x => Path.GetFileNameWithoutExtension(x.OriginalFilePath));
 			//VIEW MODE
-			/* TODO : Invalidate file lists in MAPViewer and GFXViewer
+			// TODO : Invalidate file lists in GFXViewer
 			if (CurrentMode == ViewMode.MAP) {
-				MAPViewer.InvalidateFiles();
-			} else if (CurrentMode == ViewMode.GFX) {
+				await MAPViewer.InvalidateFiles();
+			} /*else if (CurrentMode == ViewMode.GFX) {
 				GFXViewer.RefreshFiles();
 			}// */
 		}
@@ -638,19 +637,13 @@ namespace StarwingMapVisualizer.Screens
 
 			MacroExplorerView.Items.Clear();
 			if (MacroFilterRadio.IsChecked ?? false) {
-				/* TODO : Set macro foreground
-				MacroExplorerView.SetBinding(Control.ForegroundProperty, new Binding("Foreground") {
-					Source = MacroFilterRadio,
-				});// */
+				MacroExplorerView.Foreground = this.FindResource("MacroColor") as SolidColorBrush;
 				var macros = file.Chunks.OfType<ASMMacro>(); // filter all chunks by macros only
 				foreach (var macro in macros) {
 					AddSymbol(macro);
 				}
 			} else if (DefineFilterRadio.IsChecked ?? false) {
-				/* TODO : Set define foreground
-				MacroExplorerView.SetBinding(Control.ForegroundProperty, new Binding("Foreground") {
-					Source = DefineFilterRadio,
-				});// */
+				MacroExplorerView.Foreground = this.FindResource("DefineColor") as SolidColorBrush;
 				var defines = file.Constants; // constants are kept separate
 				foreach (var define in defines) {
 					if (define != null) {
@@ -781,6 +774,13 @@ namespace StarwingMapVisualizer.Screens
 			UpdateInterface();
 		}
 
+		private async Task SFOptimRefreshBase(SFOptimizerTypeSpecifiers Type, string Noun)
+		{
+			_ = await EDITORStandard.Editor_RefreshMap(Type);
+			await UpdateInterface(true); // files updated!
+		}
+
+		#region XAML menu bar
 		/// <summary>
 		/// Prompts the user to export all 3D models and will export them
 		/// </summary>
@@ -791,12 +791,6 @@ namespace StarwingMapVisualizer.Screens
 
 		private async void ExportAll3DObjButton_Click(object sender, RoutedEventArgs e) =>
 			await EDITORStandard.Editor_ExportAll3DShapes(".obj");
-
-		private async Task SFOptimRefreshBase(SFOptimizerTypeSpecifiers Type, string Noun)
-		{
-			_ = await EDITORStandard.Editor_RefreshMap(Type);
-			UpdateInterface(true); // files updated!
-		}
 
 		/// <summary>
 		/// Refreshes the SHAPESMap SFOptimizer directory with the latest 3D model list
@@ -931,10 +925,10 @@ namespace StarwingMapVisualizer.Screens
 			OpenExternal.Folder(AppResources.ImportedProject.WorkspaceDirectory.FullName, true);
 		}
 
-		private void ConvertSfscreenItem_OnClick(object sender, RoutedEventArgs e)
+		private async void ConvertSfscreenItem_OnClick(object sender, RoutedEventArgs e)
 		{
-			// TODO : Import GFXStandard for ConvertSfscreenItem_OnClick
-			//GFXStandard.ConvertFromSfscreen();
+			await GFXStandard.ConvertFromSfscreen();
 		}
+		#endregion
 	}
 }

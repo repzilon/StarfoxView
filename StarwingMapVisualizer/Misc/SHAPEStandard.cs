@@ -567,15 +567,14 @@ namespace StarwingMapVisualizer.Misc
 			};
 		}// */
 
-		internal static async Task<KeyValuePair<BSPIOWriteResult,string>> ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup Group, SFPalette Palette, int Frame = 0)
+		internal static async Task<KeyValuePair<BSPIOWriteResult,string>> ExportShapeTo3DMeshFormat(BSPShape currentShape, COLGroup group, SFPalette palette, int frame = 0)
 		{
 			var saveDialog = FILEStandard.InitSaveFileDialog("Save 3D Object File", currentShape.Header.Name);
 			saveDialog.FileTypeChoices = new FilePickerFileType[] {
 				new FilePickerFileType(BSPExporter.FILE_EXTENSION.ToUpper() + " Files")
 					{ Patterns = new string[] { "*" + BSPExporter.FILE_EXTENSION } }
 			};
-			var topLevel = TopLevel.GetTopLevel(Application.Current.MainWindow());
-			var file = await topLevel.StorageProvider.SaveFilePickerAsync(saveDialog);
+			var file = await saveDialog.ShowDialogAsync();
 
 			if (file == null) {
 				return new KeyValuePair<BSPIOWriteResult, string>(BSPIOWriteResult.Cancelled, null);
@@ -583,7 +582,7 @@ namespace StarwingMapVisualizer.Misc
 				var filePath = file.TryGetLocalPath();
 				try { // try invoking the BSP exporter
 					return new KeyValuePair<BSPIOWriteResult, string>(
-						BSPExporter.ExportShape(filePath, currentShape, Group, Palette, Frame,
+						BSPExporter.ExportShape(filePath, currentShape, group, palette, frame,
 							ProjectColorTable, GetPaltByFileName("BLUE.COL"), BSPExportOptions.Default), filePath);
 				} catch (Exception ex) { // an error has occurred
 					return new KeyValuePair<BSPIOWriteResult, string>(BSPIOWriteResult.Faulted(ex), filePath);

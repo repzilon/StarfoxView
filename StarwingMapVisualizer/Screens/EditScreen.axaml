@@ -2,43 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls1="clr-namespace:StarwingMapVisualizer.Controls2"
+             xmlns:controls="clr-namespace:StarwingMapVisualizer.Controls"
+             xmlns:controls2="clr-namespace:StarwingMapVisualizer.Controls2"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="StarwingMapVisualizer.Screens.EditScreen">
     <UserControl.Styles>
-        <Style Selector="HeaderedContentControl.GroupBox">
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*">
-                        <!-- Header -->
-                        <Border
-                            ZIndex="1"
-                            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                            Padding="5,0,5,0"
-                            Margin="5,0,0,0">
-                            <TextBlock
-                                Text="{TemplateBinding Header}"
-                                FontWeight="Bold" />
-                        </Border>
-
-                        <!-- Content Area -->
-                        <Border
-                            Grid.Row="0" Grid.RowSpan="2"
-                            Padding="0,5,0,0"
-                            Grid.ColumnSpan="2" Grid.Column="0"
-                            CornerRadius="4"
-                            Margin="0,10,0,0"
-                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                            BorderThickness="1">
-                            <ContentPresenter
-                                Name="PART_ContentPresenter"
-                                Padding="8"
-                                Content="{TemplateBinding Content}" />
-                        </Border>
-                    </Grid>
-                </ControlTemplate>
-            </Setter>
-        </Style>
         <Style Selector="TreeViewItem">
             <Setter Property="Margin" Value="0,5" />
         </Style>
@@ -173,7 +141,6 @@
                 <Menu.Styles>
                     <Style Selector="MenuItem.Base">
                         <Setter Property="Foreground" Value="{Binding Foreground, ElementName=MenuStrip}" />
-                        <!--<Setter Property="Width" Value="40"/>-->
                     </Style>
                 </Menu.Styles>
                 <MenuItem Header="File" Classes="Base">
@@ -210,9 +177,8 @@
             </Menu>
         </Border>
         <Grid DockPanel.Dock="Top" Grid.Column="1" Grid.ColumnSpan="2">
-            <TextBlock x:Name="TitleBlock" DockPanel.Dock="Top" Margin="20,0,0,0"
-                       Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Assembly Viewer"
-                       Classes="TitleText" />
+            <TextBlock x:Name="TitleBlock" DockPanel.Dock="Top" Margin="20,0,0,0" Foreground="White"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Text="Assembly Viewer" Classes="TitleText" />
         </Grid>
         <Grid Background="{DynamicResource WindowAccentBackgroundColor}" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -221,10 +187,9 @@
                 <RowDefinition Height="*" MinHeight="100" />
             </Grid.RowDefinitions>
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0"
-                           Foreground="White" Text="My Workspace:" Classes="TitleText" />
-                <ContentControl DockPanel.Dock="Top" Margin="10,10,10,10"
-                                Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
+                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Foreground="White" Text="My Workspace:"
+                           Classes="TitleText" />
+                <ContentControl DockPanel.Dock="Top" Margin="10,10,10,10" Background="Black"> <!-- Style="{StaticResource SFContentBorder}" -->
                     <TreeView FontSize="22" x:Name="SolutionExplorerView" BorderThickness="0" Background="{x:Null}"
                               FontFamily="{StaticResource Atlantis}" RenderOptions.TextRenderingMode="Antialias">
                         <TreeViewItem IsExpanded="True" FontWeight="Bold" Classes="ProjectTreeStyle">
@@ -242,8 +207,8 @@
             <GridSplitter Height="2" Grid.Row="1" HorizontalAlignment="Stretch"
                           Background="{Binding Background, ElementName=MainSplitter}" ResizeDirection="Rows" />
             <DockPanel Grid.Row="2">
-                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0"
-                           Foreground="White" Text="Symbols:" Classes="TitleText" />
+                <TextBlock DockPanel.Dock="Top" Margin="10,10,0,0" Foreground="White" Text="Symbols:"
+                           Classes="TitleText" />
                 <HeaderedContentControl Classes="GroupBox" Header="VIEW OPTIONS" FontFamily="{StaticResource Atlantis}"
                                         FontSize="18" DockPanel.Dock="Top" Margin="10,10,10,0">
                     <StackPanel>
@@ -323,8 +288,7 @@
                             <TextBlock>Assembly code viewer will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="MAPTab">
-                            <!-- <controls:MAPControl x:Name="MAPViewer" /> -->
-                            <TextBlock>Map script timeline will go here</TextBlock>
+                            <controls:MapControl x:Name="MAPViewer" />
                         </TabItem>
                         <TabItem Name="OBJTab">
                             <!-- <controls:SHAPEControl x:Name="OBJViewer" /> -->
@@ -335,10 +299,10 @@
                             <TextBlock>2D graphics viewer will go here</TextBlock>
                         </TabItem>
                         <TabItem Name="MSGTab">
-                            <controls1:MSGViewer x:Name="MSGViewer" />
+                            <controls2:MSGViewer x:Name="MSGViewer" />
                         </TabItem>
                         <TabItem Name="BRRTab">
-                            <!-- <controls1:BRRViewer x:Name="BRRViewer" /> -->
+                            <!-- <controls2:BRRViewer x:Name="BRRViewer" /> -->
                             <TextBlock>Audio files explorer will go here</TextBlock>
                         </TabItem>
                     </TabControl>

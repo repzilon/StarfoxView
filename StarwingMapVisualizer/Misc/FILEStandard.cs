@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Starfox.Editor;
@@ -46,8 +45,9 @@ namespace StarwingMapVisualizer.Misc
 		/// <para>Note that unless ContextualFileType is passed and not default, a dialog is displayed asking the user what kind of file this is.</para>
 		/// </summary>
 		/// <param name="File"></param>
+		/// <param name="contextualFileType"></param>
 		/// <returns></returns>
-		public static async Task<T> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? ContextualFileType = default)
+		public static async Task<T> IncludeFile<T>(FileInfo File, SFFileType.ASMFileTypes? contextualFileType = null)
 		where T : class
 		{
 			if (!AppResources.IsFileIncluded(File)) {
@@ -55,15 +55,15 @@ namespace StarwingMapVisualizer.Misc
 				switch (File.GetSFFileType()) {
 					case SFCodeProjectFileTypes.Include:
 					case SFCodeProjectFileTypes.Assembly:
-						var asmFile = await ParseFile(File, ContextualFileType);
-						if (asmFile == default) return default; // USER CANCEL
+						var asmFile = await ParseFile(File, contextualFileType);
+						if (asmFile == null) return null; // USER CANCEL
 						AppResources.Includes.Add(asmFile);     // INCLUDE FILE FOR SYMBOL LINKING
 						Console.WriteLine($"Included   {File.Name,-12} for symbol linking");
 						return asmFile as T;
 					case SFCodeProjectFileTypes.Palette:
 						using (var file = File.OpenRead()) {
 							var palette = CAD.COL.Load(file);
-							if (palette == default) return default;
+							if (palette == null) return null;
 							AppResources.ImportedProject.Palettes.Add(File.FullName, palette);
 							Console.WriteLine($"Included   {File.Name,-12} as palette");
 							return palette as T;
@@ -71,7 +71,7 @@ namespace StarwingMapVisualizer.Misc
 				}
 			} else return AppResources.Includes.First(x => x.OriginalFilePath == File.FullName) as T;
 
-			return default;
+			return null;
 		}
 
 		public static void IncludeFile(ASMFile asmFile)
@@ -82,10 +82,10 @@ namespace StarwingMapVisualizer.Misc
 			}
 		}
 
-		public static bool SearchProjectForFile(string FileName, out FileInfo File, bool IgnoreHyphens = false)
+		public static bool SearchProjectForFile(string fileName, out FileInfo File, bool ignoreHyphens = false)
 		{
 			File = null;
-			var results = AppResources.ImportedProject.SearchFile(FileName, IgnoreHyphens);
+			var results = AppResources.ImportedProject.SearchFile(fileName, ignoreHyphens);
 			if (!results.Any()) return false;
 			if (results.Count() > 1) // ambiguous
 				return false;
@@ -120,12 +120,12 @@ namespace StarwingMapVisualizer.Misc
 		private static async Task<bool> HandleImportMessages<T>(FileInfo File, CodeImporter<T> importer)
 		where T : IImporterObject
 		{
-			async Task AutoIncludeNow(string message, IEnumerable<string> ExpectedIncludes)
+			async Task AutoIncludeNow(string message, IEnumerable<string> expectedIncludes)
 			{
 				//**AUTO INCLUDE
 				List<string> autoIncluded = new List<string>();
 				if (!string.IsNullOrWhiteSpace(message)) { // attempt to silence the warning
-					var includes = ExpectedIncludes;
+					var includes = expectedIncludes;
 					foreach (var include in includes) {
 						if (!SearchProjectForFile(include, out var file)) continue;
 						await IncludeFile<object>(file, SFFileType.ASMFileTypes.ASM);
@@ -155,23 +155,24 @@ namespace StarwingMapVisualizer.Misc
 
 		/// <summary>
 		/// When called on <c>COLTABS.ASM</c> will parse out the color table and add it to the project
-		/// <para/>If no other palettes are added to the project, will import <paramref name="DefaultPalette"/>
+		/// <para/>If no other palettes are added to the project, will import <paramref name="defaultPalette"/>
 		/// automatically
 		/// </summary>
 		/// <param name="File"></param>
+		/// <param name="defaultPalette"></param>
 		/// <returns></returns>
-		public static async Task<bool> TryIncludeColorTable(FileInfo File, string DefaultPalette = "NIGHT.COL")
+		public static async Task<bool> TryIncludeColorTable(FileInfo File, string defaultPalette = "NIGHT.COL")
 		{
 			if (!AppResources.IsFileIncluded(File)) {
 				ReadyImporters();
 				if (!await HandleImportMessages(File, COLTImport)) return false;
 				var result = await COLTImport.ImportAsync(File.FullName);
-				if (result == default) return false;
+				if (result == null) return false;
 				AppResources.Includes.Add(result); // INCLUDE FILE FOR SYMBOL LINKING
 				var msg = string.Join(Environment.NewLine, result.Groups);
 				MessageBox.Show(msg, "Success!", MessageBoxButton.OKCancel);
 				if (!AppResources.ImportedProject.Palettes.Any()) {
-					if (!SearchProjectForFile(DefaultPalette, out var file)) return false;
+					if (!SearchProjectForFile(defaultPalette, out var file)) return false;
 					await IncludeFile<ASMFile>(file);
 				}
 			}
@@ -182,31 +183,31 @@ namespace StarwingMapVisualizer.Misc
 		/// <summary>
 		/// Returns a palette from the file reference provided
 		/// </summary>
-		/// <param name="File"></param>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		public static async Task<CAD.COL> GetPalette(FileInfo File)
+		public static async Task<CAD.COL> GetPalette(FileInfo file)
 		{
-			if (!AppResources.IsFileIncluded(File)) {
-				var success = await IncludeFile<object>(File) != default;
+			if (!AppResources.IsFileIncluded(file)) {
+				var success = await IncludeFile<object>(file) != null;
 				if (!success) return null;
 			}
 
-			return AppResources.ImportedProject.Palettes[File.FullName];
+			return AppResources.ImportedProject.Palettes[file.FullName];
 		}
 
 		/// <summary>
 		/// Opens the <see cref="PaletteView"/> window with the palette file name provided
 		/// </summary>
-		/// <param name="File"></param>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		public static async Task OpenPalette(FileInfo File)
+		public static async Task OpenPalette(FileInfo file)
 		{
-			if (!AppResources.IsFileIncluded(File)) {
-				var success = await IncludeFile<object>(File) != default;
+			if (!AppResources.IsFileIncluded(file)) {
+				var success = await IncludeFile<object>(file) != null;
 				if (!success) return;
 			}
 
-			var col = AppResources.ImportedProject.Palettes[File.FullName];
+			var col = AppResources.ImportedProject.Palettes[file.FullName];
 			/* TODO : Import PaletteView
 			var view = new PaletteView()
 			{
@@ -220,12 +221,12 @@ namespace StarwingMapVisualizer.Misc
 		/// <summary>
 		/// If the file is in <see cref="AppResources.OpenFiles"/>, the file will be closed
 		/// </summary>
-		/// <param name="File"></param>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		public static bool CloseFileIfOpen(FileInfo File)
+		public static bool CloseFileIfOpen(FileInfo file)
 		{
-			if (AppResources.OpenFiles.ContainsKey(File.FullName)) {
-				AppResources.ImportedProject.CloseFile(File.FullName);
+			if (AppResources.OpenFiles.ContainsKey(file.FullName)) {
+				AppResources.ImportedProject.CloseFile(file.FullName);
 				return true;
 			}
 
@@ -236,19 +237,19 @@ namespace StarwingMapVisualizer.Misc
 		/// Opens the specified BSP File, if it's already open, will return the file.
 		/// </summary>
 		/// <param name="File"></param>
-		/// <param name="ForceReload">Forces the library to reload the file from disk.</param>
+		/// <param name="forceReload">Forces the library to reload the file from disk.</param>
 		/// <returns></returns>
-		public static async Task<BSPFile> OpenBSPFile(FileInfo File, bool ForceReload = false)
+		public static async Task<BSPFile> OpenBSPFile(FileInfo File, bool forceReload = false)
 		{
 			if (AppResources.ImportedProject.OpenFiles.TryGetValue(File.FullName, out var fileInstance)) {
 				// FILE IS OPEN
-				if (fileInstance is BSPFile && !ForceReload) return fileInstance as BSPFile; // RETURN IT
+				if (fileInstance is BSPFile && !forceReload) return fileInstance as BSPFile; // RETURN IT
 				// WE HAVE TO RELOAD IT, SO CLOSE IT
 				CloseFileIfOpen(File);
 			}
 
 			//3D IMPORT LOGIC
-			if (!await HandleImportMessages(File, BSPImport)) return default;
+			if (!await HandleImportMessages(File, BSPImport)) return null;
 			//**AUTO-INCLUDE COLTABS.ASM
 			if (SearchProjectForFile("coltabs.asm", out var projFile))
 				await TryIncludeColorTable(projFile);
@@ -265,7 +266,7 @@ namespace StarwingMapVisualizer.Misc
 		public static async Task<MAPFile> OpenMAPFile(FileInfo File)
 		{
 			//MAP IMPORT LOGIC
-			if (!await HandleImportMessages(File, MAPImport)) return default;
+			if (!await HandleImportMessages(File, MAPImport)) return null;
 			if (!MAPImport.MapContextsSet)
 				await MAPImport.ProcessLevelContexts();
 			var rObj = await MAPImport.ImportAsync(File.FullName);
@@ -285,9 +286,9 @@ namespace StarwingMapVisualizer.Misc
 		/// <summary>
 		/// Opens a <see cref="MSGFile"/> and returns a reference to it
 		/// </summary>
-		/// <param name="File"></param>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		public static async Task<ASMFile> OpenMSGFile(FileInfo File)
+		public static async Task<ASMFile> OpenMSGFile(FileInfo file)
 		{
 			// Try to auto-include MOJI_0.TRN
 			var trn = AppResources.OpenFiles.Values.FirstOrDefault(x => x is TRNFile) as TRNFile;
@@ -299,22 +300,22 @@ namespace StarwingMapVisualizer.Misc
 			}
 
 			//MSG IMPORT LOGIC
-			if (!await HandleImportMessages(File, MSGImport)) return default;
-			Console.WriteLine($"Importing {File.Name,-12}");
+			if (!await HandleImportMessages(file, MSGImport)) return null;
+			Console.WriteLine($"Importing {file.Name,-12}");
 			MSGImport.TranslationTable = trn ?? AppResources.Includes.OfType<TRNFile>().LastOrDefault();
-			var rObj = await MSGImport.ImportAsync(File.FullName);
-			Console.WriteLine($"Imported  {File.Name,-12}");
-			ShowPossibleErrors(MSGImport, File);
+			var rObj = await MSGImport.ImportAsync(file.FullName);
+			Console.WriteLine($"Imported  {file.Name,-12}");
+			ShowPossibleErrors(MSGImport, file);
 			return rObj;
 		}
 
-		public static async Task<TRNFile> OpenTRNFile(FileInfo File)
+		public static async Task<TRNFile> OpenTRNFile(FileInfo file)
 		{
-			if (!await HandleImportMessages(File, TRNImport)) return default;
-			Console.WriteLine($"Importing  {File.Name,-12}");
-			var rObj = await TRNImport.ImportAsync(File.FullName);
-			Console.WriteLine($"Imported   {File.Name,-12}");
-			ShowPossibleErrors(TRNImport, File);
+			if (!await HandleImportMessages(file, TRNImport)) return null;
+			Console.WriteLine($"Importing  {file.Name,-12}");
+			var rObj = await TRNImport.ImportAsync(file.FullName);
+			Console.WriteLine($"Imported   {file.Name,-12}");
+			ShowPossibleErrors(TRNImport, file);
 			return rObj;
 		}
 
@@ -322,26 +323,26 @@ namespace StarwingMapVisualizer.Misc
 		/// Will import an *.ASM file into the project's OpenFiles collection and return the parsed result.
 		/// <para>NOTE: This function WILL call a dialog to have the user select which kind of file this is.
 		/// This can cause a softlock if this logic is nested with other Parse logic.</para>
-		/// <para>To avoid this, please make diligent use of the <paramref name="ContextualFileType"/> parameter.</para>
+		/// <para>To avoid this, please make diligent use of the <paramref name="contextualFileType"/> parameter.</para>
 		/// </summary>
-		/// <param name="File">The file to parse.</param>
-		/// <param name="ContextualFileType">Will skip the Dialog asking what kind of file this is parsing by using this value
+		/// <param name="file">The file to parse.</param>
+		/// <param name="contextualFileType">Will skip the Dialog asking what kind of file this is parsing by using this value
 		/// <para>If <see langword="default"/>, a dialog is displayed.</para></param>
 		/// <returns></returns>
-		private static async Task<ASMFile> ParseFile(FileInfo File,
-		SFFileType.ASMFileTypes? ContextualFileType = default)
+		private static async Task<ASMFile> ParseFile(FileInfo file,
+		SFFileType.ASMFileTypes? contextualFileType = null)
 		{
 			//GET IMPORTS SET
 			ReadyImporters();
 			//DO FILE PARSE NOW
-			ASMFile asmfile  = default;
-			var     fileType = File.GetSFFileType();
+			ASMFile asmfile  = null;
+			var     fileType = file.GetSFFileType();
 			if ((fileType == SFCodeProjectFileTypes.Assembly) ||
 				(fileType == SFCodeProjectFileTypes.Include)) // assembly file
 			{                                                 // DOUBT AS TO FILE TYPE
 				//CREATE THE MENU WINDOW
 				SFFileType.ASMFileTypes selectFileType;
-				if (!ContextualFileType.HasValue) {
+				if (!contextualFileType.HasValue) {
 					// In Avalonia, you must call your dialogs in the UI thread, never in a task worker thread
 					var op =  Dispatcher.UIThread.InvokeAsync<Task<SFFileType.ASMFileTypes?>>(async () => {
 						var importMenu = new FileImportMenu();
@@ -359,28 +360,28 @@ namespace StarwingMapVisualizer.Misc
 					} else {
 						return null;
 					}
-				} else selectFileType = ContextualFileType.Value;
+				} else selectFileType = contextualFileType.Value;
 
 				if (selectFileType == SFFileType.ASMFileTypes.ASM) {
-					asmfile = await ASMImport.ImportAsync(File.FullName);
+					asmfile = await ASMImport.ImportAsync(file.FullName);
 				} else if (selectFileType == SFFileType.ASMFileTypes.MAP) {
-					asmfile = await OpenMAPFile(File);
+					asmfile = await OpenMAPFile(file);
 				} else if (selectFileType == SFFileType.ASMFileTypes.BSP) {
-					asmfile = await OpenBSPFile(File);
+					asmfile = await OpenBSPFile(file);
 				} else if (selectFileType == SFFileType.ASMFileTypes.MSG) {
-					asmfile = await OpenMSGFile(File);
+					asmfile = await OpenMSGFile(file);
 				} else if (selectFileType == SFFileType.ASMFileTypes.DEFSPR) {
-					asmfile = await OpenDEFSPRFile(File);
+					asmfile = await OpenDEFSPRFile(file);
 				} else if (selectFileType == SFFileType.ASMFileTypes.TRN) {
-					asmfile = await OpenTRNFile(File);
+					asmfile = await OpenTRNFile(file);
 				} else {
-					return default;
+					return null;
 				}
 			}
 
-			if (asmfile == default) return default;
-			if (!AppResources.OpenFiles.ContainsKey(File.FullName))
-				AppResources.OpenFiles.Add(File.FullName, asmfile);
+			if (asmfile == null) return null;
+			if (!AppResources.OpenFiles.ContainsKey(file.FullName))
+				AppResources.OpenFiles.Add(file.FullName, asmfile);
 			return asmfile;
 		}
 
@@ -396,7 +397,7 @@ namespace StarwingMapVisualizer.Misc
 			var mSpriteDef = AppResources.OpenFiles.Values.OfType<MSpritesDefinitionFile>().FirstOrDefault();
 			if (mSpriteDef == null) { // there isn't one, try adding it now
 				var hit = AppResources.ImportedProject.SearchFile(DefinitionASMName).FirstOrDefault();
-				if (hit != default)                   // Can't find DEFSPR.ASM
+				if (hit != null)                   // Can't find DEFSPR.ASM
 					mSpriteDef = await OpenDEFSPRFile(new FileInfo(hit.FilePath)); // found it, trying to add it
 			}
 
@@ -424,11 +425,11 @@ namespace StarwingMapVisualizer.Misc
 					MessageBox.Show(
 						"You have chosen to open an MSprites definition file, yet you haven't created the MSpritesMap.\n\n" +
 						"Please do that first and then try this function again.");
-					return default;
+					return null;
 				}
 			}
 
-			if (!await HandleImportMessages(file, DEFSPRImport)) return default;
+			if (!await HandleImportMessages(file, DEFSPRImport)) return null;
 			var rObj = await DEFSPRImport.ImportAsync(file.FullName);
 			ShowPossibleErrors(DEFSPRImport, file);
 			if (!AppResources.OpenFiles.ContainsKey(file.FullName))
@@ -436,10 +437,10 @@ namespace StarwingMapVisualizer.Misc
 			return rObj;
 		}
 
-		internal static async Task<ASMFile> OpenASMFile(FileInfo File, bool IgnoreDialogs)
+		internal static async Task<ASMFile> OpenASMFile(FileInfo file, bool ignoreDialogs)
 		{
 			//DO FILE PARSE NOW
-			return await ParseFile(File, IgnoreDialogs ? (SFFileType.ASMFileTypes?)SFFileType.ASMFileTypes.ASM : null);
+			return await ParseFile(file, ignoreDialogs ? (SFFileType.ASMFileTypes?)SFFileType.ASMFileTypes.ASM : null);
 		}
 
 		/// <summary>
@@ -455,13 +456,11 @@ namespace StarwingMapVisualizer.Misc
 		{
 			if (initialDirectory == null) initialDirectory = AppResources.ImportedProject.WorkspaceDirectory.FullName;
 
-			var topLevel = TopLevel.GetTopLevel(Application.Current.MainWindow());
-			var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {
+			// TODO : Folder picker (supported in Avalonia and Windows Forms, but ironically not in WPF)
+			var files = await new FilePickerOpenOptions {
 				Title         = title,
 				AllowMultiple = multiselect,
-				// TODO : Support initialDirectory in ShowGenericFileBrowsers
-				//SuggestedStartLocation = new IStorageFolder()
-			});
+			}.ShowDialogAsync(initialDirectory);
 
 			if (files.Count > 0) {
 				var paths = files.Select(x => x.Path.LocalPath);
@@ -497,7 +496,7 @@ namespace StarwingMapVisualizer.Misc
 									"Use the Refresh <Type>Map button to create this.");
 			//Find the one that is a STAGE MAP
 			var sfOptim = project.GetOptimizerByTypeOrDefault(Type);
-			if (sfOptim == default)
+			if (sfOptim == null)
 				throw new Exception($"This project has Optimizers, but none of them are for {Type}.\n" +
 									"Use the Refresh <Type>Map button to create this.");
 			return sfOptim;
@@ -508,19 +507,16 @@ namespace StarwingMapVisualizer.Misc
 		/// <para/>This will look up the level by its name as it appears in its header.
 		/// </summary>
 		/// <returns></returns>
-		internal static async Task<MAPScript> GetMapScriptByMacroName(string LevelMacroName)
+		internal static async Task<MAPScript> GetMapScriptByMacroName(string levelMacroName)
 		{
-			var HeaderName = LevelMacroName;
 			var stageOptim = GetOptimizerByType(SFOptimizerTypeSpecifiers.Maps);
 			var stageMap   = stageOptim.OptimizerData.ObjectMap;
 			//Try to find the file that contains the stage we want
-			if (!stageMap.TryGetValue(HeaderName, out var FileName)) return default;
-			var path = Path.Combine(Path.GetDirectoryName(stageOptim.FilePath), FileName);
+			if (!stageMap.TryGetValue(levelMacroName, out var fileName)) return null;
+			var path = Path.Combine(Path.GetDirectoryName(stageOptim.FilePath), fileName);
 			//Open the file
 			var file = await OpenMAPFile(new FileInfo(path));
-			if (file.Scripts.TryGetValue(LevelMacroName, out var script))
-				return script;
-			return default;
+			return file.Scripts.TryGetValue(levelMacroName, out var script) ? script : null;
 		}
 
 		internal static FilePickerSaveOptions InitSaveFileDialog(string title, string defaultFileName)
@@ -529,8 +525,6 @@ namespace StarwingMapVisualizer.Misc
 				Title               = title,
 				SuggestedFileName   = defaultFileName,
 				ShowOverwritePrompt = true
-				// TODO : SuggestedStartLocation in InitSaveFileDialog
-				// SuggestedStartLocation = AppResources.ImportedProject.WorkspaceDirectory.FullName,
 			};
 		}
 	}

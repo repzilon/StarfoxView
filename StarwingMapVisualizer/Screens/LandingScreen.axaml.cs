@@ -36,13 +36,10 @@ namespace StarwingMapVisualizer.Screens
 			bool result = false;
 			for (int retries = 0; retries < 1; retries++) {
 				if (fileLoc == null) { // SHOW FILE BROWSER
-					var topLevel = TopLevel.GetTopLevel(this);
-					var files    = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+					var files    = await new FilePickerOpenOptions
 					{
 						Title         = "Select any file in StarFox source base directory",
-						// TODO : Support initialDirectory in GetStartedButton_Click
-						//SuggestedStartLocation = new IStorageFolder(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
-					});
+					}.ShowDialogAsync(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
 
 					if (files.Any()) {
 						var path = files.First().TryGetLocalPath();

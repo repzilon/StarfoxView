@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="StarwingMapVisualizer.Controls.MapControl"
+             xmlns:local="clr-namespace:StarwingMapVisualizer.Controls"
+             xmlns:customcontrols="clr-namespace:AvaloniaPanNZoom.CustomControls;assembly=AvaloniaPanNZoom"
+             xmlns:renderers="clr-namespace:StarwingMapVisualizer.Renderers">
+    <Grid ClipToBounds="True">
+        <Grid Name="BackgroundHost" Background="#333333" Margin="0,30,0,0">
+            <renderers:BackgroundRenderer x:Name="BackgroundRender" Opacity=".75" />
+            <ContentControl x:Name="CurrentEditorControl" ClipToBounds="True">
+                <customcontrols:PanAndZoomCanvas Background="{x:Null}">
+                    <local:MapEventNodeControl Canvas.Left="100" Canvas.Top="50" />
+                </customcontrols:PanAndZoomCanvas>
+            </ContentControl>
+            <ScrollBar x:Name="ChronologySlider" Orientation="Horizontal" VerticalAlignment="Top"
+                       Scroll="ChronologySlider_Scroll" />
+        </Grid>
+        <TabControl Name="MAPTabViewer" Classes="SFTabViewerKey" Background="Black"
+                    VerticalAlignment="Top" Height="30">
+            <TabControl.Styles>
+                <Style Selector="customcontrols|PanAndZoomCanvas">
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="ClipToBounds" Value="True" />
+                </Style>
+            </TabControl.Styles>
+            <TabItem Header="TEST" />
+        </TabControl>
+        <ContentControl Grid.Column="1" FontSize="12" Margin="0,30,0,0" HorizontalAlignment="Right" Width="135">
+            <Grid Margin="10">
+                <Border Margin="-10" IsHitTestVisible="False">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0,0" StartPoint="1,0" Opacity=".5">
+                            <GradientStop Color="Black" />
+                            <GradientStop Color="#00000000" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <StackPanel VerticalAlignment="Bottom">
+                    <Button x:Name="MapExportButton" Height="32" Foreground="White" Background="#FF2C9000"
+                            Click="MapExportButton_Click">
+                        Export to *.sfmap
+                    </Button>
+                    <Button x:Name="RefreshEditorButton" Height="32" Foreground="White" Background="#FF2C9000"
+                            Click="RefreshEditorButton_Click">
+                        Refresh Editor
+                    </Button>
+                    <Button x:Name="MapContextButton" Height="100" Margin="0,10" Foreground="White"
+                            Background="#FF2C9000" Click="MapContextButton_Click" Padding="0,5,0,5">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,5,0,0">Scenery Settings...</TextBlock>
+                            <Image Source="/Resources/Image/screenIcon.png"
+                                   RenderOptions.BitmapInterpolationMode="None" />
+                        </DockPanel>
+                    </Button>
+                    <Button x:Name="View3DButton" Foreground="White" Background="#FF2C9000" Click="View3DButton_Click"
+                            Height="100" Padding="0,5,0,5">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,5,0,0">Explore Level...</TextBlock>
+                            <Image Source="/Resources/Image/view3d.png"
+                                   RenderOptions.BitmapInterpolationMode="None" />
+                        </DockPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ContentControl>
+    </Grid>
+</UserControl>

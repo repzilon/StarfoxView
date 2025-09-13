@@ -12,7 +12,7 @@
             <Button x:Name="OKButton" Margin="10,0" Width="75" IsDefault="True" Click="OKButton_Click">OK</Button>
             <Button x:Name="ApplyButton" Width="75" Click="ApplyButton_Click">Apply</Button>
         </StackPanel>
-        <TabControl Name="SettingsTabs" Margin="0,0,0,10"> <!-- Classes="SFTabViewerKey" -->
+        <TabControl Name="SettingsTabs" Margin="0,0,0,10" Classes="SFTabViewerKey">
             <TabItem Header="TEST">
             </TabItem>
         </TabControl>

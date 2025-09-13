@@ -1,18 +1,18 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using StarFox.Interop.GFX;
 using StarFox.Interop.MISC;
-using static StarFox.Interop.SFFileType;
 
 namespace StarwingMapVisualizer.Controls.Subcontrols
 {
-	public partial class FileImportMenu : Window
+	public partial class BPPDepthMenu : Window
 	{
 		/// <summary>
 		/// The selected type of file
 		/// </summary>
-		public ASMFileTypes FileType { get; private set; }
+		public CAD.BitDepthFormats FileType { get; private set; }
 
-		public FileImportMenu()
+		public BPPDepthMenu()
 		{
 			InitializeComponent();
 			Loaded += OnLoaded;
@@ -21,31 +21,34 @@ namespace StarwingMapVisualizer.Controls.Subcontrols
 		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			TypeMenu.Children.Clear();
-			foreach (var type in Utility.GetValues<ASMFileTypes>()) {
-				var item = new Button() {
-					Content = GetSummary(type)
+			foreach (var type in Utility.GetValues<CAD.BitDepthFormats>()) {
+				var item = new MenuItem() {
+					Header = type.ToString()
 				};
 				item.Click += delegate { Dismiss(type); };
 				TypeMenu.Children.Add(item);
 			}
 
-			var citem = new Button() {
-				Content = "Cancel",
-				IsCancel = true
+			var citem = new MenuItem() {
+				Header = "Cancel"
 			};
 			citem.Click += delegate { Close(false); };
 			TypeMenu.Children.Add(citem);
-			Activate();
 		}
 
 		/// <summary>
 		/// Dismiss the window with the specified result
 		/// </summary>
 		/// <param name="fileType"></param>
-		private void Dismiss(ASMFileTypes fileType)
+		private void Dismiss(CAD.BitDepthFormats fileType)
 		{
 			this.FileType = fileType;
 			Close(true);
+		}
+
+		private void CancelItem_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
 		}
 	}
 }

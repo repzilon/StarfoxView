@@ -14,6 +14,7 @@ namespace StarwingMapVisualizer
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		#region Native Application menu
 		private void AppAbout_OnClick(object sender, EventArgs e)
 		{
 			new AboutBox().ShowDialog(Current.MainWindow());
@@ -24,6 +25,7 @@ namespace StarwingMapVisualizer
 			var settings = new SettingsDialog();
 			settings.Show();
 		}
+		#endregion
 
 		public override void OnFrameworkInitializationCompleted()
 		{
