@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 
 namespace StarwingMapVisualizer.Misc
 {
@@ -10,6 +11,16 @@ namespace StarwingMapVisualizer.Misc
 		{
 			var desktop = avaloniaApp.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 			return desktop?.MainWindow;
+		}
+
+		private static TopLevel OurTopLevel()
+		{
+			return TopLevel.GetTopLevel(Application.Current.MainWindow());
+		}
+
+		public static IClipboard Clipboard()
+		{
+			return OurTopLevel().Clipboard;
 		}
 	}
 }

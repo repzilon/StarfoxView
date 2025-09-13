@@ -146,7 +146,7 @@ namespace StarwingMapVisualizer.Misc
 			ReadyImporters();
 			message2 = importer.CheckWarningMessage(File.FullName);
 			if (!string.IsNullOrWhiteSpace(message2)) {
-				if (MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
+				if (await MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
 					return false;
 			}
 
