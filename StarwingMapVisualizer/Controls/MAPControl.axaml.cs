@@ -104,7 +104,7 @@ namespace StarwingMapVisualizer.Controls
 				this.SelectedScript.LevelData.Serialize(file);
 			}
 
-			if (MessageBox.Show($"The map was successfully exported to:\n{fileName}\n" +
+			if (await MessageBox.Show($"The map was successfully exported to:\n{fileName}\n" +
 								$"Do you want to copy its location to the clipboard?", "Complete",
 					MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
 				await AvaloniaBridge.Clipboard().SetTextAsync(fileName);
@@ -295,7 +295,7 @@ namespace StarwingMapVisualizer.Controls
 
 						//Loop while user selects the right file
 						while (subScript == null) {
-							if (MessageBox.Show($"Could not find section: {mapjsr.SubroutineName}\n\n" +
+							if (await MessageBox.Show($"Could not find section: {mapjsr.SubroutineName}\n\n" +
 												$"Would you like to select the file it's in?", "Subsection Not Found",
 									MessageBoxButton.YesNo) == MessageBoxResult.No) {
 								break; // User gives up
@@ -402,7 +402,7 @@ namespace StarwingMapVisualizer.Controls
 
 			bool autoDereference = script.ReferencedSubSections.Any();
 			if (!AppResources.MapImporterAutoDereferenceMode && autoDereference) {
-				if (MessageBox.Show("Automatically include referenced sub-sections of Map files is OFF.\n" +
+				if (await MessageBox.Show("Automatically include referenced sub-sections of Map files is OFF.\n" +
 									$"This level contains {script.ReferencedSubSections.Count} subsections, include them anyway?\n" +
 									$"\n(this may take some time)",
 						"Auto-Include Sub-Sections?", MessageBoxButton.YesNo) == MessageBoxResult.No) {

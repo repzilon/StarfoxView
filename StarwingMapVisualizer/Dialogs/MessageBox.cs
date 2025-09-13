@@ -1,7 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using StarwingMapVisualizer;
 
 namespace StarwingMapVisualizer.Dialogs
 {
@@ -29,15 +29,16 @@ namespace StarwingMapVisualizer.Dialogs
 	/// </summary>
 	internal static class MessageBox
 	{
-		public static MessageBoxResult Show(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK)
+		public static async Task<MessageBoxResult> Show(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK)
 		{
 			var box = MessageBoxManager.GetMessageBoxStandard(caption, message, Convert(buttons));
-			return Convert(box.ShowAsync().Result);
+			var baseResult = await box.ShowAsync();
+			return Convert(baseResult);
 		}
 
-		public static MessageBoxResult Show(string message)
+		public static async Task Show(string message)
 		{
-			return Show(message, AppResources.ApplicationName);
+			await Show(message, AppResources.ApplicationName);
 		}
 
 		private static MessageBoxResult Convert(ButtonResult packageResult)
