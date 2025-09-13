@@ -145,12 +145,7 @@ namespace StarwingMapVisualizer.Misc
 			await AutoIncludeNow(message2, importer.ExpectedIncludes);
 			ReadyImporters();
 			message2 = importer.CheckWarningMessage(File.FullName);
-			if (!string.IsNullOrWhiteSpace(message2)) {
-				if (await MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
-					return false;
-			}
-
-			return true;
+			return string.IsNullOrWhiteSpace(message2) || await MessageBox.Show(message2, "Continue?", MessageBoxButton.OKCancel) != MessageBoxResult.Cancel;
 		}
 
 		/// <summary>

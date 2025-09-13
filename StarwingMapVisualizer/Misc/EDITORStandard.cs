@@ -379,15 +379,8 @@ namespace StarwingMapVisualizer.Misc
 		/// <returns>True if any changes were made to the project, false if there are no changes</returns>
 		internal static async Task<bool> WelcomeWagon()
 		{
-			if (WelcomeWagonShownOnce) {
-				return false;
-			}
-
-			if (AppResources.ImportedProject == null) {
-				return false;
-			}
-
-			if (AppResources.ImportedProject.EnsureOptimizers(out SFOptimizerTypeSpecifiers[] missing)) {
+			if (WelcomeWagonShownOnce || (AppResources.ImportedProject == null) ||
+			AppResources.ImportedProject.EnsureOptimizers(out var missing)) {
 				return false;
 			}
 
