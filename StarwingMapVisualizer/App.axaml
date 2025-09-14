@@ -10,7 +10,7 @@
         </NativeMenu>
     </NativeMenu.Menu>
     <Application.Styles>
-        <FluentTheme />
+        <SimpleTheme />
         <Style Selector="RadioButton">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="22" />
