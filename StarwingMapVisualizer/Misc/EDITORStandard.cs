@@ -145,7 +145,7 @@ namespace StarwingMapVisualizer.Misc
 
 			//TEST SOMETHING OUT
 			if (!filesSelected.Select(x => Path.GetFileName(x).ToLower()).Contains(keyFile.ToLower())) {
-				if (MessageBox.Show("It looks like the directory you selected doesn't have at least " +
+				if (await MessageBox.Show("It looks like the directory you selected doesn't have at least " +
 									$"a {keyFile.ToUpper()} file in it. Have you selected the {type.ToString().ToUpper()} directory in your workspace?\n\n" +
 									"Would you like to continue anyway? No will go back to file selection.",
 						"Directory Selection Message",
@@ -183,7 +183,7 @@ namespace StarwingMapVisualizer.Misc
 		{
 			// EXPORT 3D FUNCTION -- I MADE HISTORY HERE TODAY. 11:53PM 03/31/2023 JEREMY GLAZEBROOK.
 			// I MADE A GUI PROGRAM THAT EXTRACTED STARFOX SHAPES SUCCESSFULLY AND DUMPED THEM ALL IN READABLE FORMAT.
-			var r = MessageBox.Show($"Welcome to the Export 3D Assets Wizard!\n" +
+			var r = await MessageBox.Show($"Welcome to the Export 3D Assets Wizard!\n" +
 									$"This tool will do the following: Export all 3D assets from the selected directory to *{format} files and palettes.\n" +
 									$"It will dump them to the exports/models directory.\n" +
 									$"You will get a manifest of all files dumped with their model names as well.\n" +
@@ -236,9 +236,8 @@ namespace StarwingMapVisualizer.Misc
 			}
 
 			strExportEnded += "\nDo you want to open the directory and copy its location to the clipboard?";
-			if (MessageBox.Show(strExportEnded, "Complete", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
-				await TopLevel.GetTopLevel(Application.Current.MainWindow()).Clipboard
-					.SetTextAsync(SHAPEStandard.DefaultShapeExtractionDirectory);
+			if (await MessageBox.Show(strExportEnded, "Complete", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
+				await AvaloniaBridge.Clipboard().SetTextAsync(SHAPEStandard.DefaultShapeExtractionDirectory);
 				OpenExternal.Folder(strExportDir);
 			}
 
@@ -380,20 +379,13 @@ namespace StarwingMapVisualizer.Misc
 		/// <returns>True if any changes were made to the project, false if there are no changes</returns>
 		internal static async Task<bool> WelcomeWagon()
 		{
-			if (WelcomeWagonShownOnce) {
-				return false;
-			}
-
-			if (AppResources.ImportedProject == null) {
-				return false;
-			}
-
-			if (AppResources.ImportedProject.EnsureOptimizers(out SFOptimizerTypeSpecifiers[] missing)) {
+			if (WelcomeWagonShownOnce || (AppResources.ImportedProject == null) ||
+			AppResources.ImportedProject.EnsureOptimizers(out var missing)) {
 				return false;
 			}
 
 			foreach (var missingType in missing) {
-				if (MessageBox.Show($"Your project is missing the {missingType}Map optimizer.\n" +
+				if (await MessageBox.Show($"Your project is missing the {missingType}Map optimizer.\n" +
 									$"\nWould you like to add this now?", $"Missing {missingType}Map Optimizer",
 						MessageBoxButton.YesNo)
 					== MessageBoxResult.No) {
