@@ -310,9 +310,10 @@ namespace StarFoxMapVisualizer.Misc
 		/// <returns>True if any changes were made to the project, false if there are no changes</returns>
 		internal static async Task<bool> WelcomeWagon()
 		{
-			if (WelcomeWagonShownOnce) return false;
-			if (AppResources.ImportedProject == null) return false;
-			if (AppResources.ImportedProject.EnsureOptimizers(out SFOptimizerTypeSpecifiers[] missing)) return false;
+			if (WelcomeWagonShownOnce || (AppResources.ImportedProject == null) ||
+			AppResources.ImportedProject.EnsureOptimizers(out var missing)) {
+				return false;
+			}
 			foreach (var missingType in missing) {
 				if (MessageBox.Show($"Your project is missing the {missingType}Map optimizer.\n" +
 					$"\nWould you like to add this now?", $"Missing {missingType}Map Optimizer", MessageBoxButton.YesNo)
