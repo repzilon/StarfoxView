@@ -10,7 +10,8 @@
         </NativeMenu>
     </NativeMenu.Menu>
     <Application.Styles>
-        <SimpleTheme />
+        <ClassicTheme FontAliasing="False" />
+        <StyleInclude Source="avares://Classic.Avalonia.Theme.DataGrid/Classic.axaml"/>
         <Style Selector="RadioButton">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="22" />
