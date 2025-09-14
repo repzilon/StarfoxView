@@ -7,7 +7,7 @@
     <TargetFrameworks>net46;net48;netcoreapp3.1;net5.0-windows7.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '15.0' ">
-    <TargetFrameworks>net46</TargetFrameworks>
+    <TargetFramework>net46</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
