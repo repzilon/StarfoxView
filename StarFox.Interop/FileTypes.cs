@@ -63,7 +63,7 @@
         public static string GetSummary(BINFileTypes Type)
         {
             var karSummaries = new string[] {
-                "Crunch'd Graphics (CGX)", "Sound Effects (Samples) (BRR)", "Unpack Audio BIN (ABIN)"
+                "Crunched Graphics (CGX)", "Sound Effects (Samples) (BRR)", "Unpack Audio BIN (ABIN)"
             };
             return (Type >= BINFileTypes.COMPRESSED_CGX) && (Type <= BINFileTypes.SPC) ? karSummaries[(int)Type] : "Not found";
         }
