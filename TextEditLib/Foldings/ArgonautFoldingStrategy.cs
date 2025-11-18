@@ -76,7 +76,10 @@ namespace TextEditLib.Foldings
 				}
 			}
 
-			// TODO : label and sublabel folding (I have no idea on how to reliably detect the end of code sequence related to a label)
+			// TODO : Label and sublabel folding based on regular expressions
+			// pattern for beginning: ^([.a-z0-9_]+)\s+(?!equ|MACRO) with Multiline option
+			// end is the start of the next sublabel or next label
+			// nesting is simpler too: sublabels are inside labels, but nothing recursive
 
 			newFoldings.Sort(OrderFoldings);
 			return newFoldings;
